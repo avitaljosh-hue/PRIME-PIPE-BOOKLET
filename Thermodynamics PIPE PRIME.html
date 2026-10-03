@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thermodynamics Quiz (335 Questions)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f9f9f9; color: #333; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 700px; margin: 0 auto; }
+    .btn { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+    .btn:hover { background: #0056b3; }
+    .option-btn { display: block; width: 100%; text-align: left; background: #e9ecef; border: 1px solid #ced4da; padding: 10px; margin: 8px 0; border-radius: 4px; cursor: pointer; }
+    .option-btn:hover { background: #dee2e6; }
+    .correct { background: #28a745 !important; color: white; }
+    .incorrect { background: #dc3545 !important; color: white; }
+    .controls { margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3 id="q-number">Question 1 / 335</h3>
+    <button class="btn" onclick="shuffleQuiz()">🔀 Shuffle Questions</button>
+  </div>
+  <hr>
+  <p id="q-text" style="font-weight: bold; font-size: 1.1em;"></p>
+  <div id="options-container"></div>
+  <div id="feedback" style="margin-top: 10px; font-weight: bold;"></div>
+  
+  <div class="controls">
+    <button class="btn" onclick="prevQuestion()">Previous</button>
+    <button class="btn" onclick="nextQuestion()">Next</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  { id: 1, q: "Enthalpy of an ideal gas is a function only of", options: ["entropy", "internal energy", "temperature", "pressure"], ans: 2 },
+  { id: 2, q: "Which of the following is the most efficient thermodynamic cycle?", options: ["Brayton", "Otto", "Carnot", "Diesel"], ans: 2 },
+  { id: 3, q: "What is the first law of thermodynamics?", options: ["internal energy is due to molecular motions", "entropy of the universe is increased by irreversible processes", "energy can neither be created nor destroyed", "heat energy cannot be completely transformed into work"], ans: 2 },
+  { id: 4, q: "An ideal gas is compressed isothermally. What is the enthalpy change?", options: ["always negative", "always positive", "zero", "undefined"], ans: 2 },
+  { id: 5, q: "Name the process that has no heat transfer.", options: ["Isothermal", "Isobaric", "Polytropic", "Adiabatic"], ans: 3 },
+  { id: 6, q: "An ideal gas is compressed in a cylinder so well insulated that there is essentially no heat transfer. The temperature of the gas", options: ["decreases", "increases", "remain constant", "is zero"], ans: 1 },
+  { id: 7, q: "What is the SI unit of pressure?", options: ["kg/cm²", "dynes/cm²", "Pascal", "Psi"], ans: 2 },
+  { id: 8, q: "The equation Cp = Cv + R applies to which of the following?", options: ["enthalpy", "ideal gas", "two phase states", "all pure substances"], ans: 1 },
+  { id: 9, q: "In the flow process, neglecting kinetic and potential energies, the integral of Vdp represents what?", options: ["heat transfer", "flow energy", "enthalpy change", "shaft work"], ans: 3 },
+  { id: 10, q: "Mechanical energy of pressure transformed into energy of heat.", options: ["Kinetic energy", "Enthalpy", "Heat exchanger", "Heat of compression"], ans: 1 },
+  { id: 11, q: "The theory of changing heat into mechanical work.", options: ["Thermodynamics", "Kinematics", "Inertia", "Kinetics"], ans: 0 },
+  { id: 12, q: "Average pressure on a surface when a changing pressure condition exist.", options: ["Back pressure", "Partial pressure", "Pressure drop", "Mean effective pressure"], ans: 3 },
+  { id: 13, q: "Which of the following cycles consists two isothermal and two constant volume processes?", options: ["Diesel cycle", "Ericsson cycle", "Stirling cycle", "Otto cycle"], ans: 2 },
+  { id: 14, q: "A control volume refers to what?", options: ["A fixed region in space", "A reversible process", "An isolated system", "A specified mass"], ans: 0 },
+  { id: 15, q: "In the polytropic process, PV^n = constant, if the value of n is infinitely large, the process is", options: ["isobaric", "isometric", "isothermal", "polytropic"], ans: 1 },
+  { id: 16, q: "If the temperature is held constant and the pressure is increased beyond the saturation pressure, then the working medium must be:", options: ["compressed liquid", "subcooled liquid", "saturated vapor", "saturated liquid"], ans: 0 },
+  { id: 17, q: "Is one whose temperature is below the saturation temperature corresponding to its pressure.", options: ["Superheated vapor", "Wet vapor", "Subcooled liquid", "Saturated liquid"], ans: 2 },
+  { id: 18, q: "Number of molecules in a mole of any substance is a constant called", options: ["Rankine constant", "Avogadro's number", "Otto constant", "Thompson constant"], ans: 1 },
+  { id: 19, q: "If the pressure of a gas is constant the volume is directly proportional to the absolute temperature...", options: ["Boyle's law", "Joule's law", "Charles' law", "Kelvin's law"], ans: 2 },
+  { id: 20, q: "The number of protons in the nucleus of an atom or the number of electrons in the orbit of an atom.", options: ["Atomic volume", "Atomic number", "Atomic weight", "Atomic mass"], ans: 1 },
+  { id: 21, q: "In a P-T diagram of a pure substance, the curve separating the solid phase from the liquid phase is:", options: ["vaporization curve", "fusion curve", "boiling point", "sublimation point"], ans: 1 },
+  { id: 22, q: "A water temperature change of 18 °F in the water cooled condenser is equivalent in °C to", options: ["7.78", "10", "263.56", "-9.44"], ans: 1 },
+  { id: 23, q: "The latent heat of vaporization in Joules per kg is equal to", options: ["5.4 x 10²", "4.13 x 10³", "22.6 x 10⁵", "3.35 x 10⁵"], ans: 2 },
+  { id: 24, q: "Form of energy associated with the kinetic energy of the random motion of large number of molecules.", options: ["Internal energy", "Kinetic energy", "Heat of fusion", "Heat"], ans: 3 },
+  { id: 25, q: "If the temperature is held constant and the pressure is increased beyond the saturation pressure, then, the working medium must be:", options: ["saturated vapor", "compressed liquid", "saturated liquid", "subcooled liquid"], ans: 1 },
+  { id: 26, q: "Is the condition of pressure and temperature at which a liquid and its vapor are indistinguishable.", options: ["Critical point", "Dew point", "Absolute humidity", "Relative humidity"], ans: 0 },
+  { id: 27, q: "When a substance in gaseous state is below the critical temperature, it is called", options: ["vapor", "cloud", "moisture", "steam"], ans: 0 },
+  { id: 28, q: "Superheated vapor behaves", options: ["just as gas", "just as steam", "just as ordinary vapor", "approximately as a gas"], ans: 3 },
+  { id: 29, q: "Which of the following provides the basis for measuring thermodynamic property of temperature?", options: ["Zeroth law of thermodynamics", "First law of thermodynamics", "Second law of thermodynamics", "Third law of thermodynamics"], ans: 0 },
+  { id: 30, q: "Which of the following is commonly used as liquid absorbent?", options: ["Silica gel", "Activated alumina", "Ethylene glycol", "None of these"], ans: 2 },
+  { id: 31, q: "Mechanism designed to lower the temperature of air passing through it.", options: ["Air cooler", "Air defense", "Air spill over", "Air cycle"], ans: 0 },
+  { id: 32, q: "A device for measuring the velocity of wind.", options: ["Aneroid barometer", "Anemometer", "Anemoscope", "Anemograph"], ans: 1 },
+  { id: 33, q: "Heat normally flowing from a high temperature body to a low temperature body wherein it is impossible to convert heat without other effects.", options: ["first law of thermodynamics", "second law of thermodynamics", "third law of thermodynamics", "zeroth law of thermodynamics"], ans: 1 },
+  { id: 34, q: "The temperature at which its vapor pressure is equal to the pressure exerted on the liquid.", options: ["Absolute humidity", "Calorimetry", "Boiling point", "Thermal point"], ans: 2 },
+  { id: 35, q: "A nozzle is used to", options: ["increase velocity and decrease pressure", "decrease velocity as well as pressure", "increase velocity as well as pressure", "decrease velocity and increase pressure"], ans: 0 },
+  { id: 36, q: "The sum of the energies of all the molecules in a system where energies appear in several complex form.", options: ["kinetic energy", "potential energy", "internal energy", "frictional energy"], ans: 2 },
+  { id: 37, q: "The total energy in a compressible or incompressible fluid flowing across any section in a pipeline is a function of", options: ["Pressure and velocity", "Pressure, density and velocity", "Pressure, density, velocity and viscosity", "Flow energy, kinetic energy, height above datum and internal energy"], ans: 3 },
+  { id: 38, q: "The ratio of the density of a substance to the density of some standard substance.", options: ["Relative density", "Specific gravity", "Specific density", "Relative gravity"], ans: 1 },
+  { id: 39, q: "Is one whose pressure is higher than the saturation pressure corresponding to its temperature.", options: ["Compressed liquid", "Saturated liquid", "Saturated vapor", "Super heated vapor"], ans: 0 },
+  { id: 40, q: "The changing of solid directly to vapor without passing through the liquid state is called", options: ["Evaporation", "Vaporization", "Sublimation", "Condensation"], ans: 2 },
+  { id: 41, q: "Weight per unit volume is termed as", options: ["Specific gravity", "Density", "Weight density", "Specific volume"], ans: 2 },
+  { id: 42, q: "What is the SI unit of force?", options: ["Pound", "Newton", "Kilogram", "Dyne"], ans: 1 },
+  { id: 43, q: "The volume of fluid passing a cross-section of steam in unit time.", options: ["Steady flow", "Uniform flow", "Discharge", "Continuous flow"], ans: 2 },
+  { id: 44, q: "What equation applies in the first law of thermodynamics for an ideal gas in a reversible open steady-state system?", options: ["Q - W = U2 - U1", "Q + VdP = H2 - H1", "Q - VdP = U2 - U1", "Q - PdV = H2 - H1"], ans: 1 },
+  { id: 45, q: "A pressure of 1 millibar is equivalent to", options: ["1000 dynes/cm²", "1000 cm of Hg", "1000 psi", "1000 kg/cm²"], ans: 0 },
+  { id: 46, q: "When a system deviates infinitesimally from equilibrium at every instant of its state, it is undergoing:", options: ["isobaric process", "quasi-static process", "isometric process", "cyclic process"], ans: 1 },
+  { id: 47, q: "What is the force which tends to draw a body toward the center about which it is rotating?", options: ["Centrifugal force", "Centrifugal in motion", "Centrifugal advance", "Centripetal force"], ans: 3 },
+  { id: 48, q: "What is the process that has no heat transfer?", options: ["Reversible isometric", "Isothermal", "Polytropic", "Adiabatic"], ans: 3 },
+  { id: 49, q: "Which of the engine is used for fighter bombers?", options: ["Turbojet", "Pulsejet", "Rockets", "Ramjet"], ans: 0 },
+  { id: 50, q: "Exhaust gases from an engine posses:", options: ["solar energy", "kinetic energy", "chemical energy", "stored energy"], ans: 1 },
+  { id: 51, q: "At critical point the latent enthalpy of vaporization is", options: ["temperature dependent", "zero", "minimum", "maximum"], ans: 1 },
+  { id: 52, q: "What is the force which tends to draw a body toward the center about which it is rotating?", options: ["Centrifugal force", "Centrifugal in motion", "Centrifugal advance", "Centripetal force"], ans: 3 },
+  { id: 53, q: "When a system deviates infinitesimally from equilibrium at every instant of its state, it is undergoing", options: ["isobaric process", "quasi-static process", "isometric process", "cyclic process"], ans: 1 },
+  { id: 54, q: "A pressure of 1 millibar is equivalent to", options: ["1000 dynes/cm²", "1000 cm of Hg", "1000 psi", "1000 kg/cm²"], ans: 0 },
+  { id: 55, q: "Work done per unit charge when charged is moved from one point to another.", options: ["Equipotential surface", "Potential at a point", "Electrostatic point", "Potential difference"], ans: 1 },
+  { id: 56, q: "How many independent properties are required to completely fix the equilibrium state of a pure gaseous compound?", options: ["1", "2", "3", "4"], ans: 1 },
+  { id: 57, q: "Which of the following relations defines enthalpy?", options: ["h = u + p/T", "h = u + pV", "h = u + pN", "h = pV + T"], ans: 1 },
+  { id: 58, q: "Which of the following is true for water at a reference temperature where enthalpy is zero?", options: ["Internal energy is negative", "Entropy is non-zero", "Specific volume is zero", "Vapor pressure is zero"], ans: 0 },
+  { id: 59, q: "On what plane is the Mollier diagram plotted?", options: ["p-V", "p-T", "h-s", "h-u"], ans: 2 },
+  { id: 60, q: "The compressibility factor z, is used for predicting the behavior of non ideal gases. How is the compressibility factor defined relative to an ideal gas?", options: ["z = P / Pc", "z = PV / RT", "z = T / Tc", "z = (T / Tc)(Pc / P)"], ans: 1 },
+  { id: 61, q: "How is the quality x of a liquid-vapor mixture defined?", options: ["The fraction of the total volume that is saturated vapor", "The fraction of the total volume that is saturated liquid", "The fraction of the total mass that is saturated vapor", "The fraction of the total mass that is saturated liquid"], ans: 2 },
+  { id: 62, q: "What is the expression for heat of vaporization?", options: ["hg", "hf", "hg - hf", "hf - hg"], ans: 2 },
+  { id: 63, q: "What is the value of the work done for a closed, reversible, isometric system?", options: ["Zero", "Positive", "Negative", "Indeterminate"], ans: 0 },
+  { id: 64, q: "What is the equation for the work done by a constant temperature system?", options: ["W = mRT ln(V2 - V1)", "W = mR(T2 - T1) ln(V2/V1)", "W = mRT ln(V2/V1)", "W = RT ln(V2/V1)"], ans: 2 },
+  { id: 65, q: "What is true about the polytropic exponent n for a perfect gas undergoing an isobaric process?", options: ["n > 0", "n < 0", "n = ∞", "n = 0"], ans: 3 },
+  { id: 66, q: "How does an adiabatic process compare to an isentropic process?", options: ["Adiabatic: Heat transfer = 0, Isentropic: Heat transfer = 0", "Adiabatic: Heat transfer = 0, Isentropic: Heat transfer = 0", "Adiabatic: Reversible, Isentropic: Not reversible", "Both: Heat transfer = 0; Isentropic: Reversible"], ans: 3 },
+  { id: 67, q: "During an adiabatic, internally reversible process, what is true about the change in entropy?", options: ["It is always zero", "It is always less than zero", "It is always greater than zero", "It is temperature-dependent"], ans: 0 },
+  { id: 68, q: "For an irreversible process, what is true about the change in entropy of the system and surroundings?", options: ["ds = dq / dt", "ds = 0", "ds > 0", "ds < 0"], ans: 2 },
+  { id: 69, q: "For which type of process does the equation dQ = Tds hold?", options: ["Irreversible", "Reversible", "Isobaric", "Isothermal"], ans: 1 },
+  { id: 70, q: "Which of the following is true for any process?", options: ["ΔS(Surrounding) + ΔS(system) > 0", "ΔS(Surrounding) + ΔS(system) < 0", "ΔS(Surrounding) + ΔS(system) ≤ 0", "ΔS(Surrounding) + ΔS(system) ≥ 0"], ans: 3 },
+  { id: 71, q: "Which of the following thermodynamic cycle is the most efficient?", options: ["Brayton", "Rankine", "Carnot", "Otto"], ans: 2 },
+  { id: 72, q: "The ideal reversible Carnot cycle involves four basic processes. What type of processes are they?", options: ["All isothermal", "All adiabatic", "All isentropic", "Two isothermal and two isentropic"], ans: 3 },
+  { id: 73, q: "What is the temperature difference of the cycle if the entropy difference is ΔS, and the work done is W?", options: ["W - ΔS", "W / ΔS", "ΔS / W", "ΔS - W"], ans: 1 },
+  { id: 74, q: "Which of the following is not an advantage of a superheated, closed Rankine cycle over an open Rankine cycle?", options: ["Lower equipment cost", "Increased efficiency", "Increased turbine life", "Increased boiler life"], ans: 3 },
+  { id: 75, q: "Which of the following statements regarding Rankine cycle is not true?", options: ["Use of a condensable vapor in the cycle increases the efficiency of the cycle", "The temperatures at which energy is transferred to and from the working liquid are less separated than in a Carnot cycle", "Superheating increases the efficiency of a Rankine cycle", "In practical terms, the susceptibility of the engine materials to corrosion is not a key limitation on the operating efficiency"], ans: 3 },
+  { id: 76, q: "Which one of the following is standard temperature and pressure (STP)", options: ["0 K and 1 atm pressure", "0 F and zero pressure", "32 F and zero pressure", "0 °C and 1 atm pressure"], ans: 3 },
+  { id: 77, q: "A substance is oxidized when which of the following occurs?", options: ["It turns red", "It loses electrons", "It gives off heat", "It absorbs energy"], ans: 1 },
+  { id: 78, q: "Which of the following is not a unit of pressure?", options: ["Pa", "kg / (m·s)", "bars", "kg / m²"], ans: 1 },
+  { id: 79, q: "Which of the following is the definition of Joule?", options: ["Newton meter", "kg·m / s²", "unit of power", "rate of change of energy"], ans: 0 },
+  { id: 80, q: "Which of the following is the basis for Bernoulli's law for fluid flow?", options: ["The principle of conservation of mass", "The principle of conservation of energy", "The continuity equation", "Fourier's law"], ans: 1 },
+  { id: 81, q: "Equation of state for a single component can be any of the following except:", options: ["the ideal gas law", "any relationship interrelating 3 or more state functions", "relationship mathematically interrelating thermodynamic properties of the material", "A mathematical expression defining a path between states"], ans: 3 },
+  { id: 82, q: "The state of a thermodynamic system is always defined by its:", options: ["absolute temperature", "process", "properties", "temperature and pressure"], ans: 2 },
+  { id: 83, q: "In any non quasi-static thermodynamic process, the overall entropy of an isolated system will", options: ["increase and then decrease", "decrease and then increase", "increase only", "decrease only"], ans: 2 },
+  { id: 84, q: "Entropy is the measure of:", options: ["the internal energy of a gas", "the heat capacity of a substance", "randomness or disorder", "the change of enthalpy of a system"], ans: 2 },
+  { id: 85, q: "Which of the following statements about entropy is false?", options: ["Entropy of a mixture is greater than that of its components under the same condition", "An irreversible process increases entropy of the universe", "Net entropy change in any closed cycle is zero", "Entropy of a crystal at 0 °F is zero"], ans: 3 },
+  { id: 86, q: "Work or energy can be a function of all of the following except:", options: ["force and distance", "power and time", "force and time", "temperature and entropy"], ans: 2 },
+  { id: 87, q: "Energy changes are represented by all except which one of the following:", options: ["m Cp dt", "- ∫ VdP", "Tds - PdV", "dQ / T"], ans: 3 },
+  { id: 88, q: "U + pV is a quantity called:", options: ["shaft work", "entropy", "enthalpy", "internal energy"], ans: 2 },
+  { id: 89, q: "In flow process, neglecting KE and PE changes, -∫ VdP represents which item below?", options: ["Heat transfer", "Shaft work", "Enthalpy change", "Closed system work"], ans: 1 },
+  { id: 90, q: "Power may be expressed in units of", options: ["ft-lb", "kW-hr", "Btu", "Btu / hr"], ans: 3 },
+  { id: 91, q: "Equilibrium condition exist in all except which of the following?", options: ["In reversible processes", "In processes where driving forces are infinitesimals", "In a steady state flow process", "Where nothing can occur without an effect on the system's surrounding"], ans: 2 },
+  { id: 92, q: "In a closed system (with a moving boundary) which of the following represents work done during an isothermal process?", options: ["W = 0", "W = P(V2 - V1)", "W = P1 V1 ln(V2 / V1)", "W = (P2 V2 - P1 V1) / (1 - n)"], ans: 2 },
+  { id: 93, q: "A substance that exists, or is regarded as existing, as a continuum characterized by a low resistance to flow and the tendency to assume the shape of its container.", options: ["Fluid", "Atom", "Molecule", "Vapor"], ans: 0 },
+  { id: 94, q: "A substance that is homogeneous in composition and homogeneous and invariable in chemical aggregation.", options: ["Pure substance", "Simple substance", "Vapor", "Water"], ans: 0 },
+  { id: 95, q: "A substance whose state is defined by variable intensive thermodynamic properties.", options: ["Pure substance", "Simple substance", "Vapor", "Water"], ans: 1 },
+  { id: 96, q: "A system in which there is no exchange of matter with the surrounding or mass does not cross its boundaries.", options: ["Open system", "Closed system", "Isolated system", "Nonflow system"], ans: 1 },
+  { id: 97, q: "A system that is completely impervious to its surrounding or neither mass nor energy cross its boundaries.", options: ["Open system", "Closed system", "Isolated system", "Nonflow system"], ans: 2 },
+  { id: 98, q: "A system in which there is a flow of mass across its boundaries.", options: ["Open system", "Closed system", "Isolated system", "Steady flow system"], ans: 0 },
+  { id: 99, q: "The properties that are dependent upon the mass of the system and are total values such as total volume and total internal energy.", options: ["Intensive properties", "Extensive properties", "Specific properties", "State properties"], ans: 1 },
+  { id: 100, q: "The properties that are independent of the mass of the system such as temperature, pressure, density and voltage.", options: ["Intensive properties", "Extensive properties", "Specific properties", "State properties"], ans: 0 },
+  { id: 101, q: "The properties for a unit mass and are intensive by definition such as specific volume.", options: ["Intensive properties", "Extensive properties", "Specific properties", "Thermodynamic properties"], ans: 2 },
+  { id: 102, q: "The condition as identified through the properties of the substance, generally defined by particular values of any two independent properties.", options: ["State", "Point", "Process", "flow"], ans: 0 },
+  { id: 103, q: "The only base unit with a prefix kilo is", options: ["kilogram", "kilometer", "kiloJoule", "kilopascal"], ans: 0 },
+  { id: 104, q: "The force of gravity on the body.", options: ["Weight", "Specific gravity", "Attraction", "Mass"], ans: 0 },
+  { id: 105, q: "The mass per unit volume of any substance.", options: ["Density", "Specific volume", "Specific weight", "Specific gravity"], ans: 0 },
+  { id: 106, q: "The force of gravity on unit volume is", options: ["density", "specific volume", "specific weight", "specific gravity"], ans: 2 },
+  { id: 107, q: "The reciprocal of density is", options: ["specific volume", "specific weight", "specific gravity", "specific heat"], ans: 0 },
+  { id: 108, q: "Avogadro's number, a fundamental constant of nature, is the number of molecules in a gram-mole. This constant is", options: ["6.05222 x 10²³", "6.02252 x 10²³", "6.20522 x 10²³", "6.50222 x 10²³"], ans: 1 },
+  { id: 109, q: "The ratio of the gas constant to Avogadro's number is:", options: ["Maxwell's constant", "Boltzmann's constant", "Napier's constant", "Joule's constant"], ans: 1 },
+  { id: 110, q: "The absolute zero on the Fahrenheit scale is at", options: ["-459.7 °F", "459.7 °F", "-273.15 °C", "273.15 °C"], ans: 0 },
+  { id: 111, q: "Absolute temperatures on the Fahrenheit scale are called:", options: ["degrees Rankine", "degrees Kelvin", "absolute Fahrenheit", "absolute Celsius"], ans: 0 },
+  { id: 112, q: "The absolute zero on the Celsius scale is at", options: ["-459.7 °F", "459.7 °F", "-273.15 °C", "273.15 °C"], ans: 2 },
+  { id: 113, q: "What is the absolute temperature in celsius scale?", options: ["degrees Rankine", "degrees Kelvin", "absolute Fahrenheit", "absolute Celsius"], ans: 1 },
+  { id: 114, q: "The Fahrenheit scale was introduced by Gabriel Fahrenheit of Amsterdam, Holland in what year?", options: ["1592", "1742", "1730", "1720"], ans: 3 },
+  { id: 115, q: "The Centigrade scale was introduced by Anders Celsius in what year?", options: ["1542", "1740", "1730", "1720"], ans: 1 },
+  { id: 116, q: "The National Bureau of Standards uses, among others, the liquid-vapor equilibrium of hydrogen at", options: ["-196 °C", "196 °C", "253 °C", "-253 °C"], ans: 3 },
+  { id: 117, q: "The National Bureau of Standards uses, among others, the liquid-vapor equilibrium of Nitrogen at", options: ["-196 °C", "196 °C", "253 °C", "-253 °C"], ans: 0 },
+  { id: 118, q: "The liquid vapor equilibrium of Oxygen is at what temperature?", options: ["197.82 °C", "-197.82 °C", "182.97 °C", "-182.97 °C"], ans: 3 },
+  { id: 119, q: "The solid-liquid equilibrium of Mercury is at what temperature?", options: ["38.87 °C", "-38.87 °C", "37.88 °C", "-37.88 °C"], ans: 1 },
+  { id: 120, q: "The solid liquid equilibrium of Tin is at what temperature?", options: ["-38.87 °C", "38.87 °C", "231.9 °C", "-231.9 °C"], ans: 2 },
+  { id: 121, q: "The solid liquid equilibrium of Zinc is at what temperature?", options: ["231.9 °C", "419.505 °C", "444.60 °C", "630.5 °C"], ans: 1 },
+  { id: 122, q: "The liquid vapor equilibrium of Sulfur is at what temperature?", options: ["231.9 °C", "419.505 °C", "444.60 °C", "630.5 °C"], ans: 2 },
+  { id: 123, q: "The solid-liquid equilibrium of Antimony is at what temperature?", options: ["630.5 °C", "419.505 °C", "444.60 °C", "231.9 °C"], ans: 0 },
+  { id: 124, q: "The solid liquid equilibrium of silver is at what temperature?", options: ["630.5 °C", "960.8 °C", "1063 °C", "1774 °C"], ans: 1 },
+  { id: 125, q: "The solid liquid equilibrium of Gold is at what temperature?", options: ["630.5 °C", "960.8 °C", "1063 °C", "1774 °C"], ans: 2 },
+  { id: 126, q: "The solid-liquid equilibrium of Platinum is at what temperature?", options: ["630.5 °C", "960.8 °C", "1063 °C", "1774 °C"], ans: 3 },
+  { id: 127, q: "The solid-liquid equilibrium of Tungsten is at what temperature?", options: ["3730 °C", "3370 °C", "3073 °C", "3037 °C"], ans: 1 },
+  { id: 128, q: "The device that measures temperature by the electromotive force.", options: ["thermometer", "thermocouple", "electro-thermometer", "thermoseebeck"], ans: 1 },
+  { id: 129, q: "The emf is a function of the temperature difference between the junction, a phenomenon called:", options: ["Seebeck effect", "Stagnation effect", "Primming", "Electromotive force"], ans: 0 },
+  { id: 130, q: "The device that measure temperature by the electromotive force called thermocouple was discovered by:", options: ["Galileo", "Fahrenheit", "Celsius", "Seebeck"], ans: 3 },
+  { id: 131, q: "When two bodies, isolated from other environment, are in thermal equilibrium with a third body, the two are in thermal equilibrium with each other.", options: ["Zeroth law of thermodynamics", "First law of thermodynamics", "Second law of thermodynamics", "Third law of thermodynamics"], ans: 0 },
+  { id: 132, q: "The total entropy of pure substances approaches zero as the absolute thermodynamic temperature approaches zero.", options: ["Zeroth law of thermodynamics", "First law of thermodynamics", "Second law of thermodynamics", "Third law of thermodynamics"], ans: 3 },
+  { id: 133, q: "If any one or more properties of a system change, the system is said to have undergone a", options: ["cycle", "process", "flow", "control"], ans: 1 },
+  { id: 134, q: "When a certain mass of fluid in a particular state passes through a series of processes and returns to its initial state, it undergoes a:", options: ["revolution", "rotation", "process", "cycle"], ans: 3 },
+  { id: 135, q: "The term given to the collection of matter under consideration enclosed within a boundary.", options: ["System", "Matter", "Environment", "Atoms"], ans: 0 },
+  { id: 136, q: "The region outside the boundary or the space and matter external to a system:", options: ["Ex-system", "Surrounding", "Matter", "Extension"], ans: 1 },
+  { id: 137, q: "The true pressure measured above a perfect vacuum.", options: ["Absolute pressure", "Gage pressure", "Atmospheric pressure", "Vacuum pressure"], ans: 0 },
+  { id: 138, q: "The pressure measured from the level of atmospheric pressure by most pressure recording instrument like pressure gage and open-ended manometer.", options: ["Gage pressure", "Atmospheric pressure", "Barometric pressure", "Absolute pressure"], ans: 0 },
+  { id: 139, q: "The pressure obtained from barometric reading.", options: ["Absolute pressure", "Gage pressure", "Atmospheric pressure", "Vacuum pressure"], ans: 2 },
+  { id: 140, q: "It is a form of energy associated with the kinetic random motion of large number of molecules.", options: ["Internal energy", "Kinetic energy", "Heat", "Enthalpy"], ans: 2 },
+  { id: 141, q: "The heat needed to change the temperature of the body without changing its phase.", options: ["Latent heat", "Sensible heat", "Specific heat", "Heat transfer"], ans: 1 },
+  { id: 142, q: "The heat needed by the body to change its phase without changing its temperature.", options: ["Latent heat", "Sensible heat", "Specific heat", "Heat transfer"], ans: 0 },
+  { id: 143, q: "The measure of the randomness of the molecules of a substance.", options: ["Enthalpy", "Internal energy", "Entropy", "Heat"], ans: 2 },
+  { id: 144, q: "The heat energy transferred to a substance at a constant pressure process is:", options: ["enthalpy", "heat", "internal energy", "entropy"], ans: 0 },
+  { id: 145, q: "It is the energy stored within the body.", options: ["Enthalpy", "Heat", "Internal energy", "Entropy"], ans: 2 },
+  { id: 146, q: "A theoretically ideal gas which strictly follows Boyle's law and Charle's law of gases.", options: ["Universal gas", "Perfect gas", "Combined gas", "Imperfect gas"], ans: 1 },
+  { id: 147, q: "In a confined gas, if the absolute temperature is held constant, the volume is inversely proportional to the absolute pressure.", options: ["Boyle's law", "Charles law", "Dalton's law", "Avogadro's law"], ans: 0 },
+  { id: 148, q: "In a confined gas if the absolute pressure is held constant the volume is directly proportional to the absolute temperature.", options: ["Boyle's law", "Charles law", "Dalton's law", "Avogadro's law"], ans: 1 },
+  { id: 149, q: "The pressure exerted in a vessel by a mixture of gases is equal to the sum of the pressures that each separate gas would exert if it alone occupied the whole volume of the vessel.", options: ["Boyle's law", "Charles law", "Dalton's law", "Avogadro's law"], ans: 2 },
+  { id: 150, q: "At equal volume, at the same temperature and pressure conditions, the gases contain the same number of molecules.", options: ["Boyle's law", "Charle's law", "Dalton's law", "Avogadro's law"], ans: 3 },
+  { id: 151, q: "A process in which the system departs from equilibrium state only infinitesimally at every instant.", options: ["Reversible process", "Irreversible process", "Cyclic process", "Quasi-static process"], ans: 3 },
+  { id: 152, q: "A process which gives the same states/conditions after the system undergoes a series of processes:", options: ["Reversible process", "Irreversible process", "Cyclic process", "Quasi-static process"], ans: 2 },
+  { id: 153, q: "A thermodynamic system that generally serves as a heat source or heat sink for another system.", options: ["Combustion chamber", "Heat reservoir", "Heat engine", "Stirling engine"], ans: 1 },
+  { id: 154, q: "A thermodynamic system that operates continuously with only energy (heat and work) crossing its boundaries; its boundaries are impervious to the flow of mass.", options: ["Heat engine", "Steady flow work", "Stirling engine", "Ericsson engine"], ans: 0 },
+  { id: 155, q: "A surface that is impervious to heat is", options: ["isothermal surface", "adiabatic surface", "isochoric surface", "isobaric surface"], ans: 1 },
+  { id: 156, q: "In Einstein's equation E = mc², what is the value of the speed of light c?", options: ["2.7797 x 10¹⁰ cm/s", "2.9979 x 10¹⁰ cm/s", "1.7797 x 10¹⁰ cm/s", "2.9979 x 10⁸ cm/s"], ans: 1 },
+  { id: 157, q: "In the polytropic process pv^n = constant, if n is infinitely large, the process is called:", options: ["constant volume process", "constant pressure process", "constant temperature process", "adiabatic process"], ans: 0 },
+  { id: 158, q: "The thermodynamic cycle used in a thermal power plant is:", options: ["Ericsson", "Brayton", "Joule", "Rankine"], ans: 3 },
+  { id: 159, q: "For the same heat input and same compression ratio:", options: ["both Otto cycle and Diesel cycle are equally efficient", "Otto cycle is less efficient than diesel cycle", "efficiency depends mainly on working substance", "none of the above is correct"], ans: 2 },
+  { id: 160, q: "A heat exchange process wherein the product of pressure and volume remains constant is called:", options: ["heat exchange process", "isentropic process", "throttling process", "hyperbolic process"], ans: 3 },
+  { id: 161, q: "Which of the following provides the basis for measuring thermodynamic property of temperature?", options: ["Zeroth law of thermodynamics", "First law of thermodynamics", "Second law of thermodynamics", "Third law of thermodynamics"], ans: 0 },
+  { id: 162, q: "1 watt = ...", options: ["1 N·m/s", "1 N·m/min", "1 N·m/hr", "1 kN·m/hr"], ans: 0 },
+  { id: 163, q: "Under ideal conditions, isothermal, isobaric, isochoric and adiabatic processes are:", options: ["dynamic processes", "stable processes", "quasi-static processes", "static processes"], ans: 2 },
+  { id: 164, q: "Isentropic flow is", options: ["perfect gas flow", "irreversible adiabatic flow", "ideal fluid flow", "reversible adiabatic flow"], ans: 3 },
+  { id: 165, q: "Exhaust gases from an engine possess", options: ["solar energy", "kinetic energy", "chemical energy", "stored energy"], ans: 1 },
+  { id: 166, q: "The extension and compression of a helical spring is an example of what process?", options: ["isothermal cycle", "thermodynamic process", "adiabatic process", "reversible process"], ans: 3 },
+  { id: 167, q: "At critical point the latent enthalpy of vaporization is", options: ["dependent on temperature", "zero", "minimum", "maximum"], ans: 1 },
+  { id: 168, q: "Which of the following relations is not applicable in a free expansion process?", options: ["Heat supplied is zero", "Heat rejected is zero", "Work done is zero", "Change in temperature is zero"], ans: 3 },
+  { id: 169, q: "The triple point of a substance is the temperature and pressure at which:", options: ["the solid and liquid phases are in equilibrium", "the liquid and gaseous phases are in equilibrium", "the solid, liquid and the gaseous phases are in equilibrium", "the solid does not melt, the liquid does not boil and the gas does not condense"], ans: 3 },
+  { id: 170, q: "According to Clausius statement", options: ["Heat flows from hot substance to cold substance, unaided", "Heat cannot flow from cold substance to hot substance", "Heat can flow from cold substance to hot substance with the aid of external work", "A and C"], ans: 3 },
+  { id: 171, q: "A heat engine is supplied heat at rate of 30,000 J/s gives an output of 9 kW. The thermal efficiency of the engine is", options: ["30%", "43%", "50%", "55%"], ans: 0 },
+  { id: 172, q: "The RMS velocity of hydrogen gas at N.T.P. is approximately", options: ["3838 m/s", "1839 m/s", "4839 m/s", "839 m/s"], ans: 1 },
+  { id: 173, q: "Which of the following cycles has two isothermal and two constant volume processes?", options: ["Joule cycle", "Diesel cycle", "Ericsson cycle", "Stirling cycle"], ans: 3 },
+  { id: 174, q: "\"It is impossible to construct a heat engine that operates in a cycle and receives a given quantity of heat from a high temperature body and does an equal amount of work\" is known as:", options: ["Gay Lussac's law", "Kinetic Theory", "Kelvin-Planck's law", "Joule-Thomson's law"], ans: 2 },
+  { id: 175, q: "For steam nozzle, which of the following ratios will have the value less than unity?", options: ["(Pressure at inlet)/(Pressure at outlet)", "Specific volume at inlet/(Specific volume at outlet)", "Temperature of steam at inlet/(Temperature of steam at outlet)", "None of the above"], ans: 1 },
+  { id: 176, q: "A Bell-Coleman cycle is a reversed", options: ["Stirling cycle", "Brayton cycle", "Joule cycle", "Carnot cycle"], ans: 2 },
+  { id: 177, q: "Ericsson cycle consists of the following four processes:", options: ["two isothermal and two constant volume", "two isothermal and two constant isentropic", "two isothermal and two constant pressure", "two adiabatic and two constant pressure"], ans: 2 },
+  { id: 178, q: "A steam nozzle changes", options: ["kinetic energy into heat energy", "heat energy into potential energy", "potential energy into heat energy", "heat energy into kinetic energy"], ans: 3 },
+  { id: 179, q: "Which is not correct for calculating air standard efficiency?", options: ["All processes are reversible", "Specific heat remains unchanged at all temperatures", "No account of the mechanism of heat transfer is considered", "Gases dissociate at higher temperatures"], ans: 3 },
+  { id: 180, q: "According to Peltier Thomson effect:", options: ["It is impossible to construct a heat engine that operates in a cycle...", "It is impossible to construct a device that operates in a cycle...", "When two dissimilar metals are heated...", "Work can't be converted into heat"], ans: 3 },
+  { id: 181, q: "In actual gases the molecular collisions are:", options: ["plastic", "elastic", "inelastic", "inplastic"], ans: 2 },
+  { id: 182, q: "The Beattie-Bridgeman equation of state is quite accurate in cases of:", options: ["all pressures above atmospheric pressure", "densities less than about 0.8 times the critical density", "near critical temperature", "none of the above"], ans: 1 },
+  { id: 183, q: "Which of the following statement about Van der Waals equation is correct?", options: ["It is valid for all pressures and temperatures", "It represents a straight line on PV versus V plot", "It has three roots of identical value at the critical point", "The equation is valid for diatomic gases only"], ans: 2 },
+  { id: 184, q: "The Clapeyron's equation is applicable to:", options: ["1 system in equilibrium", "a change of state", "a change of state when two phases are in equilibrium", "a change of state when water and water vapor are involved"], ans: 2 },
+  { id: 185, q: "The vapor pressure is related to the enthalpy of vaporization by the:", options: ["Clausius-Clapeyron's equation", "Dalton's law", "Raoult's law", "Maxwell's equation"], ans: 0 },
+  { id: 186, q: "Solubility of a gas in a liquid at small concentration can be represented by which law?", options: ["Henry's law", "Clausius-Clapeyron's equation", "Dalton's law", "Raoult's law"], ans: 0 },
+  { id: 187, q: "A compound pressure gauge is used to measure:", options: ["complex pressures", "variable pressures", "average pressures", "positive and negative pressures"], ans: 3 },
+  { id: 188, q: "Which of the engine is used for fighter bombers?", options: ["Turboprop", "Turbojet", "Ramjet", "Pulsejet"], ans: 1 },
+  { id: 189, q: "The thermal efficiency of gas-vapor cycle as compared to steam turbine or gas turbine", options: ["greater than", "less than", "not comparable", "equal"], ans: 0 },
+  { id: 190, q: "The process in which heat energy is transferred to a thermal energy storage device is known as:", options: ["adiabatic", "regeneration", "intercooling", "heat transfer"], ans: 1 },
+  { id: 191, q: "The absolute zero in Celsius scale is:", options: ["100", "0", "-273", "273"], ans: 2 },
+  { id: 192, q: "What is the temperature when water and vapor are in equilibrium with the atmospheric pressure?", options: ["Ice point", "Steam point", "Critical point", "Freezing point"], ans: 1 },
+  { id: 193, q: "The temperature of a pure substance at a temperature of absolute zero is:", options: ["unity", "zero", "infinity", "100"], ans: 1 },
+  { id: 194, q: "When the number of reheat stages in a reheat cycle is increased, the average temperature:", options: ["increases", "decreases", "is constant", "is zero"], ans: 0 },
+  { id: 195, q: "A temperature measurement in an ordinary thermometer which has constant specific humidity.", options: ["Critical temperature", "Dew point temperature", "Dry bulb temperature", "Wet bulb temperature"], ans: 1 },
+  { id: 196, q: "In a closed vessel, when vaporization takes place, the temperature rises until equilibrium is established. The temperature of equilibrium is called:", options: ["dew point", "ice point", "superheated temperature", "boiling point"], ans: 3 },
+  { id: 197, q: "Dew starts to form on the outermost surface of a cup. What is this temperature equal to?", options: ["superheated temperature", "equal to zero", "standard temperature", "equal to air's dew point temperature"], ans: 3 },
+  { id: 198, q: "Is a measure of the energy that is no longer available to perform useful work within the current environment.", options: ["Absolute entropy", "Absolute enthalpy", "Fugacity", "Molar value"], ans: 0 },
+  { id: 199, q: "A graph of enthalpy versus entropy for steam.", options: ["Mollier diagram", "Moody diagram", "Steam table", "Maxwell diagram"], ans: 0 },
+  { id: 200, q: "The reaction of inertia in an accelerated body is called", options: ["Kinetic reaction", "Endothermic reaction", "Kinematic reaction", "Dynamic reaction"], ans: 0 },
+  { id: 201, q: "A Mollier chart of thermodynamic properties is shown in which of the following diagrams?", options: ["T-S diagram", "P-V diagram", "h-S diagram", "p-h diagram"], ans: 2 },
+  { id: 202, q: "The following are included in the first law of thermodynamics for closed system EXCEPT:", options: ["heat transferred in and of the system", "work done by or on the system", "internal energy", "kinetic energy"], ans: 2 },
+  { id: 203, q: "All processes below are irreversible except one. Which one?", options: ["Magnetization with hysteresis", "Elastic tension and release of a steel bar", "Inelastic deformation", "Heat conduction"], ans: 1 },
+  { id: 204, q: "The combination of conditions that best describes a thermodynamic process is given by which of the following?", options: ["I and II", "I and III", "I and IV", "I only"], ans: 3 },
+  { id: 205, q: "The sum of the energies of all the molecules in a system where energies appear in several complex forms is the:", options: ["kinetic energy", "potential energy", "internal energy", "frictional energy"], ans: 2 },
+  { id: 206, q: "The Carnot refrigeration cycle includes all of the following process except:", options: ["isentropic expansion", "isothermal heating", "isenthalpic expansion", "isentropic compression"], ans: 2 },
+  { id: 207, q: "The maximum possible work that can be obtained a cycle operating between two reservoirs is found from:", options: ["process irreversibility", "availability", "Carnot efficiency", "Reversible work"], ans: 2 },
+  { id: 208, q: "The following factors are necessary to define a thermodynamic cycle except", options: ["the working substance", "high and low temperature reservoirs", "the time it takes to complete the cycle", "the means of doing work on the system"], ans: 2 },
+  { id: 209, q: "All of the following terms included in the second law for open system except", options: ["shaft work", "flow work", "internal energy", "average work"], ans: 3 },
+  { id: 210, q: "The following terms are included in the first law of thermodynamics for open systems except", options: ["heat transferred in and out of the system", "work done by or in the system", "magnetic system", "internal system"], ans: 2 },
+  { id: 211, q: "The following terms are included in the first law of thermodynamics for closed systems except:", options: ["heat transferred in and out of the system", "work done by or on the system", "internal energy", "kinetic energy"], ans: 3 },
+  { id: 212, q: "Which of the following statements about a path function is not true?", options: ["On a p-v diagram, it can represent work done", "On a t-s diagram, it can represent heat transferred", "It is dependent on the path between states", "It represents values of p, v, t, and s between states that are path functions"], ans: 3 },
+  { id: 213, q: "A constant pressure thermodynamic process obeys:", options: ["Boyle's law", "Charles law", "Amagat's law", "Dalton's law"], ans: 1 },
+  { id: 214, q: "The first and second laws of thermodynamics are:", options: ["continuity equations", "momentum equations", "energy equations", "equations of state"], ans: 2 },
+  { id: 215, q: "Represents the temperature an ideal gas will attain when it is brought to rest adiabatically.", options: ["Absolute zero temperature", "Stagnation temperature", "Boiling temperature", "Critical temperature"], ans: 1 },
+  { id: 216, q: "Gauge pressure and absolute pressure differ from each other by:", options: ["the system units", "atmospheric pressure", "the size of the gauge", "nothing they mean the same thing"], ans: 1 },
+  { id: 217, q: "Each of the following are correct values of standard atmospheric pressure except:", options: ["1,000 atm", "14.962 psia", "760 torr", "1013 mm Hg"], ans: 3 },
+  { id: 218, q: "All of the following are properties of an ideal gas except:", options: ["density", "pressure", "viscosity", "temperature"], ans: 2 },
+  { id: 219, q: "Which of the following is not the universal gas constant?", options: ["1545 ft-lb/lbmol-°R", "8.314 J/mol·K", "8314 kJ/mol·K", "8.314 kJ/kmol·K"], ans: 2 },
+  { id: 220, q: "The following are all commonly quoted values of standard temperatures and pressure except:", options: ["32 °F and 14.696 psia", "273.15 K and 101.325 kPa", "0 °C and 760 mm Hg", "0 °F and 29.92 in Hg"], ans: 3 },
+  { id: 221, q: "The variation of pressure in an isobaric process is:", options: ["linear with temperature", "described by the perfect gas law", "inversely proportional to temperature", "zero"], ans: 3 },
+  { id: 222, q: "For fluid flow, the enthalpy is the sum of internal energy and", options: ["entropy", "work flow", "pressure", "temperature"], ans: 1 },
+  { id: 223, q: "A thermodynamic process whose deviation from equilibrium is infinitesimal at all times is", options: ["reversible", "isentropic", "in quasi-equilibrium", "isenthalpic"], ans: 2 },
+  { id: 224, q: "Which thermodynamic property best describes the molecular activity of a substance?", options: ["Enthalpy", "Entropy", "Internal energy", "External energy"], ans: 2 },
+  { id: 225, q: "Stagnation enthalpy represents the enthalpy of a fluid when it is brought to rest", options: ["isometrically", "adiabatically", "isothermally", "isobarically"], ans: 1 },
+  { id: 226, q: "During stagnation process, the kinetic energy of a fluid is converted to enthalpy which results in an:", options: ["increase in the fluid specific volume", "increase in the fluid pressure", "increase in the fluid temperature and pressure", "increase in the fluid temperature"], ans: 2 },
+  { id: 227, q: "The properties of fluid at the stagnation in state are called", options: ["stagnation property", "stagnation phase", "stagnation state", "stagnation vapor"], ans: 2 },
+  { id: 228, q: "All of the following are thermodynamic properties except", options: ["temperature", "pressure", "density", "modulus of elasticity"], ans: 3 },
+  { id: 229, q: "A liquid boils when its vapor pressure equals", options: ["the gage pressure", "the critical pressure", "the ambient pressure", "one standard atmosphere"], ans: 2 },
+  { id: 230, q: "A system composed of ice and water at 0 °C is said to be:", options: ["a multiphase material", "in thermodynamic equilibrium", "in thermal equilibrium", "all of the above"], ans: 3 },
+  { id: 231, q: "The heat of fusion of a pure substance is:", options: ["the change in phase from solid to gas", "the change in phase from liquid to gas", "the energy released in a chemical reaction", "the energy required to melt the substance"], ans: 3 },
+  { id: 232, q: "The heat of vaporization involves the change in enthalpy due to:", options: ["the change in phase from solid to gas", "the change in phase from liquid to gas", "the energy released in a chemical reaction", "the change in phase from solid to liquid"], ans: 1 },
+  { id: 233, q: "The heat of sublimation involves the change in enthalpy due to", options: ["the change in phase from solid to gas", "the change in phase from liquid to gas", "the energy released in a chemical reaction", "the change in phase from solid to liquid"], ans: 0 },
+  { id: 234, q: "A specific property", options: ["defines a specific variable (e.g., temperature)", "is independent of mass", "is an extensive property multiplied by mass", "is dependent of the phase of the substance"], ans: 0 },
+  { id: 235, q: "A material's specific heat can be defined as:", options: ["the ratio of heat required to change temperature", "being different for Cp and Cv", "a function of temperature", "all of the above"], ans: 3 },
+  { id: 236, q: "If a substance temperature is less than its saturation temperature, the substance is:", options: ["subcooled liquid", "wet vapor", "saturated vapor", "superheated vapor"], ans: 0 },
+  { id: 237, q: "If a substance temperature is equal to its saturation temperature, the substance is a", options: ["subcooled liquid", "wet vapor", "saturated liquid and vapor", "superheated vapor"], ans: 2 },
+  { id: 238, q: "If a substance's temperature is greater than its saturation temperature, the substance is a", options: ["subcooled liquid", "wet vapor", "saturated vapor", "superheated vapor"], ans: 3 },
+  { id: 239, q: "Critical properties refer to", options: ["extremely important properties", "heat required for phase change", "property values where liquid and gas phase are indistinguishable", "properties having to do with equilibrium"], ans: 2 },
+  { id: 240, q: "For a saturated vapor, the relationship between temperature and pressure is given by:", options: ["the perfect gas law", "Van der Waal's equation", "the steam table", "a Viral equation of state"], ans: 2 },
+  { id: 241, q: "Properties of a superheated vapor are given by", options: ["the perfect gas law", "a superheated table", "a one to one relationship", "a Viral equation of state"], ans: 1 },
+  { id: 242, q: "Properties of non-reacting gas mixtures are given by:", options: ["geometric weighting", "volumetric weighting", "volumetric weighting for MW/density, and geometric weighting for others except entropy", "arithmetic average"], ans: 2 },
+  { id: 243, q: "The relationship between total volume of a mixture of non-reacting gases and their partial volume is given by:", options: ["gravimetric fractions", "Amagat's law", "Dalton's law", "mole fractions"], ans: 1 },
+  { id: 244, q: "The relationship between total pressure of a mixture of non-reacting gases and partial pressures is given by:", options: ["gravimetric fractions", "volumetric fractions", "Dalton's law", "mole fractions"], ans: 2 },
+  { id: 245, q: "Which of the following is the best definition of enthalpy?", options: ["The ratio of heat added to temperature increase", "The amount of useful energy in a system", "The amount of energy no longer available", "The heat required to cause phase conversion"], ans: 1 },
+  { id: 246, q: "Which of the following statements is not true for real gases?", options: ["Molecules occupy a non-negligible volume", "Real gases are subjected to attractive forces", "The law of corresponding states may be used", "Real gases are found only rarely in nature"], ans: 3 },
+  { id: 247, q: "The stagnation state is called the isentropic stagnation state when the stagnation process is:", options: ["reversible as well dynamic", "isotropic", "adiabatic", "reversible as well as adiabatic"], ans: 3 },
+  { id: 248, q: "The entropy of a fluid remains constant during what process?", options: ["polytropic stagnation process", "unsteady stagnation process", "combustion process", "isentropic stagnation process"], ans: 3 },
+  { id: 249, q: "All of the following processes are irreversible except", options: ["stirring of a viscous fluid", "an isentropic deceleration of a moving perfect fluid", "an unrestrained expansion of a gas", "phase changes"], ans: 1 },
+  { id: 250, q: "All of the following processes are irreversible except:", options: ["chemical reactions", "diffusion", "current flow through resistance", "an isentropic compression of a perfect gas"], ans: 3 },
+  { id: 251, q: "All of the following processes are irreversible except:", options: ["magnetization with hysteresis", "elastic tension and release of a steel bar", "inelastic deformation", "heat conduction"], ans: 1 },
+  { id: 252, q: "Which state(s) is/are necessary for a system to be in thermodynamic equilibrium?", options: ["Chemical equilibrium", "Thermal equilibrium", "Mechanical equilibrium", "Chemical, mechanical, and thermal equilibrium"], ans: 3 },
+  { id: 253, q: "Adiabatic heat transfer within a vapor cycle refers to:", options: ["heat transfer that is atmospheric but not reversible", "the transfer of energy from one stream to another in a heat exchanger...", "heat transfer that is reversible but not isentropic", "there is no such thing as adiabatic heat transfer"], ans: 1 },
+  { id: 254, q: "Which of the following gives polytropic exponent n?", options: ["log(P1/P2) / log(V2/V1)", "log(P1/P2) / log(V1/V2)", "log(V1/V2) / log(P2/P1)", "log(V1/V2) / log(P1/P2)"], ans: 0 },
+  { id: 255, q: "The work done in an adiabatic process in a system:", options: ["is equal to change in total energy in closed system", "is equal to total net heat transfer plus entropy change", "is equal to change in total energy plus entropy change", "is equal to change in total energy of closed system plus net heat transfer"], ans: 3 },
+  { id: 256, q: "Based on the first law of thermodynamics, which of the following is wrong?", options: ["Heat transfer equals work plus energy change", "Heat transfer cannot exceed work done", "Net transfer equals net work of cycle", "Net heat transfer equals energy change if no work is done"], ans: 1 },
+  { id: 257, q: "Assuming real processes, the net entropy change in the universe:", options: ["must be calculated", "equals zero", "is negative", "is positive"], ans: 3 },
+  { id: 258, q: "Which of the following types of flowmeters is most accurate?", options: ["Venturi tube", "Pitot tube", "Flow nozzle", "Foam type"], ans: 1 },
+  { id: 259, q: "What is referred by control volume?", options: ["An isolated system", "Closed system", "Fixed region in space", "Reversible process only"], ans: 2 },
+  { id: 260, q: "What is the most efficient thermodynamic cycle?", options: ["Carnot", "Diesel", "Rankine", "Brayton"], ans: 0 },
+  { id: 261, q: "How do you treat a statement that is considered a scientific law?", options: ["We postulate to be true", "Accept as a summary of experimental observation", "We generally observed to be true", "Believe to be derived from mathematical theorem"], ans: 1 },
+  { id: 262, q: "An instrument commonly used in most research and engineering laboratories because it is small and fast:", options: ["Mercury thermometer", "Liquid-in-glass thermometer", "Gas thermometer", "Thermocouple"], ans: 3 },
+  { id: 263, q: "In actual gases, the molecular collisions are", options: ["plastic", "elastic", "inelastic", "inplastic"], ans: 2 },
+  { id: 264, q: "Which of the following is used in thermal power plant?", options: ["Brayton", "Reversed Carnot", "Rankine", "Otto"], ans: 2 },
+  { id: 265, q: "The elongation and compression of a helical spring is an example of", options: ["irreversible process", "reversible process", "isothermal process", "adiabatic process"], ans: 1 },
+  { id: 266, q: "Otto cycle consists of", options: ["Two isentropic and two constant volume processes", "Two isentropic and two constant pressure processes", "Two adiabatic and two isothermal processes", "Two isothermal and two constant volume processes"], ans: 0 },
+  { id: 267, q: "Brayton cycle has", options: ["Two isentropic and two constant volume processes", "Two isentropic and two constant pressure processes", "One constant pressure, one constant volume and two adiabatic processes", "Two isothermal, one constant volume and one constant pressure processes"], ans: 1 },
+  { id: 268, q: "A Bell-Coleman cycle is a reversed", options: ["Stirling cycle", "Joule cycle", "Carnot cycle", "Otto cycle"], ans: 1 },
+  { id: 269, q: "A steam nozzle changes", options: ["kinetic energy into heat energy", "heat energy into potential energy", "heat energy into kinetic energy", "potential energy into heat energy"], ans: 2 },
+  { id: 270, q: "The pitot tube is a device used for measurement of", options: ["pressure", "flow", "velocity", "discharge"], ans: 2 },
+  { id: 271, q: "The continuity equation is applicable to", options: ["Viscous, unviscous fluids", "Compressibility of fluids", "Conservation of mass", "Steady, unsteady flow"], ans: 2 },
+  { id: 272, q: "Work done by force R moving distance L converted into kinetic energy is:", options: ["RL = 2MV²", "RL = 2MV", "RL = ½ MV²", "RL = ½ MV"], ans: 2 },
+  { id: 273, q: "Gas being heated at constant volume is undergoing the process of:", options: ["isentropic", "adiabatic", "isometric", "isobaric"], ans: 2 },
+  { id: 274, q: "Dew point is defined as", options: ["The temperature to which air must be cooled at constant pressure to produce saturation", "The point where pressure and temperature lines meet", "The temperature which dew is formed", "The pressure which dew is formed"], ans: 0 },
+  { id: 275, q: "What do you call changing an atom of an element into an atom of a different element?", options: ["Atomization", "Atomic transmutation", "Atomic pile", "Atomic energy"], ans: 1 },
+  { id: 276, q: "What do you call the weight of the column of air above the earth's surface?", options: ["Air pressure", "Aerostatic pressure", "Wind pressure", "Atmospheric pressure"], ans: 3 },
+  { id: 277, q: "What keeps the moisture from passing through the system?", options: ["Dehydrator", "Aerator", "Trap", "Humidifier"], ans: 0 },
+  { id: 278, q: "What condition exists in an adiabatic throttling process?", options: ["Enthalpy is variable", "Enthalpy is constant", "Entropy is constant", "Specific volume is constant"], ans: 1 },
+  { id: 279, q: "The specific gravity of a substance is the ratio of its density to the density of:", options: ["mercury", "gas", "air", "water"], ans: 3 },
+  { id: 280, q: "A compound pressure gauge is used to measure:", options: ["complex pressures", "variable pressures", "compound pressures", "positive and negative pressures"], ans: 3 },
+  { id: 281, q: "Isentropic flow is", options: ["perfect gas flow", "ideal fluid flow", "frictionless reversible flow", "reversible adiabatic flow"], ans: 3 },
+  { id: 282, q: "Under ideal conditions, isothermal, isobaric, isochoric and adiabatic processes are:", options: ["dynamic processes", "stable processes", "quasi-static processes", "static processes"], ans: 2 },
+  { id: 283, q: "One Watt is:", options: ["1 N·m/s", "1 N·m/min", "1 N·m/hr", "1 kN·m/s"], ans: 0 },
+  { id: 284, q: "A temperature above which a given gas cannot be liquefied:", options: ["Cryogenic temperature", "Vaporization temperature", "Absolute temperature", "Critical temperature"], ans: 3 },
+  { id: 285, q: "The effectiveness of a body as a thermal radiator at a given temperature.", options: ["Absorptivity", "Emissivity", "Conductivity", "Reflectivity"], ans: 1 },
+  { id: 286, q: "Which of the following occurs in a reversible polytropic process?", options: ["Enthalpy remains constant", "Internal energy does not change", "Some heat transfer occurs", "Entropy remains constant"], ans: 2 },
+  { id: 287, q: "The instrument used to measure atmospheric pressure is:", options: ["Rotameter", "Manometer", "Venturi", "Barometer"], ans: 3 },
+  { id: 288, q: "A pneumatic tool is generally powered by", options: ["water", "electricity", "steam", "air"], ans: 3 },
+  { id: 289, q: "Which of the following gases can be used to measure the lowest temperature?", options: ["Nitrogen", "Helium", "Oxygen", "Hydrogen"], ans: 1 },
+  { id: 290, q: "The triple point of a substance is the temperature and pressure at which:", options: ["Solid and liquid in equilibrium", "Solid and gas in equilibrium", "Solid, liquid and gas in equilibrium", "Solid does not melt, liquid does not boil, gas does not condense"], ans: 3 },
+  { id: 291, q: "Which of the following relations is not applicable in a free expansion process?", options: ["Heat rejected is zero", "Work done is zero", "Change in temperature is zero", "Heat supplied is zero"], ans: 2 },
+  { id: 292, q: "Ericsson cycle has", options: ["Two isothermal and two constant pressure processes", "Two isothermal and two constant volume processes", "Two isothermal and two constant entropy process", "Two adiabatic, one constant volume and constant pressure processes"], ans: 0 },
+  { id: 293, q: "A Stirling cycle has", options: ["Two adiabatic and two constant volume processes", "Two adiabatic and two constant pressure processes", "Two isothermal and two constant pressure processes", "Two isothermal and two constant volume processes"], ans: 3 },
+  { id: 294, q: "The temperature of fluid flowing under pressure through a pipe is usually measured by:", options: ["glass thermometer", "electric resistance thermometer", "thermocouple", "all of the above"], ans: 3 },
+  { id: 295, q: "Specific heat capacity is an SI derived unit described as", options: ["J/kg", "W/(m·K)", "kJ/(kg·K)", "J/m"], ans: 2 },
+  { id: 296, q: "Which of the following is mathematically a thermodynamic property?", options: ["A point function", "Discontinuous", "A path function", "Exact differential"], ans: 0 },
+  { id: 297, q: "When expansion or compression takes place 'without transfer of heat', the process is called:", options: ["reversible", "adiabatic", "polytropic", "isothermal"], ans: 1 },
+  { id: 298, q: "Another name for the liquid valve is:", options: ["Freon valve", "Shut-off valve", "King valve", "Master valve"], ans: 2 },
+  { id: 299, q: "A liquid whose temperature is lower than saturation temperature corresponding to pressure:", options: ["Subcooled liquid", "Saturated liquid", "Pure liquid", "Compressed liquid"], ans: 0 },
+  { id: 300, q: "The law stating 'Entropy of all perfect crystalline solids is zero at absolute zero':", options: ["Zeroth law", "First law", "Second law", "Third law"], ans: 3 },
+  { id: 301, q: "What should be the temperature of both water and steam whenever they are present together?", options: ["Saturation temperature for existing pressure", "Boiling point of water at 101.325 kPa", "Superheated temperature", "100 °C"], ans: 0 },
+  { id: 302, q: "A manometer is an instrument that is used to measure:", options: ["air pressure", "heat radiation", "condensate water level", "air volume"], ans: 0 },
+  { id: 303, q: "What is the area under the curve of a temperature-entropy diagram?", options: ["Volume", "Heat", "Work", "Entropy"], ans: 1 },
+  { id: 304, q: "What do bodies at a temperature above absolute zero emit?", options: ["Energy", "Heat of convection", "Thermal radiation", "Heat of compression"], ans: 2 },
+  { id: 305, q: "In absence of irreversibilities, a thermoelectric generator will have the efficiency of a/an", options: ["Carnot cycle", "Otto cycle", "Diesel cycle", "Rankine cycle"], ans: 0 },
+  { id: 306, q: "Both Stirling and Ericsson engines are", options: ["internal combustion engines", "external combustion engines", "Carnot engines", "Brayton engines"], ans: 1 },
+  { id: 307, q: "Nozzles do not involve work interaction. The fluid experiences:", options: ["no change in potential energy", "no change in kinetic energy", "no change in enthalpy", "vacuum"], ans: 0 },
+  { id: 308, q: "If actual kinetic energy is Ka and maximum isentropic is Ki, efficiency of nozzle is:", options: ["Ki / Ka", "(Ka - Ki)/Ka", "(Ka - Ki)/Ki", "Ka / Ki"], ans: 3 },
+  { id: 309, q: "The convergent section of a nozzle increases velocity. What does it do to pressure?", options: ["Pressure becomes constant", "Pressure equals velocity", "It increases pressure", "It decreases pressure"], ans: 3 },
+  { id: 310, q: "In a closed vessel, vaporization occurs until equilibrium is established. This equilibrium temperature is:", options: ["dew point", "ice point", "boiling point", "superheated temperature"], ans: 2 },
+  { id: 311, q: "At steam point, temperatures of water and its vapor at standard pressure are:", options: ["extremes or maximum", "unity", "in equilibrium", "undefined"], ans: 2 },
+  { id: 312, q: "Dew forms on the outer surface of a cup. What is this surface temperature equal to?", options: ["Superheated temperature", "Equal to zero", "Standard temperature", "Equal to air's dew point temperature"], ans: 3 },
+  { id: 313, q: "Conversion technology yielding electricity straight from sunlight without working substance:", options: ["Power conversion", "Stirling cycle conversion", "Solar thermal conversion", "Photovoltaic-energy conversion"], ans: 3 },
+  { id: 314, q: "Property of liquid extending resistance to angular or shear deformation:", options: ["Specific gravity", "Specific weight", "Viscosity", "Density"], ans: 2 },
+  { id: 315, q: "What is the pressure at the exit of a draft tube in a turbine?", options: ["Below atmospheric", "Above atmospheric", "Atmospheric", "Vacuum"], ans: 2 },
+  { id: 316, q: "When changes in kinetic energy are negligible, work input to adiabatic compressor is", options: ["negligible", "zero", "infinity", "equal to change in enthalpy"], ans: 3 },
+  { id: 317, q: "What is the area under the curve of a pressure-volume diagram?", options: ["Nonflow work", "Steadyflow work", "Heat", "Power"], ans: 0 },
+  { id: 318, q: "In Stirling and Ericsson cycle, regeneration can", options: ["increase efficiency", "decrease efficiency", "control efficiency", "limit efficiency"], ans: 0 },
+  { id: 319, q: "The first law of thermodynamics is based on which principle?", options: ["Conservation of mass", "Enthalpy-entropy relationship", "Entropy-temperature relationship", "Conservation of energy"], ans: 3 },
+  { id: 320, q: "In a two-phase system, 30% moisture means", options: ["70% liquid and 30% vapor", "70% vapor and 30% liquid", "30% liquid and 100% vapor", "30% vapor and 100% liquid"], ans: 1 },
+  { id: 321, q: "If pressure is decreased below 101.325 kPa, the boiling temperature of water will:", options: ["increase", "decrease", "remain the same", "drop to zero"], ans: 1 },
+  { id: 322, q: "Which of the following is equivalent to 1 hp in Btu/hr?", options: ["778", "2545", "746", "3.41"], ans: 1 },
+  { id: 323, q: "What is the pressure above zero?", options: ["Gage pressure", "Absolute pressure", "Vacuum pressure", "Atmospheric pressure"], ans: 0 },
+  { id: 324, q: "One Newton-meter is equal to:", options: ["1 Joule", "1 Btu", "1 Calorie", "1 Ergs"], ans: 0 },
+  { id: 325, q: "Which of the following is used to measure fluid velocity?", options: ["Pitot tube", "Orsat apparatus", "Anemometer", "Viscosimeter"], ans: 0 },
+  { id: 326, q: "Cryogenic temperature ranges from:", options: ["-150 °F to -359 °F", "-250 °F to -459 °F", "-100 °F to -300 °F", "-200 °F to -400 °F"], ans: 1 },
+  { id: 327, q: "Steam at 2 kPa is saturated at 17.5 °C. What state will it be at 40 °C and 2.0 kPa?", options: ["Superheated", "Saturated", "Subcooled", "Supersaturated"], ans: 0 },
+  { id: 328, q: "Acceleration is proportional to force.", options: ["Newton's law", "Archimedes principle", "Law of gravitation", "Theory of relativity"], ans: 0 },
+  { id: 329, q: "Which of the following could be defined as simply push and pull?", options: ["Power", "Inertia", "Work", "Force"], ans: 3 },
+  { id: 330, q: "The true pressure measured above a perfect vacuum is:", options: ["absolute pressure", "atmospheric pressure", "gauge pressure", "vacuum pressure"], ans: 0 },
+  { id: 331, q: "If ideal gas is compressed to half volume and twice temperature, pressure:", options: ["doubles", "halves", "quadruples", "triples"], ans: 2 },
+  { id: 332, q: "Expansion/compression without heat transfer is called:", options: ["isometric process", "isothermal process", "isobaric process", "adiabatic process"], ans: 3 },
+  { id: 333, q: "A body radiates heat proportional to the fourth power of absolute temperature:", options: ["Stefan-Boltzmann law", "Planck's law", "Kirchhoff's law", "Maxwell's law"], ans: 0 },
+  { id: 334, q: "All substances emit radiation whose quantity and quality depend on temp and material properties:", options: ["Stefan-Boltzmann law", "Planck's law", "Kirchhoff's law", "Maxwell's law"], ans: 1 },
+  { id: 335, q: "Ratio of total emissive power to absorptivity is constant for bodies in thermal equilibrium:", options: ["Stefan-Boltzmann law", "Planck's law", "Kirchhoff's law", "Maxwell's law"], ans: 2 }
+];
+
+let activeQuestions = [...quizData];
+let currentIndex = 0;
+
+function loadQuestion() {
+  const q = activeQuestions[currentIndex];
+  document.getElementById("q-number").innerText = `Question ${currentIndex + 1} / ${activeQuestions.length} (Original ID: #${q.id})`;
+  document.getElementById("q-text").innerText = q.q;
+  document.getElementById("feedback").innerText = "";
+  
+  const container = document.getElementById("options-container");
+  container.innerHTML = "";
+  
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+    btn.onclick = () => checkAnswer(idx, q.ans, btn);
+    container.appendChild(btn);
+  });
+}
+
+function checkAnswer(selected, correct, btn) {
+  const buttons = document.querySelectorAll(".option-btn");
+  buttons.forEach(b => b.disabled = true);
+  
+  if (selected === correct) {
+    btn.classList.add("correct");
+    document.getElementById("feedback").innerText = "✨ Correct!";
+    document.getElementById("feedback").style.color = "#28a745";
+  } else {
+    btn.classList.add("incorrect");
+    buttons[correct].classList.add("correct");
+    document.getElementById("feedback").innerText = `❌ Incorrect. Correct answer: ${String.fromCharCode(65 + correct)}`;
+    document.getElementById("feedback").style.color = "#dc3545";
+  }
+}
+
+function nextQuestion() {
+  if (currentIndex < activeQuestions.length - 1) {
+    currentIndex++;
+    loadQuestion();
+  }
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadQuestion();
+  }
+}
+
+function shuffleQuiz() {
+  for (let i = activeQuestions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [activeQuestions[i], activeQuestions[j]] = [activeQuestions[j], activeQuestions[i]];
+  }
+  currentIndex = 0;
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>

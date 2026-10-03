@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuels & Combustion Practice Quiz (Questions 1-194)</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        header {
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: var(--light-bg);
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-container input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .score-board {
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            margin-top: 25px;
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7f8c8d;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .option-item:hover:not(.disabled) {
+            border-color: var(--secondary-color);
+            background-color: #f4f9fd;
+        }
+
+        .option-item.selected-correct {
+            border-color: var(--success-color);
+            background-color: #e8f8f0;
+            color: #1e7e34;
+            font-weight: 600;
+        }
+
+        .option-item.selected-incorrect {
+            border-color: var(--danger-color);
+            background-color: #fdf2f2;
+            color: #bd2130;
+            font-weight: 600;
+        }
+
+        .option-item.show-correct {
+            border-color: var(--success-color);
+            background-color: #e8f8f0;
+            color: #1e7e34;
+        }
+
+        .option-item.disabled {
+            cursor: default;
+        }
+
+        .option-prefix {
+            font-weight: bold;
+            margin-right: 12px;
+            width: 20px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #7f8c8d;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .results-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 15px 0;
+        }
+
+        .sub-text {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 15px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <header>
+        <h1>Fuels & Combustion Practice Quiz</h1>
+        <div class="sub-text">Mechanical Engineering Board Exam Preparation (Questions 1 - 194)</div>
+    </header>
+
+    <div class="controls">
+        <label class="toggle-container">
+            <input type="checkbox" id="shuffle-toggle" onchange="toggleShuffle()">
+            <span>Shuffle Mode</span>
+        </label>
+        <div class="score-board">
+            Score: <span id="score">0</span> / <span id="answered-count">0</span>
+        </div>
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="quiz-body">
+        <div class="question-card">
+            <div class="question-number" id="q-number">Question 1 of 194</div>
+            <div class="question-text" id="q-text">Loading question...</div>
+            <ul class="options-list" id="options-container">
+                <!-- Options will be populated by JavaScript -->
+            </ul>
+        </div>
+
+        <div class="navigation">
+            <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()">Previous</button>
+            <button class="btn btn-secondary" id="reset-btn" onclick="resetQuiz()">Reset</button>
+            <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+
+    <div id="results-body" style="display: none;">
+        <div class="results-card">
+            <h2>Quiz Completed!</h2>
+            <p>Your final score is:</p>
+            <div class="results-score" id="final-score">0 / 194</div>
+            <p id="percentage-score"></p>
+            <button class="btn btn-primary" onclick="resetQuiz()">Restart Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const quizData = [
+  { id: 1, question: "PAST ME BOARD QUESTION\nWhich is not a viscosity rating?", options: ["Redwood", "SSU", "Centipoise", "Entropy Degrees API"], answer: "D" },
+  { id: 2, question: "PAST ME BOARD QUESTION\nPercent excess air is the difference between the air actually supplied and the theoretically required divided by", options: ["the theoretically air supplied", "the actually air supplied", "the deficiency of air supplied", "the sufficient air supplied"], answer: "A" },
+  { id: 3, question: "ME BOARD QUESTION\nWhat is the apparatus used in the analysis of combustible gases?", options: ["Calorimeter differential", "Calorimeter gas", "Calorimetry", "Calorimeter"], answer: "D" },
+  { id: 4, question: "PAST ME BOARD QUESTION\nPercent excess air is the difference between the air actually supplied and the theoretical air divided by", options: ["the sufficient air supplied", "the deficiency air supplied", "the actually air supplied", "the theoretically air supplied"], answer: "D" },
+  { id: 5, question: "PAST ME BOARD QUESTION\nThe viscosity of most commercially available petroleum lubricating oil changes rapidly above", options: ["120°F", "180°F", "150°F", "130°F"], answer: "B" },
+  { id: 6, question: "PAST ME BOARD QUESTION\nWhen 1 mol carbon combines with 1 mol oxygen", options: ["2 mols carbon dioxide", "1 mol carbon dioxide", "1 mol carbon and 1 mol carbon dioxide", "1 mol carbon dioxide"], answer: "B" },
+  { id: 7, question: "ME BOARD QUESTION\nWhat are the immediate undesirable products from the petroleum based lubricating oil when subjected to high pressure and temperature?", options: ["Gums, resins and acids", "Sulfur", "Soots and ashes", "Carbon residue"], answer: "A" },
+  { id: 8, question: "What kind of bonding do common gases that exist in free state as diatomic molecules experiences?", options: ["Ionic bonds", "Covalent bonds", "Metallic bonds", "Nuclear bonds"], answer: "B" },
+  { id: 9, question: "An Orsat's apparatus is used for", options: ["volumetric analysis of the flue gas", "gravimetric analysis of the flue gas", "smoke density analysis of the flue gas", "all of the above"], answer: "A" },
+  { id: 10, question: "A theorem that states that the total property of a mixture of ideal gases is the sum of the properties that the individual gases would have if each occupied the total mixture volume alone as the same temperature.", options: ["Gibbs theorem", "Dalton's theorem", "Boltzmann's theorem", "Maxwell's theorem"], answer: "A" },
+  { id: 11, question: "A small enough particles suspended in a fluid will exhibit small random movements due to the statistical collision of fluid molecules on the particle's surface. This motion is called", options: ["Boltzmann motion", "rectilinear motion", "kinetic gas motion", "Brownian motion"], answer: "D" },
+  { id: 12, question: "When two or more light atoms have sufficient energy (available only at high temperatures and velocities) to fuse together to form a heavier nucleus the process is called", options: ["fusion", "fission", "the photoelectric effect", "the Compton effect"], answer: "A" },
+  { id: 13, question: "What is the residue left after combustion of a fossil fuel?", options: ["Charcoal", "Ash", "Scraper", "All of the choices"], answer: "B" },
+  { id: 14, question: "What is formed during incomplete combustion of carbon in fuels?", options: ["Carbon dioxide", "Carbon monoxide", "Nitrogen oxide", "Oxygenated fuel"], answer: "B" },
+  { id: 15, question: "A gas produced by the combustion of fuel oil and cannot be found in the flue gases is:", options: ["oxygen", "nitrogen", "hydrogen", "carbon dioxide"], answer: "C" },
+  { id: 16, question: "Which of the following chemical reactions in which heat is absorbed?", options: ["Heat reaction", "Endothermic reaction", "Exothermic reaction", "Combustion reaction"], answer: "B" },
+  { id: 17, question: "A chemical reaction in which heat is given off.", options: ["Heat reaction", "Endothermic reaction", "Exothermic reaction", "Combustion reaction"], answer: "C" },
+  { id: 18, question: "A colorless, odorless mixture of nitrogen and oxygen, with traces of other gases water vapor and same impurities.", options: ["Air", "Helium", "Water gas", "Nitrite"], answer: "A" },
+  { id: 19, question: "The transfer of air and air characteristics by horizontal motion is called", options: ["convection", "air transfer", "advection", "adhesion"], answer: "C" },
+  { id: 20, question: "Properties of non - reacting gas mixtures are given by:", options: ["geometric weighting", "volumetric weighting", "volumetric weighting for molecular weight and density, and geometric weighting for all other properties except entropy", "arithmetic average"], answer: "C" },
+  { id: 21, question: "The process of separating two or more liquids by means of the difference in their boiling point.", options: ["Engler distillation", "Fractional distillation", "Gas scrubbing", "Fractional crystallization"], answer: "B" },
+  { id: 22, question: "The gaseous products of combustion of a boiler which contains carbon dioxide, carbon monoxide, oxygen, nitrogen and water vapor is called", options: ["Flue gas", "Producer gas", "Product gas", "Universal gas"], answer: "A" },
+  { id: 23, question: "A substance whose burning with oxygen yields heat energy such as coal, petroleum and natural gas.", options: ["Air", "Fluid", "Fuel", "Gas"], answer: "C" },
+  { id: 24, question: "Stoichiometric ratio is", options: ["chemically correct air - fuel ratio by volume", "chemically correct air - fuel ratio by weight", "theoretical mixture of air for complete combustion", "actual ratio of air to fuel for maximum efficiency"], answer: "B" },
+  { id: 25, question: "A type of radiation consisting of singly charged particles that generate to intermediate distances.", options: ["Nuclear radiation", "Alpha radiation", "Beta radiation", "Gamma radiation"], answer: "C" },
+  { id: 26, question: "The increase in velocity past the throat is due to the rapid decrease in the:", options: ["fluid density", "fluid specific volume", "fluid temperature", "fluid pressure"], answer: "A" },
+  { id: 27, question: "In an oxidation reduction chemical reaction, all of the following occur except:", options: ["the exchange of electrons between elements", "elements becoming more positive", "elements becoming more negative", "nuclear fusion"], answer: "D" },
+  { id: 28, question: "The residual oil left after the distillation of gasoline and kerosene from crude petroleum yellow to brown oil, used as a diesel fuel and for enriching water gas.", options: ["Diesel oil", "Gasoline oil", "LPG", "Gas oil"], answer: "D" },
+  { id: 29, question: "A fuel gas obtained by the destructive distillation of soft coal is called", options: ["Gas scrub", "Coal gas", "Alcogas", "Water gas"], answer: "B" },
+  { id: 30, question: "Removing of impurities from a gas by bubbling it through a liquid purifying agent is called", options: ["Gas scrubbing", "Gas purifying", "Gas liquefying", "Gas bubbling"], answer: "A" },
+  { id: 31, question: "During the fusion process, mass is lost and converted to energy according to:", options: ["the Heisenburg uncertainty principle", "the Compton's law", "Einstein's law", "The second law of thermodynamics"], answer: "C" },
+  { id: 32, question: "A finely divided carbon deposit by the smoke or flame is called", options: ["Fly ash", "Soot", "Residue", "All of the choices"], answer: "B" },
+  { id: 33, question: "Rare gases such as helium, argon, krypton, xenon and radon that are non-reactive are called", options: ["Non reactants", "Stop gases", "Inert gases", "Residual gases"], answer: "C" },
+  { id: 34, question: "Kinematics and dynamic viscosity vary from each other only by a factor equal to the:", options: ["fluid density", "temperature", "pressure", "specific gas constant"], answer: "A" },
+  { id: 35, question: "The following properties are different for isomers of the same chemical compound except:", options: ["density", "melting point", "number of atoms in a mole of each isomers", "specific heat"], answer: "C" },
+  { id: 36, question: "Atomic weights of the elements in the periodic table are not whole numbers because of:", options: ["the existence of isotopes", "imprecise measurements during the development of the periodic table", "round off error in calculating atomic weights", "the exchange of reference of the atomic mass unit from oxygen - 16 to carbon -12 in 1961"], answer: "A" },
+  { id: 37, question: "The tendency of a pure compound to be composed of the same elements combined in a definite proportion by mass.", options: ["Avogadro's law", "Boyle's law", "The law of definite proportions", "Le Chatelier's principle"], answer: "C" },
+  { id: 38, question: "How do you call the process of removing of impurities from a gas by bubbling it through a liquid purifying agent?", options: ["Gas scrubbing", "Gas purifying", "Gas liquefying", "Gas bubbling"], answer: "A" },
+  { id: 39, question: "What is the effect of a catalyst in a chemical reaction?", options: ["absorb the exothermic heat of reaction", "provide the exothermic heat of reaction", "lower the activation energy", "provide the heat of sublimation"], answer: "C" },
+  { id: 40, question: "The relationship between the concentration of products and reactants in a reversible chemical reaction given by", options: ["the ionization constant", "the equilibrium constant", "the solubility product", "Le Chatelier's principle"], answer: "B" },
+  { id: 41, question: "What fuel gas obtained by the destructive distillation of soft coal ?", options: ["Gas scrub", "Coal gas", "Alcogas", "Water gas"], answer: "B" },
+  { id: 42, question: "The process of splitting the nucleus into smaller fragments.", options: ["fusion", "fission", "the photoelectric effect", "the Compton effect"], answer: "B" },
+  { id: 43, question: "The ash that is removed from the combustor after the fuel is burn is the :", options: ["fly ash", "bottom ash", "scraper ash", "top ash"], answer: "B" },
+  { id: 44, question: "A mixture of hydrogen and carbon monoxide made by passing steam over hot coke.", options: ["Water gas", "Water vapor", "hydrocarbon", "Air"], answer: "A" },
+  { id: 45, question: "All of the following are true of non-stoichiometric reactions except", options: ["there is an excess of one or more reactants", "the percentage yield measures the efficiency of the reaction", "non - stoichiometric reactions are rare in the combustion process", "in combustion, air is often the excess reactant to assure complete combustion of fuel"], answer: "C" },
+  { id: 46, question: "It is the ratio of the volume at the end of heat addition to the volume at the start of heat addition.", options: ["compression ratio", "air-fuel ratio", "volumetric ratio", "cut-off ratio"], answer: "D" },
+  { id: 47, question: "Piston rings are made of:", options: ["alloy steel", "carbon steel", "copper", "cast iron"], answer: "D" },
+  { id: 48, question: "ME BOARD QUESTION\nLoss power is due to:", options: ["poor compression", "restricted exhaust", "clogging of air cleaner", "low injection pressure"], answer: "D" },
+  { id: 49, question: "ME BOARD QUESTION\nA branch system of pipes to carry waste emissions away from the piston chambers of an internal combustion engine is called", options: ["exhaust nozzle", "exhaust deflection pipe", "exhaust pipe", "exhaust manifold"], answer: "D" },
+  { id: 50, question: "ME BOARD QUESTION\nThe type of filter where the filtering elements is replaceable.", options: ["Paper edge filter", "Metal edge filter", "Pressure filter", "Filter with element"], answer: "B" },
+  { id: 51, question: "ME BOARD QUESTION\nWhen four events takes place in one revolution of a crankshaft of an engine, the engine is called :", options: ["rotary engine", "steam engine", "two stroke engine", "four stroke engine"], answer: "C" },
+  { id: 52, question: "ME BOARD QUESTION\nWhich of the following does not belong to the group?", options: ["Air injection system", "Mechanical injection system", "Time injection system", "Gas admission system"], answer: "C" },
+  { id: 53, question: "ME BOARD QUESTION\nSpecific heat capacity is an SI derived unit described as:", options: ["J/kg", "W/m°K", "J/m³", "J/kg°K"], answer: "D" },
+  { id: 54, question: "ME BOARD QUESTION\nA device whose primary function is to meter the flow of refrigerant to the evaporator.", options: ["Sniffer valve", "Equalizer", "Thermostatic expansion valve", "Crossover valve"], answer: "C" },
+  { id: 55, question: "ME BOARD QUESTION\nThe internal combustion engines never work in", options: ["Rankine cycle", "Diesel cycle", "Dual combustion cycle", "Otto cycle"], answer: "A" },
+  { id: 56, question: "The general chemical formula for all hydrocarbons is CₙHₘ. In different combinations of interest, as internal combustion engine fuel, n varies from:", options: ["1 to 26", "2 to 54", "2 to 26", "1 to 54"], answer: "A" },
+  { id: 57, question: "The general chemical formula for all hydrocarbons is CₙHₘ. In different combinations of interest, as internal combustion engine fuel m varies from :", options: ["1 to 26", "2 to 54", "2 to 26", "1 to 54"], answer: "B" },
+  { id: 58, question: "The general chemical formula of a paraffin fuel is", options: ["CₙH₂ₙ", "CₙH₂ₙ₋₆", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂"], answer: "C" },
+  { id: 59, question: "Naphthenes and olefins are types of hydrocarbons with chemical formula of:", options: ["CₙH₂ₙ", "CₙH₂ₙ₋₆", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂"], answer: "A" },
+  { id: 60, question: "Which of the following types of hydrocarbons have chemical formula of CₙH₂ₙ₋₂?", options: ["Diolefins", "Aromatics", "Asphaltics", "Paraffins"], answer: "A" },
+  { id: 61, question: "Which of the following types of hydrocarbons have chemical formula of CₙH₂ₙ₋₄?", options: ["Diolefins", "Aromatics", "Asphaltics", "Paraffins"], answer: "C" },
+  { id: 62, question: "What is the chemical formula of an Aromatic type of hydrocarbon fuels ?", options: ["CₙH₂ₙ₋₆", "CₙH₂ₙ₋₂", "CₙH₂ₙ", "CₙH₂ₙ₊₂"], answer: "A" },
+  { id: 63, question: "At atmospheric condition, hydrocarbon molecules with a low number of carbon atoms, 1 to 4 are", options: ["Liquids", "Atomic", "Gases", "Light oils"], answer: "C" },
+  { id: 64, question: "Hydrocarbons with 5 to 15 carbon atoms are:", options: ["more or less volatile light oils", "referred to as heavy oils", "mixtures of many kinds of hydrocarbons", "commercial fuels"], answer: "A" },
+  { id: 65, question: "Hydrocarbons with 16 to 26 carbon atoms are referred to as:", options: ["light oils", "heavy oils", "commercial fuels", "lubricating oils"], answer: "B" },
+  { id: 66, question: "In a four stroke engine if a valve opens 25° before B.D.C. and close 10° after T.D.C. the valve should be:", options: ["puppet valve", "exhaust valve", "inlet valve", "spring valve"], answer: "B" },
+  { id: 67, question: "In a hot wire anemometer the rate of heat loss from sensing element is a function of:", options: ["mass rate of flow", "pressure", "velocity of flow", "all of the above"], answer: "C" },
+  { id: 68, question: "Sticking valves", options: ["valve tappet clearance incorrect", "valve springs of defective material", "valve guides gummed", "lubricating oil of poor quality"], answer: "B" },
+  { id: 69, question: "Detonation of pinging noise is due to :", options: ["early timing of fuel injection", "late timing of fuel injection", "head of piston carbonized", "valve springs weak or broken"], answer: "B" },
+  { id: 70, question: "The thermal efficiency of a dual cycle engine with fixed compression ratio and fixed quantity of heat and with increase in pressure ratio, will", options: ["increase", "remain same", "decrease", "depends on other factors"], answer: "A" },
+  { id: 71, question: "Scavenging efficiency of a four stroke diesel engine is:", options: ["in the range 80 - 95 percent", "in the range 60 - 80 percent", "below 60 percent", "between 95% and 100%"], answer: "D" },
+  { id: 72, question: "Volumetric efficiency of a well designed engine may be in the range of:", options: ["75 to 90 per cent", "60 to 75 per cent", "30 to 50 per cent", "below 30 per cent"], answer: "A" },
+  { id: 73, question: "During idling in a compression ignition engine the air fuel ratio may be of the order of:", options: ["30", "200", "150", "100"], answer: "A" },
+  { id: 74, question: "Vapor lock is", options: ["lock of vaporization of fuel to atmospheric pressure", "excess fuel supply to engine because of faster evaporation", "complete or partial stoppage of fuel supply because of vaporization of fuel in supply steam", "locking carburetor jets because of vapor pressure"], answer: "C" },
+  { id: 75, question: "Flash point of liquids is the temperature at which:", options: ["the fuel emits vapors at a rate which produces an inflammable mixture with air", "the fuel spontaneously ignites", "the fuel ignites with clearly visible flash", "the fuel ignites without a spark"], answer: "A" },
+  { id: 76, question: "The mean effective pressure of a diesel cycle having fixed compression ratio will increase if cut off ratio is :", options: ["increased", "decreased", "independent of compression ratio", "depends on other factor"], answer: "A" },
+  { id: 77, question: "Hot spots", options: ["do not exist in engines", "are the hottest spots in engines", "are the spots where heavier functions of fuel are vaporized", "are the defects in S.I. in engines"], answer: "C" },
+  { id: 78, question: "Flash point for diesel fuel oil should be:", options: ["maximum 49°C", "maximum 490°C", "maximum 200°C", "maximum 300°C"], answer: "A" },
+  { id: 79, question: "Morse test is conducted on:", options: ["single cylinder engines", "multi - cylinder engines", "horizontal engines", "vertical engines"], answer: "B" },
+  { id: 80, question: "Prony brake is used for testing of:", options: ["small engines", "large engines", "engines having small flywheel", "high speed engines"], answer: "A" },
+  { id: 81, question: "Clog point of an oil refer to:", options: ["the point of maximum contamination of oil", "the level of impurities beyond which oil ceases to flow", "the temperature at which oil solidifies", "the temperature at which paraffin and waxes in oil start precipitating"], answer: "D" },
+  { id: 82, question: "Otto cycle consists of:", options: ["two isentropic and two constant volumes processes", "two isentropic and two constant pressure processes", "two adiabatic and two isothermal processes", "two isothermal and two constant volume processes"], answer: "A" },
+  { id: 83, question: "Diesel cycle consists of:", options: ["isentropic, isothermal, constant volume, constant pressure process", "two constant volume, one constant pressure, and one isothermal process", "two isentropic, one constant volume and one constant pressure processes", "two constant pressure, one constant volume, and one isentropic processes"], answer: "C" },
+  { id: 84, question: "Which is not correct for calculating air standard efficiency?", options: ["All processes are reversible", "Specific heat remains unchanged at all temperatures", "No account of the mechanism of heat transfer is considered", "Gases dissociate at higher temperatures"], answer: "D" },
+  { id: 85, question: "The king pin inclination is generally:", options: ["less than 0.5°", "between 1 and 2°", "between 2° and 5°", "more than 9°"], answer: "C" },
+  { id: 86, question: "For balancing single cylinder engine a counter weight is added to:", options: ["piston", "piston pin", "cam", "crank"], answer: "D" },
+  { id: 87, question: "To measure the clearance between the valve and tappet of an automobile engine we use a", options: ["vernier scale", "feeler gauge", "pneumatic gauge", "slip gauge"], answer: "B" },
+  { id: 88, question: "By supercharging:", options: ["power stroke becomes stronger", "loss in exhaust gets reduced", "engine can be made to run smoother", "thermal efficiency of the engine can be improved"], answer: "D" },
+  { id: 89, question: "Speedometer drive is generally taken from:", options: ["dynamo", "flywheel", "fan belt", "front wheel"], answer: "D" },
+  { id: 90, question: "Odometer is:", options: ["an instrument that indicates the condition of the battery", "an instrument used for measurement of fuel consumption", "an instrument used for BHP measurement", "an instrument used for distance measurement"], answer: "D" },
+  { id: 91, question: "Automobile radiator is filled with:", options: ["acidic water", "alkaline water", "hard water", "soft water"], answer: "D" },
+  { id: 92, question: "The ignition coil acts as:", options: ["a capacitor", "an inductor", "an RC circuit", "a step up transformer"], answer: "D" },
+  { id: 93, question: "The self starting motor for automobiles is a:", options: ["universal motor", "DC shunt motor", "DC series motor", "synchronous motor"], answer: "C" },
+  { id: 94, question: "Starting motor current may be about", options: ["0.15 A", "0.5 A", "5.1 A", "25 A"], answer: "D" },
+  { id: 95, question: "As a rule before the piston are removed, it is essential to remove the :", options: ["gudgeon pin", "circlip", "piston rings", "crankshaft"], answer: "C" },
+  { id: 96, question: "Common causes for excessive oil consumption include:", options: ["heavy oil and light bearings", "high speed and worn engine", "short trips and cold weather", "frequent oil changes"], answer: "B" },
+  { id: 97, question: "The device that is used for reducing the exhaust noise is called", options: ["exhaust manifold", "exhaust pipe", "muffler", "none of the above"], answer: "C" },
+  { id: 98, question: "The device that is used to measure the clearance between the valve and tappet of an internal combustion engine is measured by using :", options: ["snap gauge", "slip gauge", "feeler gauge", "micrometer"], answer: "C" },
+  { id: 99, question: "Which of the following instrument is used in measuring specific gravity?", options: ["Thermometer", "Hygrometer", "Anemometer", "Hydrometer"], answer: "D" },
+  { id: 100, question: "Exhaust gas leakage into the cooling system is most likely to occur because of defective:", options: ["cylinder head gasket", "manifold gasket", "water pump", "any of the above"], answer: "A" },
+  { id: 101, question: "Clutch slippage while clutch is engaged is specially noticeable", options: ["during idling", "at low speed", "during acceleration", "during braking"], answer: "C" },
+  { id: 102, question: "To engage securely and prevent dragging the clearance between release bearing and release collar in a clutch is generally:", options: ["2-3 mm", "10-12 mm", "20-22 mm", "30-32 mm"], answer: "A" },
+  { id: 103, question: "Gudgeon pins are made of:", options: ["same material as that of piston", "cast iron", "hardened and ground steel", "none of these"], answer: "D" },
+  { id: 104, question: "Latex is:", options: ["a plastic", "a cover on writes carrying current to spark plugs", "a variety of lubricant", "a milky juice of rubber"], answer: "D" },
+  { id: 105, question: "Cross wire grooves on tires", options: ["decrease the danger of skidding", "absorb shocks because of road unevenness", "provide good traction", "provide better load carrying capacity"], answer: "B" },
+  { id: 106, question: "The Diesel fuel pump is designed to supply fuel", options: ["just sufficient against the demand of the injection pump", "in excess quantity than needed by the injection pump", "a constant quantity at all engine speeds", "insufficient quantity in accordance with the engine speed"], answer: "D" },
+  { id: 107, question: "In the fuel is injected into the cylinder in Diesel engine when the piston is:", options: ["exactly at B.D.C. after compression stroke", "exactly at T.D.C. before compression stroke", "approaching T.D.C. during compression stroke", "approaching B.D.C. during exhaust stroke"], answer: "C" },
+  { id: 108, question: "In the cam, the distance between the base circle and the nose is known as", options: ["flank", "nose", "lobe", "lift"], answer: "D" },
+  { id: 109, question: "Dirt or gum in fuel nozzle or jets can produce :", options: ["excessive fuel consumption", "lack of engine power", "smoky black exhaust", "white exhaust"], answer: "C" },
+  { id: 110, question: "Oil pan is attached:", options: ["to the bottom of the cylinder block", "in a separate unit away from the crankcase", "at the top of the cylinder block", "at the outside wall of the crank case"], answer: "A" },
+  { id: 111, question: "Excess oil consumption in engine may be because of :", options: ["leakage of oil through oil pan gasket", "poor quality or improper viscosity of engine oil", "excessive oil pressure", "any of the above"], answer: "D" },
+  { id: 112, question: "Wheel base of a vehicle is the:", options: ["distance between front and rear axles", "distance between the front tires", "extreme length of the vehicle", "width of tires"], answer: "A" },
+  { id: 113, question: "The percentage of heat released from fuel - air mixture, in an internal combustion engine which is converted into useful work is roughly:", options: ["10 per cent", "10-20 per cent", "20-25 per cent", "40-45 per cent"], answer: "C" },
+  { id: 114, question: "The efficiency of hydraulic braking system is:", options: ["about 90 per cent", "60-80 per cent", "50-60 per cent", "40-50 per cent"], answer: "A" },
+  { id: 115, question: "The instrument that is used to check the state of charge of a battery is called a", options: ["hydrometer", "battery charger", "battery eliminator", "anemometer"], answer: "A" },
+  { id: 116, question: "When not in use, the self discharge of an automobile battery in dry weather is generally:", options: ["0.5 to 1%", "3 to 5%", "5 to 7.5%", "not more than 10%"], answer: "A" },
+  { id: 117, question: "A laminated glass on cracking:", options: ["bursts into sharp edged fragments", "bursts into granular pieces", "sandwiched layer taps the fragments", "breaks into the farm of crystals"], answer: "C" },
+  { id: 118, question: "Wax is applied on car body as:", options: ["it is water repellent", "It seals off the pores", "the surface shines", "any of the above"], answer: "D" },
+  { id: 119, question: "A spark voltage requires a voltage of:", options: ["112 V", "124 V", "220 V", "440 V"], answer: "C" },
+  { id: 120, question: "The minimum cranking speed in petrol engine is:", options: ["same as the normal operating speed", "half of operating speed", "one fourth of operating speed", "60-80 rpm"], answer: "D" },
+  { id: 121, question: "Which oil is more viscous?", options: ["SAE 30", "SAE 50", "SAE 80", "SAE 40"], answer: "C" },
+  { id: 122, question: "Engine oil is generally changed after:", options: ["100 km", "1500 km", "1100 km", "2500-6000 km"], answer: "D" },
+  { id: 123, question: "The most probable cause for uneven wear of tires for a truck is:", options: ["low tire pressure", "excessive camber", "tires over loaded", "any of the above"], answer: "D" },
+  { id: 124, question: "In a vehicle the most probable cause for hard steering may be :", options: ["low tire pressure", "bent wheel spindle", "tie rod ends tight", "any of the above"], answer: "D" },
+  { id: 125, question: "Poor compression in a two stroke engine cannot be because of:", options: ["leaky valves", "broken piston rings", "leaking cylinder head gasket", "poor fits between pistons, rings and cylinder"], answer: "A" },
+  { id: 126, question: "The number of exhaust manifolds in a V-8 engine Is:", options: ["one", "four", "there is no exhaust manifold", "two"], answer: "D" },
+  { id: 127, question: "The device for smoothing out the power impulses from the engine is known as:", options: ["clutch", "fly wheel", "gear box", "differential"], answer: "B" },
+  { id: 128, question: "The firing order in case of four cylinder in - line engines is generally", options: ["1-2-4-3", "1-3-4-2", "1-4-3-2", "either B or C"], answer: "D" },
+  { id: 129, question: "In case of four cylinder opposed cylinder engines, the firing order is:", options: ["1-4-3-2", "1-3-4-2", "1-2-3-4", "1-2-4-3"], answer: "A" },
+  { id: 130, question: "In a four stroke engine, for the combustion of one liter of fuel, the volume of air needed would be approximately", options: ["1 cu.m", "2 cu.m", "5-7 cu.m", "9-10 cu.m"], answer: "D" },
+  { id: 131, question: "Theoretically air needed for the combustion of one kg of fuel is:", options: ["100 kg", "14.5 kg", "16.7 kg", "27.4 kg"], answer: "B" },
+  { id: 132, question: "Which of the following is the cause of loss power?", options: ["Poor compression", "Restricted exhaust", "Clogging of air cleaner", "Low injection pressure"], answer: "D" },
+  { id: 133, question: "A valve in the carburetor of an internal combustion engines which regulates the proportion of air gasoline vapors entering the cylinder.", options: ["Gate valve", "Choke valve", "Check valve", "Globe valve"], answer: "B" },
+  { id: 134, question: "What device combines air and fuel for burning in cylinder?", options: ["Intercooler", "Regenerator", "Fuel injection", "Carburetor"], answer: "D" },
+  { id: 135, question: "A passive restraint device consisting of bags in front of the driver and passenger.", options: ["Air buoy", "Air bag", "Air balloon", "Air duct"], answer: "B" },
+  { id: 136, question: "The heat exchanger used in an Ericsson cycle is:", options: ["regenerator", "combustion chamber", "intercooler", "recuperator"], answer: "D" },
+  { id: 137, question: "In Stirling engine, the heat is added during", options: ["isothermal process", "isometric process", "isobaric process", "isentropic process"], answer: "A" },
+  { id: 138, question: "In an Otto engine, the heat is added during", options: ["isothermal process", "isometric process", "isobaric process", "isentropic process"], answer: "B" },
+  { id: 139, question: "Exhaust stroke of gasoline engine is also known as", options: ["supercharging", "choking", "scavenging", "knocking"], answer: "C" },
+  { id: 140, question: "The mechanical efficiency of a device is the ratio of the", options: ["mechanical energy input to the mechanical energy output of the device", "ideal energy input to the actual energy input", "actual energy extracted to the ideal energy extracted", "actual to the ideal energy input"], answer: "B" },
+  { id: 141, question: "The smallest subdivision of an element that can take place in a chemical reaction is a/an", options: ["atom", "molecule", "electron", "proton"], answer: "A" },
+  { id: 142, question: "The smallest subdivision of a compound that can exist in a natural state is a/an", options: ["atom", "molecule", "electron", "proton"], answer: "B" },
+  { id: 143, question: "Elements with different atomic weights but the same atomic number are:", options: ["isomers", "isotropes", "isotopes", "isobars"], answer: "C" },
+  { id: 144, question: "All of the following are characteristics of metals except:", options: ["high electrical conductivities", "tendency to form positive ions", "tendency to form brittle solids", "high melting points"], answer: "C" },
+  { id: 145, question: "The following are all characteristics of nonmetals except", options: ["having little or no luster", "appearing on the right end of the periods table", "having low ductility", "being reducing agents"], answer: "D" },
+  { id: 146, question: "Graduations in the properties of elements from one elements to the next are less pronounced in:", options: ["the lanthanide series", "periods", "groups", "active metals"], answer: "C" },
+  { id: 147, question: "All of the following are components of a chemical elements except:", options: ["protons", "neutrons", "electrons", "ions"], answer: "D" },
+  { id: 148, question: "Which of the following is not a prefix used in naming isomers?", options: ["Para", "Meta", "Cis", "Bi"], answer: "D" },
+  { id: 149, question: "All of the following are types of chemical bonds except:", options: ["ionic bonds", "covalent bonds", "metallic bonds", "nuclear bonds"], answer: "D" },
+  { id: 150, question: "The equilibrium distance between elements in an ionic bond is function of all the following except:", options: ["ionic charge", "coordination number", "atomic weight", "temperature"], answer: "C" },
+  { id: 151, question: "Which of the following statements is not a characteristic of ionic compounds?", options: ["They are usually hard, brittle, crystalline solids", "They have high melting points", "They are nonvolatile and have low vapor pressures", "They are good electrical conductors in the solid phase"], answer: "D" },
+  { id: 152, question: "What kind of bonding do common gases that exist in a free state as diatomic molecules experience?", options: ["Ionic bonds", "Covalent bonds", "Metallic bonds", "Nuclear bonds"], answer: "B" },
+  { id: 153, question: "Measure the diffuser's ability to increase the pressure of the fluid is:", options: ["speed recovery factor", "pressure recovery factor", "volume recovery factor", "diffuser recovery factor"], answer: "B" },
+  { id: 154, question: "A decrease in stagnation pressure will decrease the mass flux through the:", options: ["diverging nozzle", "converging nozzle", "converging - diverging nozzle", "none of these"], answer: "A" },
+  { id: 155, question: "What is the main power generating plant that produces the most electricity per unit thermal energy in the fuel input and has the greatest surplus of electricity for most cogeneration system?", options: ["Steam engine", "Steam turbine", "Gas turbine", "Diesel engine"], answer: "D" },
+  { id: 156, question: "Air standard efficiency of a diesel engine depends on:", options: ["speed", "compression ratio", "fuel", "torque"], answer: "B" },
+  { id: 157, question: "What is meant by brake horsepower?", options: ["Power developed in the engine cylinder", "Final horsepower delivered to the equipment", "Actual horsepower delivered to the engine drive shaft", "Work required to raise a weight of 33,000 lbs at a height of one foot in one minute of time."], answer: "C" },
+  { id: 158, question: "ME BOARD QUESTION\nAverage pressure on a surface when a changing pressure condition exist", options: ["back pressure", "partial-pressure", "pressure drop", "mean effective pressure"], answer: "D" },
+  { id: 159, question: "ME BOARD QUESTION\nWhat air pressure is needed for air starting a diesel engine?", options: ["350 psi", "250 psi", "450 psi", "150 psi"], answer: "B" },
+  { id: 160, question: "ME BOARD QUESTION\nMechanical energy of pressure transformed into energy of heat:", options: ["Kinetic energy", "Enthalpy", "Heat exchanger", "Heat of compression"], answer: "B" },
+  { id: 161, question: "ME BOARD QUESTION\nIgnition of the air fuel mixture in the intake of the exhaust manifold.", options: ["Backlash", "Backfire", "Exhaust pressure", "Back pressure"], answer: "B" },
+  { id: 162, question: "ME BOARD QUESTION\nThe total sulfur content in a diesel fuel must not exceed", options: ["0.3%", "0.5%", "0.8%", "0.11%"], answer: "B" },
+  { id: 163, question: "ME BOARD QUESTION\nTotal sulfur content in a diesel fuel oil must not exceed", options: ["0.2%", "0.5%", "0.15%", "0.1%"], answer: "B" },
+  { id: 164, question: "ME BOARD QUESTION\nThe color of lubricating oil:", options: ["does not indicate contamination", "does not indicate qualities", "indicates qualities", "indicates viscosity"], answer: "B" },
+  { id: 165, question: "ME BOARD QUESTION\nThere are two broad types in the classification of lubricating oils, these are straight and", options: ["active", "inactive", "crooked", "additives"], answer: "D" },
+  { id: 166, question: "ME BOARD QUESTION\nMost commercially available petroleum lubricating oil deteriorates starting from operating temperature of:", options: ["150°F", "200°F", "300°F", "250°F"], answer: "B" },
+  { id: 167, question: "ME BOARD QUESTION\nAn Orsat apparatus is used for:", options: ["volumetric analysis of the flue gases", "gravimetric analysis of the flue gases", "smoke density analysis of the gases", "all of the above"], answer: "A" },
+  { id: 168, question: "ME BOARD QUESTION\nThe indicator used to determine the anti-knock characteristics of gasoline.", options: ["Aniline point", "Cetane number", "Octane number", "Diesel index"], answer: "C" },
+  { id: 169, question: "ME BOARD QUESTION\nAmount of heat liberated by the complete combustion of a unit weight or volume of fuel is:", options: ["heating value", "latent heat", "sensible heat", "work of compression"], answer: "A" },
+  { id: 170, question: "ME BOARD QUESTION\nAir that controls the rate of combustion in the combustion chamber is known as:", options: ["secondary air", "excess air", "control air", "primary air"], answer: "A" },
+  { id: 171, question: "ME BOARD QUESTION\nPercentage of excess air is the difference between the air actually supplied and the theoretically required divided by:", options: ["actual air supplied", "theoretical air supplied", "theoretical less actual supplied", "deficient air supplied"], answer: "B" },
+  { id: 172, question: "ME BOARD QUESTION\nWhen fuel oil has a high viscosity then the fuel oil", options: ["will evaporate easily", "will have a low specific gravity", "will burn without smoke", "will flow slowly through pipes"], answer: "D" },
+  { id: 173, question: "ME BOARD QUESTION\nEngines using heavy fuels require heating of the fuel so that the viscosity at the injector is:", options: ["around 200 SSU", "100 SSU or less", "200 SSU ± 50", "150 SSU or slightly higher"], answer: "D" },
+  { id: 174, question: "ME BOARD QUESTION\nA gas produced by the combustion of fuel oil and cannot be found in the flue gases is:", options: ["carbon dioxide", "hydrogen", "oxygen", "nitrogen"], answer: "B" },
+  { id: 175, question: "ME BOARD QUESTION\nAmount of heat liberated by the complete combustion of a unit weight or volume of fuel is:", options: ["heating value", "latent heat", "sensible heat", "work of compression"], answer: "A" },
+  { id: 176, question: "ME BOARD QUESTION\nThe products of complete combustion of gaseous hydrocarbons.", options: ["Carbon dioxide and water", "Carbon monoxide", "Carbon monoxide, water and ammonia", "Water, carbon monoxide and carbon dioxide"], answer: "A" },
+  { id: 177, question: "ME BOARD QUESTION\nWhen the water in the products of combustion is in the vapor state, the heating value is:", options: ["lower heating value", "higher heating value", "gross calorific value", "average heating value"], answer: "A" },
+  { id: 178, question: "ME BOARD QUESTION\nAt what temperature wherein an oil of any grade becomes cloudy and it freezes, thus its application is limited.", options: ["Cold point", "Flash point", "Pour point", "Freezing point"], answer: "A" },
+  { id: 179, question: "ME BOARD QUESTION\nDry air can be approximated as % oxygen and % nitrogen by mole numbers..", options: ["30% and 70%", "70% and 30%", "21% and 79%", "79% and 21%"], answer: "C" },
+  { id: 180, question: "ME BOARD QUESTION\nWhen H2O in the products of combustion is in liquid form, the heating value is known as", options: ["higher heating value", "lower heating value", "low and medium heating value", "average heating value"], answer: "A" },
+  { id: 181, question: "ME BOARD QUESTION\nFlow of fluids wherein its particles do not have definite paths and the paths of the individual and distinct particles cross one another is:", options: ["non-uniform flow", "unsteady flow", "laminar flow", "turbulent flow"], answer: "D" },
+  { id: 182, question: "ME BOARD QUESTION\nIf the composition of hydrocarbon fuel is known, the ratio between the nitrogen and oxygen that is supplied in air is:", options: ["equal", "constant", "intensity", "fixed"], answer: "B" },
+  { id: 183, question: "ME BOARD QUESTION\nThe property of liquid in which they extend resistance to angular or shear deformation is:", options: ["specific gravity", "specific weight", "viscosity", "density"], answer: "C" },
+  { id: 184, question: "ME BOARD QUESTION\nA property of lubricating oil that measures the thickness of the oil and will help determine how long oil will flow at a given temperature is known as:", options: ["viscosity", "flash point", "cloud point", "cloud point"], answer: "A" },
+  { id: 185, question: "ME BOARD QUESTION\nThe minimum amount of air required for a complete combustion of fuel is called", options: ["dry air", "excess air", "theoretical air", "flue gas"], answer: "C" },
+  { id: 186, question: "ME BOARD QUESTION\nThe temperature at which lubricating will form a cloud.", options: ["Cloud point", "Pour point", "Critical point", "Boiling point"], answer: "A" },
+  { id: 187, question: "ME BOARD QUESTION\nThe ideal cycle based on the concept that the combustion process is both diesel and gasoline in the combination of heat transfer processes that is constant pressure and constant volume.", options: ["Ericsson cycle", "Dual cycle", "Brayton cycle", "Rankine cycle"], answer: "B" },
+  { id: 188, question: "The unit used for expressing API gravity is:", options: ["gm/cc", "dimensionless numbers", "degrees", "none of the above"], answer: "C" },
+  { id: 189, question: "ASTM coal classification is based on:", options: ["proximate analysis", "orsat analysis", "ultimate analysis", "none of the above"], answer: "A" },
+  { id: 190, question: "API gravity of water is :", options: ["zero", "10", "1.0", "100"], answer: "B" },
+  { id: 191, question: "Which of the following variety of coal has highest ash content?", options: ["Lignite", "Bituminous coal", "Grade I steam coal", "Coking coal"], answer: "A" },
+  { id: 192, question: "Which of the following is a petroleum fuel?", options: ["Benzol", "Ethyl alcohol", "Methyl alcohol", "Naphta"], answer: "D" },
+  { id: 193, question: "Diesel engine fuels are rated by:", options: ["specific gravity", "calorific value", "cetane number", "octane number"], answer: "C" },
+  { id: 194, question: "Which of the following needs to be filtered in a diesel engine?", options: ["Air only", "Lubricating oil only", "Air and diesel oil only", "Air, diesel oil and lubricating oil"], answer: "D" }
+];
+
+let currentQuestions = [...quizData];
+let currentIndex = 0;
+let userAnswers = {};
+let isShuffle = false;
+
+function initQuiz() {
+    renderQuestion();
+    updateProgress();
+}
+
+function renderQuestion() {
+    const q = currentQuestions[currentIndex];
+    document.getElementById('q-number').innerText = `Question ${currentIndex + 1} of ${currentQuestions.length} (ID: #${q.id})`;
+    document.getElementById('q-text').innerText = q.question;
+
+    const optionsContainer = document.getElementById('options-container');
+    optionsContainer.innerHTML = '';
+
+    const letters = ['A', 'B', 'C', 'D'];
+    const userChoice = userAnswers[q.id];
+
+    q.options.forEach((opt, idx) => {
+        const letter = letters[idx];
+        const li = document.createElement('li');
+        li.className = 'option-item';
+
+        if (userChoice) {
+            li.classList.add('disabled');
+            if (letter === q.answer) {
+                li.classList.add('show-correct');
+            }
+            if (letter === userChoice && userChoice !== q.answer) {
+                li.classList.add('selected-incorrect');
+            }
+            if (letter === userChoice && userChoice === q.answer) {
+                li.classList.add('selected-correct');
+            }
+        } else {
+            li.onclick = () => selectOption(letter);
+        }
+
+        li.innerHTML = `<span class="option-prefix">${letter}.</span><span>${opt}</span>`;
+        optionsContainer.appendChild(li);
+    });
+
+    document.getElementById('prev-btn').disabled = currentIndex === 0;
+    document.getElementById('next-btn').innerText = currentIndex === currentQuestions.length - 1 ? 'Finish' : 'Next';
+}
+
+function selectOption(selectedLetter) {
+    const q = currentQuestions[currentIndex];
+    if (userAnswers[q.id]) return; // Already answered
+
+    userAnswers[q.id] = selectedLetter;
+    updateScore();
+    renderQuestion();
+}
+
+function updateScore() {
+    let score = 0;
+    let answeredCount = Object.keys(userAnswers).length;
+
+    for (let qId in userAnswers) {
+        const question = quizData.find(q => q.id == qId);
+        if (question && userAnswers[qId] === question.answer) {
+            score++;
+        }
+    }
+
+    document.getElementById('score').innerText = score;
+    document.getElementById('answered-count').innerText = answeredCount;
+}
+
+function updateProgress() {
+    const progress = ((currentIndex + 1) / currentQuestions.length) * 100;
+    document.getElementById('progress-bar').style.width = `${progress}%`;
+}
+
+function nextQuestion() {
+    if (currentIndex < currentQuestions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+        updateProgress();
+    } else {
+        showResults();
+    }
+}
+
+function prevQuestion() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion();
+        updateProgress();
+    }
+}
+
+function toggleShuffle() {
+    isShuffle = document.getElementById('shuffle-toggle').checked;
+    resetQuiz();
+}
+
+function resetQuiz() {
+    userAnswers = {};
+    currentIndex = 0;
+    if (isShuffle) {
+        currentQuestions = [...quizData].sort(() => Math.random() - 0.5);
+    } else {
+        currentQuestions = [...quizData];
+    }
+    document.getElementById('quiz-body').style.display = 'block';
+    document.getElementById('results-body').style.display = 'none';
+    updateScore();
+    renderQuestion();
+    updateProgress();
+}
+
+function showResults() {
+    document.getElementById('quiz-body').style.display = 'none';
+    document.getElementById('results-body').style.display = 'block';
+
+    let score = 0;
+    for (let qId in userAnswers) {
+        const question = quizData.find(q => q.id == qId);
+        if (question && userAnswers[qId] === question.answer) {
+            score++;
+        }
+    }
+
+    const percentage = Math.round((score / quizData.length) * 100);
+    document.getElementById('final-score').innerText = `${score} / ${quizData.length}`;
+    document.getElementById('percentage-score').innerText = `Percentage: ${percentage}%`;
+}
+
+window.onload = initQuiz;
+</script>
+
+</body>
+</html>
