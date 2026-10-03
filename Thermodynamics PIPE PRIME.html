@@ -13,6 +13,15 @@
     .correct { background: #28a745 !important; color: white; }
     .incorrect { background: #dc3545 !important; color: white; }
     .controls { margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+         .back,
+        .back:visited {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #000000;
+        }
   </style>
 </head>
 <body>
@@ -20,6 +29,7 @@
 <div class="card">
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <h3 id="q-number">Question 1 / 335</h3>
+    <a class="back" href="index.html">← Back to Index</a>
     <button class="btn" onclick="shuffleQuiz()">🔀 Shuffle Questions</button>
   </div>
   <hr>
