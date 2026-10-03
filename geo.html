@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geothermal Plant Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+    .quiz-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    .status-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; background: #eef2f5; padding: 12px; border-radius: 5px; }
+    .q-card { margin-bottom: 25px; padding: 18px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; }
+    .q-title { font-weight: bold; margin-bottom: 12px; font-size: 1.05em; color: #222; }
+    .opt-btn { display: block; width: 100%; text-align: left; padding: 10px 14px; margin: 6px 0; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 0.95em; transition: background 0.2s; }
+    .opt-btn:hover { background: #eaf3ff; }
+    .opt-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+    .opt-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+    .opt-btn:disabled { cursor: default; }
+    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    button.action-btn { padding: 12px 24px; font-size: 1em; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button.action-btn:hover { background: #0056b3; }
+    #score-summary { display: none; text-align: center; padding: 20px; background: #e8f4f8; border-radius: 6px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Geothermal Plant Quiz</h1>
+    <div class="status-bar">
+      <span>Total Questions: <span id="total-count">0</span></span>
+      <span>Answered: <span id="answered-count">0</span></span>
+      <span>Score: <span id="score-count">0</span></span>
+    </div>
+    <div id="quiz-body"></div>
+    <div id="score-summary">
+      <h2>Quiz Completed!</h2>
+      <p id="final-score-text" style="font-size: 1.2em;"></p>
+    </div>
+    <div class="btn-group">
+      <button class="action-btn" onclick="initQuiz()">Shuffle & Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { q: "Refers to the internal heat from the earth.", options: ["Geothermal", "Thermal energy", "Molten heat", "Tectonic heat"], answer: 0 },
+      { q: "A rock - forming crystalline mixed silicate which constitute about 60% of the earth's surface.", options: ["Soil", "Feldspar", "Flux", "Flint"], answer: 1 },
+      { q: "A compound rock, a crypto crystalline form of silica, which is dense, tough, breaking with a conchoidal fracture.", options: ["Gravel", "Stalactite", "Flint", "Flux"], answer: 2 },
+      { q: "Is the process of using injection wells to bubble air through groundwater.", options: ["Air stripping", "Staged combustion", "Sparging", "Soil washing"], answer: 2 },
+      { q: "A popular term used by utilities to mean upgrading existing plant.", options: ["Replanting", "Repowering", "Recharging", "Reorganizing"], answer: 1 },
+      { q: "A dense, fine grained, light colored igneous rock which is rich in silica.", options: ["Felsite", "Feldspar", "Flint", "Flux"], answer: 0 },
+      { q: "An opening in lava or in volcanic area through which steam and other hot gases are escaping into the air is called:", options: ["Fumarole", "Volcanic leaks", "Seismic outlets", "Seismic leaks"], answer: 0 },
+      { q: "Tidal power is the power generated from:", options: ["waves of the ocean", "rise and fall tides", "thermal energy of ocean water", "raw sea water"], answer: 1 },
+      { q: "Converts chemical energy directly into electrical energy.", options: ["Fuel cell", "Magnetohydrodynamic generator", "Battery", "Thermoelectric generator"], answer: 0 },
+      { q: "Generates a voltage from incident light, usually light in the visible region.", options: ["Photovoltaic cell", "Solar cell", "Dry cell", "Photovoltaic cell or Solar cell"], answer: 3 },
+      { q: "All of the following terms are synonymous with quanta of electromagnetic theory except :", options: ["packets", "corpuscles", "x-rays", "photons"], answer: 2 },
+      { q: "In geothermal power plants waste water is:", options: ["recirculated after cooling in cooling towers", "discharged into sea", "evaporated in ponds", "discharged back to earth"], answer: 3 },
+      { q: "In a liquid-dominated geothermal plant, what process occurs when the saturated steam passes through the turbine?", options: ["Isobaric", "Polytropic", "Isometric", "Isentropic"], answer: 1 },
+      { q: "What do you call a conversion technology that yields electricity straight from sunlight without the aid of a working substance like gas or steam without the use of any mechanical cycle?", options: ["Power conversion", "Stirling cycle conversion", "Solar thermal conversion", "Photovoltaic-energy conversion"], answer: 3 },
+      { q: "Tidal power plant is attractive because it has:", options: ["low head and intermittent power", "high head", "cheap energy source", "expensive energy source"], answer: 2 },
+      { q: "The statement that the product of the error in the measured determination of a particle's position and its momentum is of the order of Planck's constant h is known as:", options: ["Bohr's theory", "D'Alembert's paradox", "The Heisenberg uncertainty principle", "Planck's law"], answer: 2 },
+      { q: "The flow process through shock wave is highly irreversible and cannot be approximated as being:", options: ["polytropic", "isometric", "hyperbolic", "isentropic"], answer: 3 },
+      { q: "Beaufort scale is used for measuring what?", options: ["beta and gamma radiations", "wind speed", "insolation", "depth of sea"], answer: 1 },
+      { q: "Betz law is widely used in:", options: ["MHD systems", "solar cells", "geothermal power plants", "wind mills"], answer: 3 },
+      { q: "Rocks having excessive internal stresses may produce spalling. These rocks are called:", options: ["stratified rocks", "popping rocks", "crushed rocks", "swelling rocks"], answer: 0 },
+      { q: "Solar energy arrives at the outside of the earth's atmosphere at an average rate of:", options: ["1.354 kW/m²", "1.543 kW/m²", "2.354 kW/m²", "2.543 kW/m²"], answer: 0 },
+      { q: "How many percent of solar energy survives absorption and reflection?", options: ["40 to 70%", "30 to 60%", "50 to 80%", "20 to 50%"], answer: 0 },
+      { q: "Solar energy is captured in:", options: ["sun capturer", "solar collector", "sun collector", "greenhouse capturer"], answer: 1 },
+      { q: "Which solar collectors are essentially wide, flat boxes with clear plastic or glass coverings known as the glazing?", options: ["flat plate collectors", "concentrating collectors", "focusing collectors", "evacuated tube collectors"], answer: 0 },
+      { q: "Which collectors use mirrors and/or lenses to focus the sun's energy on a small absorber area?", options: ["flat plate collectors", "concentrating collectors", "non focusing collectors", "evacuated tube collectors"], answer: 1 },
+      { q: "Which collectors are more complex, but their efficiencies are higher?", options: ["flat plate collectors", "concentrating collectors", "focusing collectors", "evacuated tube collectors"], answer: 3 },
+      { q: "Which collectors are useful when extremely hot transfer fluid is needed and are generally limited to commercial projects?", options: ["flat plate collectors", "concentrating collectors", "focusing collectors", "evacuated tube collectors"], answer: 3 },
+      { q: "The shading factor in calculating the heat absorbed by the solar collector has a value of approximately :", options: ["0.95 to 0.97", "0.85 to 0.87", "0.75 to 0.77", "0.65 to 0.67"], answer: 0 },
+      { q: "The ratio of energy absorbed by the transfer fluid to the original incident energy striking the collector.", options: ["collector efficiency", "sun efficiency", "shading factor", "absorptance"], answer: 0 },
+      { q: "As the difference between the ambient air and average plate (or inlet) temperatures increases, what happens to the collector efficiency?", options: ["increases", "decreases", "constant", "no effect"], answer: 1 },
+      { q: "Distributed collector system is also known as:", options: ["trough electric system", "central receiver system", "power tower system", "dish/Stirling system"], answer: 0 },
+      { q: "Central receiver system is also known as :", options: ["trough electric system", "distributed collector system", "power tower system", "dish/Stirling system"], answer: 2 },
+      { q: "Parabolic tracking trough concentrators focus sunlight on evacuated glass tubes that run along the collector's focal lines.", options: ["trough electric system", "central receiver system", "power tower system", "dish/Stirling system"], answer: 0 },
+      { q: "Trough electric technology is relatively mature but due to low temperatures, average annual thermal efficiencies are only:", options: ["10 to 15%", "5 to 10%", "15 to 20%", "25 to 30%"], answer: 0 },
+      { q: "A field of heliostats or tracking mirrors concentrates solar energy onto a receiver on a central tower.", options: ["trough electric system", "distributed collector system", "power tower system", "dish/Stirling system"], answer: 2 },
+      { q: "In a power tower system typical thermal efficiencies are in the range:", options: ["10 to 15%", "5 to 10%", "15 to 20%", "25 to 30%"], answer: 2 },
+      { q: "A dish engine system has an efficiency of:", options: ["10 to 15%", "5 to 10%", "14 to 19%", "24 to 28%"], answer: 3 },
+      { q: "Practical and economic issues limit trough electric systems to about:", options: ["200 MW", "100 MW", "300 MW", "400 MW"], answer: 0 },
+      { q: "Practical and economic issues limit tower electric systems to approximately :", options: ["100 to 200 MW", "150 to 250 MW", "100 to 300 MW", "150 to 400 MW"], answer: 2 },
+      { q: "Thermal efficiency of a geothermal power plant is approximately:", options: ["30%", "22%", "35%", "15%"], answer: 1 },
+      { q: "A flash steam cycle can be used if the hot water temperature is approximately:", options: ["165°C or higher", "150°C or higher", "145°C to 200°C", "below 200°C"], answer: 0 },
+      { q: "A binary cycle using a separate heat transfer fluid if the temperature of the hot water is between approximately:", options: ["165°C and 120°C", "200°C and 150°C", "225°C and 175°C", "300°C and higher"], answer: 0 },
+      { q: "For every kilometer of depth, the temperature of the earth's crust increases by:", options: ["30°F", "40°F", "50°F", "20°F"], answer: 0 },
+      { q: "Multiple wells produce steam at 690 to 820 kPa and temperature of:", options: ["205°C", "155°C", "250°C", "175°C"], answer: 0 },
+      { q: "In hot rock systems, water is injected through injection wells into artificially made fractured rock beds of how many kilometers below the surface?", options: ["1 to 6 km", "3 to 9 km", "4 to 10 km", "6 to 11 km"], answer: 0 }
+    ];
+
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      document.getElementById("score-summary").style.display = "none";
+      
+      currentQuestions = originalQuestions.map(q => {
+        let opts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+        shuffleArray(opts);
+        return {
+          q: q.q,
+          options: opts
+        };
+      });
+      shuffleArray(currentQuestions);
+
+      document.getElementById("total-count").innerText = currentQuestions.length;
+      document.getElementById("answered-count").innerText = 0;
+      document.getElementById("score-count").innerText = 0;
+
+      const container = document.getElementById("quiz-body");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "q-card";
+        
+        const title = document.createElement("div");
+        title.className = "q-title";
+        title.innerText = `${qIdx + 1}. ${qObj.q}`;
+        card.appendChild(title);
+
+        qObj.options.forEach((optObj, oIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optObj.text}`;
+          btn.onclick = () => checkAnswer(qIdx, optObj, card);
+          card.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(qIdx, selectedOpt, cardElement) {
+      const btns = cardElement.querySelectorAll(".opt-btn");
+      btns.forEach(btn => btn.disabled = true);
+
+      if (selectedOpt.isCorrect) {
+        score++;
+        event.target.classList.add("correct");
+      } else {
+        event.target.classList.add("incorrect");
+        currentQuestions[qIdx].options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            btns[idx].classList.add("correct");
+          }
+        });
+      }
+
+      answeredCount++;
+      document.getElementById("score-count").innerText = score;
+      document.getElementById("answered-count").innerText = answeredCount;
+
+      if (answeredCount === currentQuestions.length) {
+        const summary = document.getElementById("score-summary");
+        document.getElementById("final-score-text").innerText = `You scored ${score} out of ${currentQuestions.length} (${((score/currentQuestions.length)*100).toFixed(1)}%)`;
+        summary.style.display = "block";
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>

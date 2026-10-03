@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boilers Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+    .quiz-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    .status-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; background: #eef2f5; padding: 12px; border-radius: 5px; }
+    .q-card { margin-bottom: 25px; padding: 18px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; }
+    .q-title { font-weight: bold; margin-bottom: 12px; font-size: 1.05em; color: #222; }
+    .opt-btn { display: block; width: 100%; text-align: left; padding: 10px 14px; margin: 6px 0; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 0.95em; transition: background 0.2s; }
+    .opt-btn:hover { background: #eaf3ff; }
+    .opt-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+    .opt-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+    .opt-btn:disabled { cursor: default; }
+    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    button.action-btn { padding: 12px 24px; font-size: 1em; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button.action-btn:hover { background: #0056b3; }
+    #score-summary { display: none; text-align: center; padding: 20px; background: #e8f4f8; border-radius: 6px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Boilers Quiz</h1>
+    <div class="status-bar">
+      <span>Total Questions: <span id="total-count">0</span></span>
+      <span>Answered: <span id="answered-count">0</span></span>
+      <span>Score: <span id="score-count">0</span></span>
+    </div>
+    <div id="quiz-body"></div>
+    <div id="score-summary">
+      <h2>Quiz Completed!</h2>
+      <p id="final-score-text" style="font-size: 1.2em;"></p>
+    </div>
+    <div class="btn-group">
+      <button class="action-btn" onclick="initQuiz()">Shuffle & Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { q: "Which of the following is necessary to generate steam in a boiler?", options: ["A container", "Heat", "Water", "all of the above"], answer: 3 },
+      { q: "It is the part of the boiler with water on one side and heat on the other side.", options: ["furnace volume", "fire side", "heating surface", "water side"], answer: 2 },
+      { q: "A ____ boiler has heat and gases of combustion that pass through tubes surrounded by water.", options: ["fire tube", "cast iron sectional", "water tube", "straight-tube"], answer: 0 },
+      { q: "A ____ boiler has water in the tubes and heat gases of combustion passing around the tubes.", options: ["fire tube", "cast iron sectional", "water tube", "firebox"], answer: 2 },
+      { q: "Which of the following are used in boilers to direct the gases of combustion over the boiler heating surface?", options: ["Combustion control", "Baffles", "Fire tubes", "Zone controls"], answer: 1 },
+      { q: "The three basic types of low pressure heating boilers are ____, ____, and ____.", options: ["firebox; vertical; locomotive", "scotch marine; wet-top; dry-top", "straight-tube; bent tube; multiple pass", "fire-tube; water tube; cast iron sectional"], answer: 3 },
+      { q: "In a low pressure gas system, the gas regulator reduces the city gas pressure to ____ psi.", options: ["0", "2", "1", "3"], answer: 0 },
+      { q: "In the ____ air mixes with the fuel and burns.", options: ["fire tubes", "combustion chamber", "water tubes", "breeching"], answer: 1 },
+      { q: "The function of the steam boiler is to:", options: ["produce condensate", "create heat", "produce steam", "burn fuel"], answer: 2 },
+      { q: "Which of the following is the most common type of water tube boiler?", options: ["firebox", "scotch marine", "vertical", "straight-tube multiple pass"], answer: 3 },
+      { q: "Excess fuel oil in the fuel oil system returns to the:", options: ["combustion chamber", "fuel oil tank", "burner", "suction line"], answer: 1 },
+      { q: "It is the system that provides the air necessary for combustion.", options: ["feedwater", "steam", "draft", "fuel"], answer: 2 },
+      { q: "The gases of combustion leave the boiler through the:", options: ["chimney", "blower", "air vent", "breeching"], answer: 3 },
+      { q: "Which of the following boilers does not use tubes?", options: ["cast iron sectional", "water tube", "scotch marine", "firebox"], answer: 0 },
+      { q: "Which of the following will make a boiler work more efficiently?", options: ["more fuel is added", "fire tubes are decreased in size", "the heating surface is increased", "all of the above"], answer: 2 },
+      { q: "What are the four systems necessary to operate a boiler?", options: ["combustion; draft; steam; boiler water", "water; steam; combustion; stoker", "boiler water; fuel; draft; condensate", "feedwater; fuel; draft; steam"], answer: 3 },
+      { q: "The ____ forms a vacuum that draws condensate out of the condensate return line and into the vacuum tank.", options: ["suction line", "main header", "vacuum pump", "heating equipment"], answer: 2 },
+      { q: "Which of the following can be a function of the container in a boiler?", options: ["holds the water", "collects the steam that is produced", "transfers heat to the water to produce steam", "all of the above"], answer: 3 },
+      { q: "At what temperature will water normally turn to steam?", options: ["100°F", "200°F", "150°F", "212°F"], answer: 3 },
+      { q: "Which of the following statements is true for cast iron sectional boilers?", options: ["cast iron sectional boilers have fire tubes", "can be expanded in size", "these boilers do not require water", "none of the above"], answer: 3 },
+      { q: "Which of the following is the most important valve on a boiler?", options: ["main steam stop valve", "automatic nonreturn valve", "safety valve", "feedwater stop valve"], answer: 2 },
+      { q: "The MAWP on a low pressure steam boiler is ____ psi.", options: ["10", "20", "15", "30"], answer: 2 },
+      { q: "Which of the following best defines a total force acting on a boiler?", options: ["area times diameter", "area times pressure", "area times distance", "the MAWP times pressure"], answer: 1 },
+      { q: "The ASME code states that boilers with over ____ square feet heating surface must have two or more safety valves.", options: ["200", "400", "300", "500"], answer: 3 },
+      { q: "The area of a safety valve 4\" in diameter is how many square inches?", options: ["2.3562", "6.2832", "3.1416", "12.5664"], answer: 3 },
+      { q: "Which of the following is the only valve permitted between the safety valve and the boiler?", options: ["os&y gate", "os&y globe", "automatic nonreturn", "no valves are permitted between the boiler and the safety valve"], answer: 3 },
+      { q: "The range of the pressure gauge should be ____ times the MAWP of the boiler.", options: ["1 to 2", "2 to 3", "1.5 to 2", "2.5 to 3"], answer: 2 },
+      { q: "The ASME code only allows ____ safety valves on a boiler.", options: ["deadweight", "spring-loaded pop-type", "lever", "none of the above"], answer: 1 },
+      { q: "How much is the total force on a safety valve 2.5 in diameter and with a steam pressure of 15 psi?", options: ["19.5413", "73.63125", "29.4525", "93.7512"], answer: 1 },
+      { q: "The steam pressure gauge on the boiler is calibrated to read in:", options: ["inches of vacuum", "absolute pressure", "pounds per square inch", "pressure below atmospheric pressure"], answer: 2 },
+      { q: "Live steam is prevented from entering the Bourdon tube of the pressure gauge by which of the following?", options: ["automatic nonreturn valve", "os&y valve", "inspector's test cock", "siphon"], answer: 3 },
+      { q: "What pressure gauge can read whether vacuum pressure or not?", options: ["compound", "suction", "duplex", "vacuum"], answer: 0 },
+      { q: "Which of the following best defines a vacuum?", options: ["a pressure above gauge", "a pressure below atmospheric", "a pressure below gauge", "a pressure equal to gauge"], answer: 1 },
+      { q: "Safety valves are designed to pop open and stay open until there is a ____ psi drop in pressure.", options: ["0 to 1", "5 to 15", "2 to 4", "over 15"], answer: 2 },
+      { q: "What type of boiler uses safety valves?", options: ["fire tube", "cast iron sectional", "water tube", "all of the above"], answer: 3 },
+      { q: "The water column is located at the NOWL so the lowest visible part of the gauge glass is ____ above the highest surface.", options: ["2\" to 3\"", "just", "4\" to 5\"", "never"], answer: 0 },
+      { q: "Blowback of a safety valve is to prevent:", options: ["burner cycling", "premature popping", "chattering", "feathering"], answer: 2 },
+      { q: "The boiler bottom blowdown line should discharge to a(n):", options: ["sewer", "atmospheric tank", "blowdown tank", "return tank or open sump"], answer: 2 },
+      { q: "If the desired cut-in pressure of the boiler is 6 psi and the desired cut-out pressure is 10 psi, the differential pressure setting must be ____ psi.", options: ["2", "6", "4", "8"], answer: 2 },
+      { q: "Impurities that build up on the surface of the water in the boiler prevent ____ from breaking through the surface of the water.", options: ["air", "CO2", "oxygen", "steam"], answer: 3 },
+      { q: "To prevent air pressure from building up in the boiler when filling the boiler with water, the ____ must be open.", options: ["safety valve", "boiler vent", "main steam stop valve", "manhole cover"], answer: 1 },
+      { q: "To prevent a vacuum from forming when taking the boiler off-line, which of the following must be opened when pressure is still on the boiler?", options: ["safety valve", "boiler vent", "main steam stop valve", "manhole cover"], answer: 1 },
+      { q: "The operating range of the boiler is controlled by:", options: ["aquastat", "pressure control", "vaporstat", "modulating pressure control"], answer: 1 },
+      { q: "The ____ regulates the high and low fire of the burner.", options: ["aquastat", "pressure control", "vaporstat", "modulating pressure control"], answer: 3 },
+      { q: "The best time to blow down the boiler to remove sludge and sediment is when the boiler is at:", options: ["its highest load", "half its load", "its lightest load", "anytime"], answer: 2 },
+      { q: "The level of the water in the ____ indicates the water level in the boiler.", options: ["condensate return tank", "gauge glass", "try cocks", "blowdown tank"], answer: 1 },
+      { q: "When blowing down a boiler, the quick-opening valve should always be opened ____ and closed ____.", options: ["first; first", "last; first", "first; last", "last; last"], answer: 2 },
+      { q: "Which of the following is added to a boiler so that water changes scale-forming salts into a non-adhering sludge?", options: ["Oxygen", "Slag", "Minerals", "Chemicals"], answer: 3 },
+      { q: "A ____ valve is installed before the ____ to allow the steam pressure gauge to be changed if a malfunction occurs.", options: ["globe; safety valve", "globe; U-tube siphon", "gate; siphon", "globe; pigtail siphon"], answer: 2 },
+      { q: "What pressure gauge reads more pressure than is actually in the boiler?", options: ["broken", "uncalibrated", "slow", "fast"], answer: 3 },
+      { q: "According to the ASME code, safety valves on low pressure boilers should be tested by hand at least:", options: ["once a month", "once a year", "once a shift", "twice a year"], answer: 0 },
+      { q: "The purpose of the safety valve is to prevent the pressure in the boiler from:", options: ["exceeding its MAWP", "causing a boiler explosion", "dropping below its MAWP", "relieving water pressure"], answer: 0 },
+      { q: "The term applied when a safety valve opens and closes rapidly.", options: ["Feathering", "Chattering", "Pressuring", "Huddling"], answer: 1 },
+      { q: "The safety valve on a low pressure boiler opens when pressure in the boiler exceeds how many psi?", options: ["5", "15", "10", "30"], answer: 1 },
+      { q: "After the total force of the steam has lifted the safety valve off its seat, the steam enters the:", options: ["huddling chamber", "steam holding tank", "combustion chamber", "main steam line"], answer: 0 },
+      { q: "What causes false water level readings in the gauge glass?", options: ["Priming", "Foaming", "Carryover", "Blowing down"], answer: 1 },
+      { q: "Fusible plugs are required on ____ boilers by the ASME code.", options: ["coal-fired", "gas-fired", "fuel oil-fired", "all of the above"], answer: 3 },
+      { q: "On a pressure control, ____ pressure equals ____ pressure plus ____ pressure.", options: ["differential; cut-out; cut-in", "cut-in; cut-out; differential", "cut-in; differential; cut-in", "cut-in pressures equals cut-out pressure"], answer: 2 },
+      { q: "A burner should always start up in ____ fire and shut down in ____ fire.", options: ["low; low", "high; low", "low; high", "high; high"], answer: 0 },
+      { q: "The water in the boiler is heated, turns to steam, and leaves the boiler through the:", options: ["feedwater line", "main steam line", "main header", "main branch line"], answer: 1 },
+      { q: "When steam gives up its heat in a heat exchanger it turns to:", options: ["low pressure steam", "makeup water", "condensate", "exhaust steam"], answer: 2 },
+      { q: "A ____ pump discharges the return water back to the boiler.", options: ["feed", "gear", "return", "vacuum"], answer: 3 },
+      { q: "How do you call a valve that controls the flow of water in one direction only?", options: ["gate", "os&y", "globe", "check"], answer: 3 },
+      { q: "The feedwater ____ valve should be located as close to the shell of the boiler as practical.", options: ["check", "nonreturn", "stop", "regulating"], answer: 2 },
+      { q: "A ____ after each radiator allows ____ to pass through to the return line.", options: ["steam trap; steam", "water trap; steam", "steam trap; condensate", "water trap; condensate"], answer: 2 },
+      { q: "A ____ valve should be located between the boiler and the ____ valve on the feedwater line.", options: ["stop; check", "stop; regulator", "check; stop", "check; regulator"], answer: 0 },
+      { q: "The feedwater ____ valve opens and closes automatically.", options: ["return", "check", "bypass", "equalizing"], answer: 1 },
+      { q: "The vacuum pump pumps water and discharges air to the:", options: ["expansion tank", "return tank", "compression tank", "atmosphere"], answer: 3 },
+      { q: "The range of pressure on the vacuum switch is usually:", options: ["2 to 6 psi", "2\" to 8\"", "6 to 12 psi", "8\" to 12\""], answer: 1 },
+      { q: "To test the vacuum pump, the operator puts the selector switch in the ____ position.", options: ["float", "float or vacuum", "vacuum", "continuous"], answer: 3 },
+      { q: "Water added to the boiler to replace water lost due to leaks and blowing down is known as ____ water.", options: ["extra", "boiler", "makeup", "feed"], answer: 2 },
+      { q: "Excessive use of cold city water makeup reduces overall efficiency because the water must be ____ before use in the boiler.", options: ["vented", "filtered", "heated", "recirculated"], answer: 2 },
+      { q: "The vacuum pump selector switch is normally in the ____ position during the heating season.", options: ["float or vacuum", "vacuum only", "float only", "continuous"], answer: 0 },
+      { q: "The ____ shuts off the burner in the event of low water.", options: ["low water alarm", "low water fuel cut-off", "feedwater regulator", "automatic low water feeder"], answer: 1 },
+      { q: "Water is supplied to the condensate return tank by the ____ pump.", options: ["vacuum", "feedwater", "condensate", "return"], answer: 0 },
+      { q: "The feedwater regulator is located at the ____ and is connected to the boiler in the same manner as the ____.", options: ["right side; gauge glass", "NOWL; water column", "bottom blowdown", "NOWL; safety valve"], answer: 1 },
+      { q: "What maintains a constant water level in the boiler?", options: ["gauge glass", "automatic city water makeup feeder", "water column", "feedwater regulator"], answer: 3 },
+      { q: "The low water fuel cut-off should be tested:", options: ["daily", "semiannually", "monthly", "annually"], answer: 0 },
+      { q: "The burner should be ____ when the low water fuel cut-off is blown down.", options: ["off", "tagged out", "firing", "tested"], answer: 2 },
+      { q: "Which of the following valves must be used as boiler main steam stop valve?", options: ["globe", "check", "gate", "os&y gate"], answer: 3 },
+      { q: "Gate valves should always be ____ or ____ closed.", options: ["partially open; completely", "completely open; completely", "wide open; partly", "throttled; completely"], answer: 1 },
+      { q: "Steam header valves should be ____ valves.", options: ["globe", "check", "gate", "os&y gate"], answer: 2 },
+      { q: "When open the os&y valve offers ____ to the flow of steam.", options: ["no resistance", "velocity", "throttling action", "full resistance"], answer: 0 },
+      { q: "Steam traps are ____ devices.", options: ["manual", "automatic", "electrical", "semiautomatic"], answer: 1 },
+      { q: "What valve should be used for throttling flow of material?", options: ["Gate", "Check", "Globe", "Non-return"], answer: 2 },
+      { q: "Steam traps remove ____ and ____ from the steam lines.", options: ["air; water", "water; oil", "air; oil", "air; steam"], answer: 0 },
+      { q: "Condensate in the steam lines can result in:", options: ["carryover", "foaming", "priming", "water hammer"], answer: 3 },
+      { q: "Two types of steam traps are the ____ and the ____ steam trap.", options: ["return; float", "nonreturn; thermostatic", "return; nonreturn", "nonreturn; float"], answer: 2 },
+      { q: "The ____ steam trap is the most common steam trap used.", options: ["thermostatic", "inverted bucket", "return", "nonreturn; float"], answer: 0 },
+      { q: "Condensate from the nonreturn steam trap is pumped from the condensate return tank of the:", options: ["return tank", "feedwater heater", "vacuum tank", "boiler"], answer: 3 },
+      { q: "Steam returning to the vacuum tank could cause the condensate pump to become:", options: ["waterbound", "waterlogged", "steambound", "steamlogged"], answer: 2 },
+      { q: "Steam strainers should be located on the line ____ the steam trap.", options: ["in front of", "above", "after", "along sides of"], answer: 0 },
+      { q: "As the steam pressure increases the steam temperature:", options: ["decreased", "remains the same", "increases", "fluctuates"], answer: 2 },
+      { q: "When the os&y valve is open the stem is in the ____ position.", options: ["floating", "up", "locked", "down"], answer: 1 },
+      { q: "The thermostatic steam trap opens and closes by a(n):", options: ["float", "electric sensor", "inverted bucket", "flexible bellows"], answer: 3 },
+      { q: "In the float and thermostatic trap the float rises to discharge:", options: ["condensate", "feedwater chemicals", "steam", "water and steam"], answer: 0 },
+      { q: "A steam trap that failed to open would cause the heating unit to become:", options: ["steambound", "very hot", "waterlogged", "all of the above"], answer: 2 },
+      { q: "Which of the following has the main function to remove dirt and impurities that may cause the steam trap to malfunction?", options: ["Vacuum pumps", "Steam strainers", "Globe valves", "Steam separators"], answer: 1 },
+      { q: "When a steam trap is functioning properly there is a ____ difference in temperature between the trap inlet and discharge.", options: ["5°F to 10°F", "20°F to 30°F", "10°F to 20°F", "no"], answer: 2 },
+      { q: "When burning No. 6 fuel oil strainers should be cleaned at least once every ____ hours.", options: ["8", "12", "10", "24"], answer: 3 },
+      { q: "When cleaning the fuel oil strainers the ____ must be carefully replaced to prevent ____ from getting into the system.", options: ["gaskets; fuel oil", "cover; water", "gaskets; air", "cover; fuel oil"], answer: 2 },
+      { q: "The ____ pump draws fuel oil from the fuel oil tank.", options: ["transfer", "condensate", "fuel oil", "circulating"], answer: 2 },
+      { q: "The ____ valve protects the fuel lines and pump from excessive pressure.", options: ["safety", "relief", "bypass", "stop"], answer: 1 },
+      { q: "A high vacuum on the fuel oil suction gauge normally indicates either ____ or ____.", options: ["low viscosity; a clogged vent", "a closed discharge valve; hot fuel oil", "cold fuel oil; a dirty suction strainer", "water in the fuel oil; a warm pump"], answer: 2 },
+      { q: "Fuel oil burners deliver the fuel oil to the furnace in a:", options: ["steady stream", "half spray, half steam", "fine spray", "none of the above"], answer: 2 },
+      { q: "The rotary cup burner uses ____ and ____ to atomize the fuel oil.", options: ["high temperature; pressure", "high temperature; air", "high pressure; steam", "a spinning cup; high velocity air"], answer: 3 },
+      { q: "In a low pressure gas burner gas is mixed with air in the:", options: ["burner register", "combustion chamber", "mixing chamber before the burner register", "boiler furnace"], answer: 2 },
+      { q: "In a high pressure gas system, gas mixes with the air on the inside of the:", options: ["burner register", "combustion chamber", "mixing chamber", "boiler furnace"], answer: 0 },
+      { q: "Regardless of the type of fuel oil used the fuel oil must be ____ before it enters the boiler furnace.", options: ["pressurized", "treated", "atomized", "measured"], answer: 2 },
+      { q: "On the low pressure gas system the manual reset cannot be opened until the:", options: ["vaporstat proves pressure", "pilot is lighted", "boiler is vented", "all of the above"], answer: 1 },
+      { q: "Before any repair work is attempted on any gas-fired boiler the:", options: ["insurance inspector must be notified", "main gas cock must be secured", "state inspector must be notified", "main solenoid valve should be secured"], answer: 1 },
+      { q: "In a low pressure gas system when the vaporstat proves gas pressure up to the zero-reducing governor the ____ starts up.", options: ["induced draft fan", "pressure", "forced draft blower", "gas pump"], answer: 2 },
+      { q: "The butterfly valve on the low pressure gas system is a ____ valve.", options: ["slow-opening", "screw", "quick-opening", "globe"], answer: 0 },
+      { q: "The amount of gas supplied to the burner in the low pressure gas system is controlled by:", options: ["gas pressure", "steam pressure", "the boiler operator", "the amount of air passing through the butterfly valve"], answer: 3 },
+      { q: "If low water develops in the boiler having a low pressure gas system the ____ will secure the gas to the burner.", options: ["whistle valve", "manual reset valve", "vaporstat", "main gas solenoid"], answer: 3 },
+      { q: "Combination gas/fuel oil burners permit the operator to switch from one fuel to another:", options: ["for economy", "because of a shortage of fuel being used", "because of a failure in the fuel system being used", "all of the above"], answer: 3 },
+      { q: "Hard coal, known as ____, has a ____ content.", options: ["bituminous; high carbon", "anthracite; high volatile", "bituminous; high volatile", "anthracite; high carbon"], answer: 3 },
+      { q: "Soft coal, known as ____, has a ____ content.", options: ["bituminous; high carbon", "anthracite; high volatile", "bituminous; high volatile", "anthracite; high carbon"], answer: 2 },
+      { q: "Boilers using soft coal must have ____ furnace volume to reduce the danger of ____.", options: ["small; overfiring", "large; smoking", "small; smoking", "large; overfiring"], answer: 1 },
+      { q: "When burning soft coal, if the volatile gases reach the heating surface before they have burned completely ____ and ____ develop.", options: ["smoke; soot", "clinkers; ash", "uneven heat; ash", "high temperature; smoke"], answer: 0 },
+      { q: "The ____ of fuel oil is the lowest temperature at which it will flow as a liquid.", options: ["fire point", "pour point", "flash point", "viscosity"], answer: 1 },
+      { q: "The ____ is the temperature at which fuel oil gives off vapor that flashes when exposed to an open flame.", options: ["fire point", "pour point", "flash point", "viscosity"], answer: 2 },
+      { q: "The ____ is the temperature at which fuel oil will burn continuously when exposed to an open flame.", options: ["fire point", "pour point", "flash point", "viscosity"], answer: 0 },
+      { q: "It is defined as the internal resistance of fuel oil flow.", options: ["fire point", "pour point", "flash point", "viscosity"], answer: 3 },
+      { q: "What must be done in order to lower the viscosity of the fuel oil?", options: ["lower its temperature", "increase its temperature", "lower its pour point", "increase its pour point"], answer: 1 },
+      { q: "A leak on the fuel oil suction line between the tank and the suction side of the fuel oil pump would result in:", options: ["the suction gauge pulsating", "air entering the suction line", "pulsating of the fire in the boiler", "all of the above"], answer: 1 },
+      { q: "Stokers were developed to:", options: ["increase efficiency of burning coal", "keep furnace temperature constant to protect brickwork", "allow for development of larger coal-fired boiler", "all of the above"], answer: 3 },
+      { q: "Any foreign matter in the coal feed mechanism of the screw-feed stoker is best removed by:", options: ["emptying the coal hopper", "reversing the stoker", "forcing it through with a heavy shear pin", "using the cutoff gate at the bottom of the hopper"], answer: 3 },
+      { q: "In the event of an obstruction clogging the feed screw, a ____ is used to prevent damage to transmission.", options: ["slip clutch", "shear pin or key", "fuse", "none of the above"], answer: 1 },
+      { q: "In order to bank the stoker it is necessary to secure the ____ while the ____ continues to operate.", options: ["combination fan; coal feeder", "coal feeder; forced draft fan", "feedwater; induced draft fan", "boiler stop valve; coal feeder"], answer: 1 },
+      { q: "In a screw-feed stoker, what draft fan supplies air for combustion?", options: ["induced", "forced", "combination", "natural"], answer: 1 },
+      { q: "To prevent smoke and to aid in complete combustion in the screw-feed stoker, ____ is provided using a separate damper control.", options: ["underfire air", "retort air", "overfire air", "grate zone air"], answer: 2 },
+      { q: "The ram-feed stoker is a(n) ____ stoker.", options: ["overfeed", "side feed", "travelling grate", "underfeed"], answer: 3 },
+      { q: "The ram-feed stoker provides:", options: ["uniform feed", "quick ash discharge", "even coal distribution", "all of the above"], answer: 3 },
+      { q: "Combustion is the rapid burning of fuel and oxygen resulting in:", options: ["release of heat", "oxidation", "release of steam", "nitrogen and oxygen"], answer: 0 },
+      { q: "What combustion occurs when all the fuel is burned using the theoretical amount of air?", options: ["incomplete", "Perfect", "Complete", "Imperfect"], answer: 1 },
+      { q: "It is the burning of all the fuel using the minimum amount of excess air.", options: ["Incomplete combustion", "Complete combustion", "Perfect combustion", "Imperfect combustion"], answer: 1 },
+      { q: "____ combustion occurs when all the fuel is not burned resulting in formation of soot and smoke.", options: ["Incomplete", "Perfect", "Complete", "Imperfect"], answer: 0 },
+      { q: "Which of the following is required to achieve complete combustion?", options: ["proper atomization", "proper temperature of fuel", "time of complete combustion", "all of the above"], answer: 3 },
+      { q: "The combustion process must be complete before the gases of combustion come in contact with the:", options: ["atmosphere", "superheater", "heating surface", "main steam outlet"], answer: 2 },
+      { q: "Soot buildup on heating surface:", options: ["acts as an insulation", "prevents heat transfer", "increases temperature of gases of combustion", "all of the above"], answer: 3 },
+      { q: "The purpose of automatic combustion controls is to control ____ and ____.", options: ["high fire; low fire", "stoker firing; fuel rate", "overfire air; fuel mixture", "proper air to fuel mixture; firing rate"], answer: 3 },
+      { q: "At 0 psig, how many BTU are necessary to change 1 lb of water at 212°F into steam?", options: ["144", "970", "180", "1190"], answer: 1 },
+      { q: "Radiation is:", options: ["the movement of liquids or gases created by a temperature difference", "the transfer of heat by direct molecular contact", "the weight of the substance compared to unity", "a form of heat transfer"], answer: 3 },
+      { q: "Steam at 100 psi and 400°F is:", options: ["saturated", "superheated", "wet", "none of the above"], answer: 1 },
+      { q: "Which of the following most closely defines sensible heat?", options: ["an established relationship comparing any substance to the heat content of water", "heat quantity that can be felt or measured by a thermometer", "heat quantity above the point of saturation", "measure of heat intensity"], answer: 1 },
+      { q: "What heat is required to raise the temperature of 1 lb of water from 32°F to 212°F?", options: ["144 Btu", "970.3 Btu", "180 Btu", "Saturated heat"], answer: 2 },
+      { q: "Increasing the pressure has what effect on the boiling point of water?", options: ["No change", "Temperature will be raised", "Temperature will be lowered", "Temperature will increase 2°F for every psi"], answer: 1 },
+      { q: "Heat absorbed by water when it changes from liquid to steam at the boiling point is called:", options: ["sensible heat", "specific heat", "latent heat", "superheat"], answer: 2 },
+      { q: "Heat may be transferred in how many ways?", options: ["One", "Three", "Two", "Four"], answer: 1 }
+    ];
+
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      document.getElementById("score-summary").style.display = "none";
+      
+      currentQuestions = originalQuestions.map(q => {
+        let opts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+        shuffleArray(opts);
+        return {
+          q: q.q,
+          options: opts
+        };
+      });
+      shuffleArray(currentQuestions);
+
+      document.getElementById("total-count").innerText = currentQuestions.length;
+      document.getElementById("answered-count").innerText = 0;
+      document.getElementById("score-count").innerText = 0;
+
+      const container = document.getElementById("quiz-body");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "q-card";
+        
+        const title = document.createElement("div");
+        title.className = "q-title";
+        title.innerText = `${qIdx + 1}. ${qObj.q}`;
+        card.appendChild(title);
+
+        qObj.options.forEach((optObj, oIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optObj.text}`;
+          btn.onclick = () => checkAnswer(qIdx, optObj, card);
+          card.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(qIdx, selectedOpt, cardElement) {
+      const btns = cardElement.querySelectorAll(".opt-btn");
+      btns.forEach(btn => btn.disabled = true);
+
+      if (selectedOpt.isCorrect) {
+        score++;
+        event.target.classList.add("correct");
+      } else {
+        event.target.classList.add("incorrect");
+        currentQuestions[qIdx].options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            btns[idx].classList.add("correct");
+          }
+        });
+      }
+
+      answeredCount++;
+      document.getElementById("score-count").innerText = score;
+      document.getElementById("answered-count").innerText = answeredCount;
+
+      if (answeredCount === currentQuestions.length) {
+        const summary = document.getElementById("score-summary");
+        document.getElementById("final-score-text").innerText = `You scored ${score} out of ${currentQuestions.length} (${((score/currentQuestions.length)*100).toFixed(1)}%)`;
+        summary.style.display = "block";
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>

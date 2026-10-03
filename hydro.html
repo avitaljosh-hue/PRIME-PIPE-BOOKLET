@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hydroelectric Plant Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+    .quiz-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    .status-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; background: #eef2f5; padding: 12px; border-radius: 5px; }
+    .q-card { margin-bottom: 25px; padding: 18px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; }
+    .q-title { font-weight: bold; margin-bottom: 12px; font-size: 1.05em; color: #222; }
+    .opt-btn { display: block; width: 100%; text-align: left; padding: 10px 14px; margin: 6px 0; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 0.95em; transition: background 0.2s; }
+    .opt-btn:hover { background: #eaf3ff; }
+    .opt-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+    .opt-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+    .opt-btn:disabled { cursor: default; }
+    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    button.action-btn { padding: 12px 24px; font-size: 1em; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button.action-btn:hover { background: #0056b3; }
+    #score-summary { display: none; text-align: center; padding: 20px; background: #e8f4f8; border-radius: 6px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Hydroelectric Plant Quiz</h1>
+    <div class="status-bar">
+      <span>Total Questions: <span id="total-count">0</span></span>
+      <span>Answered: <span id="answered-count">0</span></span>
+      <span>Score: <span id="score-count">0</span></span>
+    </div>
+    <div id="quiz-body"></div>
+    <div id="score-summary">
+      <h2>Quiz Completed!</h2>
+      <p id="final-score-text" style="font-size: 1.2em;"></p>
+    </div>
+    <div class="btn-group">
+      <button class="action-btn" onclick="initQuiz()">Shuffle & Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { q: "In turbine installation, the air is removed from the condenser by:", options: ["air pump", "air injector", "air ejector", "air jet"], answer: 2 },
+      { q: "The primary purpose of a turbine in a fluid loop is to:", options: ["add energy to the flow", "add mass to the flow", "extract energy from the flow", "none of the above"], answer: 2 },
+      { q: "A vena contracta in a fluid jet issuing through a hole in a plate is located approximately:", options: ["10 diameters downstream of the hole", "at jet's minimum diameter", "at the orifice minimum diameter", "at the orifice maximum diameter"], answer: 1 },
+      { q: "The following are all examples of indirect (secondary) miscellaneous methods to measure flow except:", options: ["turbine and propeller meters", "magnetic flow meters", "positive displacement meters", "hot-wire anemometers"], answer: 2 },
+      { q: "One could expect the possibility of Reynolds number similarity in all of the following cases except:", options: ["pumps", "fans", "turbines", "weirs"], answer: 3 },
+      { q: "One could expect the possibility of Froude number similarity in all of the following cases except:", options: ["surface ships", "surface wave motion", "flow over weirs", "closed-pipe turbulent pipe flow"], answer: 3 },
+      { q: "One could expect the possibility of Froude number similarity in all of the following cases except:", options: ["motion of a fluid jet", "flow over spillways", "surge and flood waves", "subsonic airfoils"], answer: 3 },
+      { q: "In fluid flow, linear momentum is:", options: ["a vector quantity equal to the product of mass and velocity", "a scalar quantity equal to the product of mass and velocity", "a scalar quantity equal to the product of force and length of time applied", "the change in impulse"], answer: 0 },
+      { q: "All of the following fluid phenomena are based on the force momentum principle of a flowing fluid except:", options: ["turbines", "Pelton wheels", "Diesel automobile engines", "jet engines"], answer: 2 },
+      { q: "The fact that a fluid's velocity increases as the cross sectional area of the pipe through which it flows decreases is due to:", options: ["Bernoulli's equation", "the continuity equation", "the momentum equation", "the perfect gas law"], answer: 1 },
+      { q: "In the absence of any heat and work interactions and any changes in potential energy, the stagnation enthalpy of a fluid remains constant during:", options: ["unsteady flow", "steady flow", "turbulent flow", "variable flow"], answer: 1 },
+      { q: "When a falling object reaches a speed at which the drag force equals its weight, it has achieved:", options: ["Mach one", "a laminar boundary layer", "a turbulent boundary layer", "terminal velocity"], answer: 2 },
+      { q: "The coefficient of contraction is the ratio of the:", options: ["area of vena contracta to the orifice area", "actual discharge to the theoretical discharge", "actual velocity to the theoretical velocity", "effective head to the actual head"], answer: 0 },
+      { q: "The coefficient of discharge is the ratio of the:", options: ["area of vena contracta to the orifice area", "actual discharge to the theoretical discharge", "actual velocity to the theoretical velocity", "effective head to the actual head"], answer: 1 },
+      { q: "The coefficient of velocity is equal to the:", options: ["product of the coefficient of discharge and the coefficient of contraction", "actual velocity divided by the theoretical velocity", "sum of the coefficient of discharge and the coefficient of contraction", "difference of the coefficient of discharge and the coefficient of contraction"], answer: 1 },
+      { q: "Which of the following is not a similarity between a submerged culvert and a siphon?", options: ["They both operate full", "Torricelli's equation holds", "Both can experience entrance and exit losses", "In both, the water flows downhill"], answer: 1 },
+      { q: "In parallel pipe system originating and terminating in common junctions:", options: ["mass flows through each branch are equal", "pressure drops through each branch are equal", "lengths of each branch are equal", "flow areas of each branch are equal"], answer: 1 },
+      { q: "Flows through multi loop systems may be computed by:", options: ["any closed form solution of simultaneous equations", "the Hardy-Cross method", "trial and error", "all of the above"], answer: 3 },
+      { q: "Flow measuring devices include all of the following except:", options: ["venturi meters", "static pressure probes", "turbine and propeller meters", "magnetic dynamometers"], answer: 3 },
+      { q: "Flow measuring devices include all of the following except:", options: ["orifice plate meters", "hot-wire anemometers", "magnetic flow meters", "mercury barometers"], answer: 3 },
+      { q: "Flow measuring devices include all of the following except:", options: ["flow nozzles", "venturi area meters", "pitot tubes", "precision tachometers"], answer: 3 },
+      { q: "The following are examples of indirect (secondary) measurements to measure flow rates using obstruction meters except:", options: ["variable area meters", "venturi meters", "volume tanks", "flow nozzles"], answer: 2 },
+      { q: "The following are examples of indirect (secondary) measurements to measure flow rates using obstruction meters except:", options: ["pitot static meters", "static pressure probes", "weight and mass scales", "direction-sensing probes"], answer: 2 },
+      { q: "In series pipe systems, all of the following parameters vary from section to section except:", options: ["pressure drop", "friction loss", "head loss", "mass flow"], answer: 3 },
+      { q: "Venturi meters, pitot static gauges, orifice meters, flow nozzles, and differential manometers all depend upon the relationship between:", options: ["flow velocity and friction", "flow velocity and pressure", "friction and pressure", "pressure and mass flow"], answer: 1 },
+      { q: "The combination of enthalpy and kinetic energy of fluid is termed as:", options: ["latent enthalpy", "heat enthalpy", "throttling enthalpy", "stagnation enthalpy"], answer: 3 },
+      { q: "The coefficient of velocity, Cv, accounts for the:", options: ["effects on the flow area of contraction, friction, and turbulence", "small effect of friction and turbulence of the orifice", "changes in diameters of a converging pipe", "effects of compressibility"], answer: 1 },
+      { q: "Expansion factors take into account the:", options: ["area of the vena contracta", "small effect of friction and turbulence of the orifice", "changes in diameters of a converging pipe", "effects of compressibility"], answer: 3 },
+      { q: "The matching of scale model and full-scale results for a fluid dynamic phenomena with a free surface requires equality of:", options: ["Reynolds number", "Weber number", "Froude number", "Cauchy number"], answer: 2 },
+      { q: "The matching of scale model and full-scale results for a fluid dynamic phenomena involving compressible fluids requires equality of:", options: ["Reynolds number", "Froude number", "Cauchy number", "Mach number"], answer: 3 },
+      { q: "The matching of scale model and full-scale prototype results for a fluid dynamic phenomena involving surface tension requires equality of:", options: ["Reynolds number", "Weber number", "Froude number", "Cauchy number"], answer: 1 },
+      { q: "The matching of scale model and full-scale prototype results for a fluid dynamic phenomena involving a fully submerged body requires equality of:", options: ["Reynolds number", "Weber number", "Froude number", "Mach number"], answer: 0 },
+      { q: "The water hammer phenomenon is primarily what kind of fluid mechanics?", options: ["Static (a phenomena independent of time)", "Dynamic (a time-dependent phenomena)", "Compressible", "Incompressible"], answer: 1 },
+      { q: "All of the following are forms of drag on a body moving through a fluid except:", options: ["skin friction", "wake drag", "profile drag", "d'Alembert's paradox drag"], answer: 3 },
+      { q: "The magnitude of the drag coefficient of a sphere in water is dependent upon all of the following except:", options: ["fluid density", "fluid velocity", "units of measure (SI or English Engineering System)", "drag force"], answer: 2 },
+      { q: "The fact that there is no resistance to bodies moving through an ideal (non-viscous) fluid is known as:", options: ["Reynolds analogy", "D'Alembert's paradox", "Newton's second law", "the second law of thermodynamics"], answer: 1 },
+      { q: "One could expect the possibility of Reynolds number similarity in all of the following cases except:", options: ["submarines", "torpedoes", "seaplane hulls", "supersonic aircraft"], answer: 2 },
+      { q: "Pitot tube is used to measure the:", options: ["velocity of mass", "velocity of pipe", "flow", "velocity of flow"], answer: 3 },
+      { q: "Orifice coefficients are used to determine:", options: ["energy losses", "energy gains", "mass losses", "energy losses and mass gains"], answer: 0 },
+      { q: "The volume flow passes through a venturimeter is:", options: ["increasing", "decreasing", "constant", "varying"], answer: 2 },
+      { q: "What must be done to change the direction of rotation of a 440-volt, 3-phase induction motor?", options: ["reverse lines to start winding", "interchange any two power leads", "replace any two wires to the rotor", "remove any power leads"], answer: 1 },
+      { q: "A draft tube is a part of which power plant?", options: ["Diesel engine power plant", "Gas turbine power plant", "Steam power plant", "Hydro-electric power plant"], answer: 3 },
+      { q: "In the hydro-electric plant having a medium head and using a Francis turbine, the turbine speed may be regulated through:", options: ["deflector gate", "nozzle", "wicket gate", "forebay"], answer: 2 },
+      { q: "A Francis turbine has what flow?", options: ["Inward flow reaction", "Outward flow impulse", "Outward flow reaction", "Inward flow impulse"], answer: 0 },
+      { q: "Which of the following is a type of water turbine?", options: ["Parson", "Hero", "Pelton", "Banki"], answer: 2 },
+      { q: "What is the use of a Hydraulic jump?", options: ["increase the flow rate", "reduce the flow rate", "reduce the velocity of flow", "reduce the energy of flow"], answer: 3 },
+      { q: "A Kaplan turbine is:", options: ["a high head mixed flow turbine", "an inward flow impulse turbine", "an outward flow reaction turbine", "low head axial flow turbine"], answer: 3 },
+      { q: "The locus of elevation is:", options: ["critical point", "hydraulic gradient", "energy gradient", "friction gradient"], answer: 1 },
+      { q: "The locus of elevations to which water will rise in the piezometer tube is termed:", options: ["energy gradient", "friction head", "hydraulic gradient", "critical path"], answer: 2 },
+      { q: "The intake pipe to a hydraulic turbine from a dam is:", options: ["tailrace", "spiral casing", "surge tank", "penstock"], answer: 3 },
+      { q: "A type of water turbine where a jet of water is made to fall on the blades or buckets and due to the impulse of water, the turbine starts to move.", options: ["Pelton wheel", "Steam turbine", "Francis turbine", "Reaction turbine"], answer: 0 },
+      { q: "The lowest portion to storage basin from where the water is not drawn is:", options: ["bottom storage", "sub-soil storage", "spring reserve", "dead storage"], answer: 3 },
+      { q: "In deep well installation or operation, the difference between static water level and operating water level is known as:", options: ["suction lift", "drawdown", "priming level", "clogging"], answer: 1 },
+      { q: "Which of the following is a characteristic of an impulse turbine?", options: ["Steam striking blades on angle", "No steam reaction to velocity", "Steam striking blades at zero angle", "Steam reversing direction"], answer: 2 },
+      { q: "What is the pressure at the exit of a draft tube in a turbine?", options: ["Below atmospheric", "Vacuum", "Atmospheric", "Gage"], answer: 2 },
+      { q: "An impulse turbine is used for:", options: ["low head", "medium head", "high head", "very low head"], answer: 2 },
+      { q: "Which of the following is used as high head turbine?", options: ["Impulse", "Francis", "Reaction", "Propeller"], answer: 0 },
+      { q: "In pumped storage plant:", options: ["power is produced by pumps", "water is stored by pumping to high pressures", "pressure accumulators are used", "downstream water is pumped upstream during offload periods"], answer: 3 },
+      { q: "Which of the following devices used to measure the discharge of outflow from a vessel?", options: ["pitot tube", "orifice", "pump head", "obstruction meter"], answer: 1 }
+    ];
+
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      document.getElementById("score-summary").style.display = "none";
+      
+      currentQuestions = originalQuestions.map(q => {
+        let opts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+        shuffleArray(opts);
+        return {
+          q: q.q,
+          options: opts
+        };
+      });
+      shuffleArray(currentQuestions);
+
+      document.getElementById("total-count").innerText = currentQuestions.length;
+      document.getElementById("answered-count").innerText = 0;
+      document.getElementById("score-count").innerText = 0;
+
+      const container = document.getElementById("quiz-body");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "q-card";
+        
+        const title = document.createElement("div");
+        title.className = "q-title";
+        title.innerText = `${qIdx + 1}. ${qObj.q}`;
+        card.appendChild(title);
+
+        qObj.options.forEach((optObj, oIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optObj.text}`;
+          btn.onclick = () => checkAnswer(qIdx, optObj, card);
+          card.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(qIdx, selectedOpt, cardElement) {
+      const btns = cardElement.querySelectorAll(".opt-btn");
+      btns.forEach(btn => btn.disabled = true);
+
+      if (selectedOpt.isCorrect) {
+        score++;
+        event.target.classList.add("correct");
+      } else {
+        event.target.classList.add("incorrect");
+        currentQuestions[qIdx].options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            btns[idx].classList.add("correct");
+          }
+        });
+      }
+
+      answeredCount++;
+      document.getElementById("score-count").innerText = score;
+      document.getElementById("answered-count").innerText = answeredCount;
+
+      if (answeredCount === currentQuestions.length) {
+        const summary = document.getElementById("score-summary");
+        document.getElementById("final-score-text").innerText = `You scored ${score} out of ${currentQuestions.length} (${((score/currentQuestions.length)*100).toFixed(1)}%)`;
+        summary.style.display = "block";
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>

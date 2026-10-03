@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gas Turbine Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+    .quiz-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    .status-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; background: #eef2f5; padding: 12px; border-radius: 5px; }
+    .q-card { margin-bottom: 25px; padding: 18px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; }
+    .q-title { font-weight: bold; margin-bottom: 12px; font-size: 1.05em; color: #222; }
+    .opt-btn { display: block; width: 100%; text-align: left; padding: 10px 14px; margin: 6px 0; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 0.95em; transition: background 0.2s; }
+    .opt-btn:hover { background: #eaf3ff; }
+    .opt-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+    .opt-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+    .opt-btn:disabled { cursor: default; }
+    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    button.action-btn { padding: 12px 24px; font-size: 1em; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button.action-btn:hover { background: #0056b3; }
+    #score-summary { display: none; text-align: center; padding: 20px; background: #e8f4f8; border-radius: 6px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Gas Turbine Quiz</h1>
+    <div class="status-bar">
+      <span>Total Questions: <span id="total-count">0</span></span>
+      <span>Answered: <span id="answered-count">0</span></span>
+      <span>Score: <span id="score-count">0</span></span>
+    </div>
+    <div id="quiz-body"></div>
+    <div id="score-summary">
+      <h2>Quiz Completed!</h2>
+      <p id="final-score-text" style="font-size: 1.2em;"></p>
+    </div>
+    <div class="btn-group">
+      <button class="action-btn" onclick="initQuiz()">Shuffle & Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { q: "Brayton cycle has:", options: ["two isentropic and two constant volume processes", "two isentropic and two constant pressure processes", "one constant pressure, one constant volume, and two adiabatic processes", "two isothermals, one constant volume and a constant pressure process"], answer: 1 },
+      { q: "Brayton cycle cannot be used in reciprocating engines even for same adiabatic compression ratio and work output because :", options: ["Otto cycle is highly efficient", "Brayton cycle is less efficient", "Brayton cycle is for slow speed engines only", "large volume of low pressure air cannot be efficiently handled in reciprocating engines"], answer: 3 },
+      { q: "Which cycle is generally used for gas turbine?", options: ["Otto cycle", "Dual cycle", "Carnot cycle", "Brayton cycle"], answer: 3 },
+      { q: "When r is the compression ratio, the efficiency of Brayton cycle is given by:", options: ["1 - 1 / r^((k-1)/k)", "1 - 1 / r^(k-1)", "1 - 1 / r", "1 - 1 / r^k"], answer: 0 },
+      { q: "A regenerator in a gas turbine:", options: ["reduces heat loss during exhaust", "allows use of higher compression ratio", "improves thermal efficiency", "allows use of fuels of inferior quality"], answer: 2 },
+      { q: "Which of the following compressors is generally used for gas turbines?", options: ["lobe type", "centrifugal type", "axial flow type", "reciprocating type"], answer: 2 },
+      { q: "The constant pressure gas turbine works on the principle of:", options: ["Carnot cycle", "Bell - Coleman cycle", "Rankine cycle", "Brayton cycle"], answer: 3 },
+      { q: "What type of gas turbine is used in aircraft?", options: ["Open cycle type", "Closed cycle type with reheating", "Closed type with reheating and regeneration", "Open cycle type with reheating, regeneration and intercooling"], answer: 0 },
+      { q: "In a gas turbine combined cycle plant, a waste heat boiler is used to:", options: ["heat air from intercooler", "gases from regenerator", "recover heat from exhaust gases", "none of the above"], answer: 2 },
+      { q: "Overall efficiency of a gas turbine is :", options: ["equal to Carnot cycle efficiency", "equal to Rankine cycle efficiency", "less than Diesel cycle efficiency", "more than Otto or Diesel cycle efficiency"], answer: 2 },
+      { q: "Which of the following turbine has least weight per bhp developed?", options: ["Simple open cycle gas turbine", "Open cycle gas turbine with inter-cooling and reheating", "Open cycle gas turbine with inter cooling, reheating and regenerating", "Closed cycle gas turbine"], answer: 0 },
+      { q: "Which of the following is/are advantage of closed cycle gas turbine over open cycle gas turbine?", options: ["no containing of working substance with combustion gases", "inferior quality fuel can be used", "low maintenance costs", "all of the above"], answer: 3 },
+      { q: "The range of compression ratio in a gas turbine is:", options: ["3 to 5", "5 to 8", "8 to 12", "12 to 20"], answer: 1 },
+      { q: "A constant volume combustion gas turbine operates on:", options: ["Ericsson cycle", "Joule cycle", "Brayton cycle", "Atkinson cycle"], answer: 3 },
+      { q: "Heat exchanger used to provide heat transfer between the exhaust gases and the air prior to its entrance to the combustor.", options: ["Evaporator", "Combustion chamber", "Regenerator", "Heater"], answer: 2 },
+      { q: "How does the value for work per unit mass flow of air in the compressor and turbine influenced by the addition of a regenerator?", options: ["Slightly increased", "Unchanged", "Greatly decreased", "Greatly increased"], answer: 1 },
+      { q: "What is the ideal cycle for gas turbine work?", options: ["Brayton cycle", "Stag combined cycle", "Bottom cycle", "Ericsson cycle"], answer: 0 },
+      { q: "In order to increase the gas velocity gas turbines generally have fixed nozzles. This is to allow the :", options: ["compression of gases", "condensation of gases", "expansion of gases", "evaporation of gases"], answer: 2 },
+      { q: "Combustion turbines or gas turbines are the preferred combustion engines in application much above:", options: ["8 MW", "9 MW", "10 MW", "7 MW"], answer: 2 },
+      { q: "Large units gas turbine regularly operate :", options: ["in 100 to 200 MW range", "in 50 to 100 MW range", "over 150 MW", "below 150 MW"], answer: 0 },
+      { q: "Small units gas turbine operate below:", options: ["20 MW", "12 MW", "30 MW", "24 MW"], answer: 2 },
+      { q: "Heavy duty gas turbines typically have:", options: ["double shafts", "single shaft", "triple shafts", "quadruple shafts"], answer: 1 },
+      { q: "Which of the following is basically a jet engine that exhausts into a turbine generator?", options: ["aeroderivative gas turbine", "industrial gas turbine", "Brayton engine", "Joule turbine"], answer: 0 },
+      { q: "Most aeroderivative combustion turbine produce less than:", options: ["20 MW", "30 MW", "40 MW", "50 MW"], answer: 2 },
+      { q: "The compression ratio based on pressures in the compression stage in a gas turbine is typically :", options: ["11 to 16", "5 to 8", "12 to 18", "8 to 14"], answer: 0 },
+      { q: "The compression ratio based on pressures of heavy duty gas turbine is in the range of:", options: ["14 to 15", "19 to 21", "11 to 16", "16 to 18"], answer: 0 },
+      { q: "Aeroderivative combustion turbine have higher compression ratios typically:", options: ["14 to 15", "19 to 21", "11 to 16", "16 to 18"], answer: 1 },
+      { q: "Most heavy duty combustion turbines have how many compression stages?", options: ["14 to 16", "18 to 20", "10 to 12", "16 to 18"], answer: 3 },
+      { q: "The temperature of the gas entering the expander section is typically:", options: ["1200°C to 1290°C", "1000°C to 1200°C", "1500°C to 1490°C", "1300°C to 1390°C"], answer: 0 },
+      { q: "The exhaust temperature which makes the exhaust an ideal heat source for combined cycles is typically:", options: ["540°C to 590°C", "600°C to 650°C", "300°C to 350°C", "440°C to 490°C"], answer: 0 },
+      { q: "Most combustion turbines have:", options: ["2 to 3 expander stages", "3 to 4 expander stages", "4 to 5 expander stages", "1 to 2 expander stages"], answer: 1 },
+      { q: "The exhaust flow rate in modern heavy duty turbines per 100 MW is approximately:", options: ["240 to 250 kg/s", "140 to 150 kg/s", "340 to 350 kg/s", "440 to 450 kg/s"], answer: 0 },
+      { q: "The Brayton gas turbine cycle is also known as:", options: ["Joule cycle", "Stirling cycle", "Ericsson cycle", "Atkinson cycle"], answer: 0 },
+      { q: "Approximately how many percent of the turbine power is used to drive the high efficiency compressor?", options: ["50 to 75%", "60 to 85%", "45 to 70%", "30 to 55%"], answer: 0 },
+      { q: "Depending on the turbine construction details, the temperature of the air entering the turbine will be between:", options: ["650°C to 1000°C", "750°C to 1100°C", "550°C to 950°C", "850°C to 1200°C"], answer: 0 },
+      { q: "Which of the following engines are typically used by Turbojet and turboprop ?", options: ["open combustors", "closed combustors", "turbo combustors", "high combustors"], answer: 0 },
+      { q: "The full load thermal efficiency of existing heavy duty combustion turbines in simple cycles is approximately:", options: ["34 to 36%", "30 to 32%", "40 to 42%", "26 to 28%"], answer: 0 },
+      { q: "New combustion turbines on the cutting edge of technology (Advanced turbine systems) are able to achieve:", options: ["38 to 38.5%", "36 to 36.5%", "40 to 40.5%", "34 to 34.5%"], answer: 0 },
+      { q: "Aeroderivative turbines commonly achieve efficiencies up to:", options: ["42%", "38%", "45%", "35%"], answer: 0 },
+      { q: "Which of the following is the typical backwork ratio of gas turbines ?", options: ["50 to 75%", "40 to 65%", "30 to 55%", "35 to 60%"], answer: 0 },
+      { q: "Which of the following is an example of a regenerator ?", options: ["a counterflow heat exchanger", "a cross flow heat exchanger", "a mixed flow heat exchanger", "a parallel flow heat exchanger"], answer: 1 },
+      { q: "Which of the following is an effect of having a regenerator?", options: ["less heat is added", "compressor work is reduced", "turbine work is increased", "compressor work is increased"], answer: 0 },
+      { q: "A regenerator in a gas turbine has no effect in:", options: ["compressor and turbine work", "heat added", "thermal efficiency", "combustor"], answer: 0 },
+      { q: "In a Brayton cycle multiple stages of compression and expansion will:", options: ["increase thermal efficiency", "decrease thermal efficiency", "limit thermal efficiency", "control efficiency"], answer: 0 },
+      { q: "In a Brayton cycle, reheating and intercooling will:", options: ["increase thermal efficiency", "decrease thermal efficiency", "limit thermal efficiency", "control efficiency"], answer: 0 },
+      { q: "In a Brayton cycle, reheating has no effect in:", options: ["heat added", "thermal efficiency", "backwork ratio", "Network"], answer: 0 },
+      { q: "In a Brayton cycle, intercooling has no effect in :", options: ["turbine work", "thermal efficiency", "backwork ratio", "network"], answer: 0 },
+      { q: "If Wt is the turbine power and Wc is the compressor power then the backwork ratio is:", options: ["Wt / Wc", "Wc / Wt", "(Wt - Wc) / Wt", "(Wt - Wc) / Wc"], answer: 1 },
+      { q: "If Wt is the turbine power and Wc is the compressor power then the network is:", options: ["Wt * Wc", "Wc / Wt", "Wt - Wc", "Wt + Wc"], answer: 2 },
+      { q: "Physical limitations usually preclude more than how many stages of intercooling and reheating?", options: ["2", "3", "4", "5"], answer: 0 }
+    ];
+
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      document.getElementById("score-summary").style.display = "none";
+      
+      // Deep copy and shuffle questions
+      currentQuestions = originalQuestions.map(q => {
+        let opts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+        shuffleArray(opts);
+        return {
+          q: q.q,
+          options: opts
+        };
+      });
+      shuffleArray(currentQuestions);
+
+      document.getElementById("total-count").innerText = currentQuestions.length;
+      document.getElementById("answered-count").innerText = 0;
+      document.getElementById("score-count").innerText = 0;
+
+      const container = document.getElementById("quiz-body");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "q-card";
+        
+        const title = document.createElement("div");
+        title.className = "q-title";
+        title.innerText = `${qIdx + 1}. ${qObj.q}`;
+        card.appendChild(title);
+
+        qObj.options.forEach((optObj, oIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optObj.text}`;
+          btn.onclick = () => checkAnswer(qIdx, optObj, card);
+          card.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(qIdx, selectedOpt, cardElement) {
+      const btns = cardElement.querySelectorAll(".opt-btn");
+      btns.forEach(btn => btn.disabled = true);
+
+      if (selectedOpt.isCorrect) {
+        score++;
+        event.target.classList.add("correct");
+      } else {
+        event.target.classList.add("incorrect");
+        // Highlight correct answer
+        currentQuestions[qIdx].options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            btns[idx].classList.add("correct");
+          }
+        });
+      }
+
+      answeredCount++;
+      document.getElementById("score-count").innerText = score;
+      document.getElementById("answered-count").innerText = answeredCount;
+
+      if (answeredCount === currentQuestions.length) {
+        const summary = document.getElementById("score-summary");
+        document.getElementById("final-score-text").innerText = `You scored ${score} out of ${currentQuestions.length} (${((score/currentQuestions.length)*100).toFixed(1)}%)`;
+        summary.style.display = "block";
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>

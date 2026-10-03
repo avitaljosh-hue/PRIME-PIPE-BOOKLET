@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variable Load & Environmental Eng'g Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+    .quiz-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    .status-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; background: #eef2f5; padding: 12px; border-radius: 5px; }
+    .q-card { margin-bottom: 25px; padding: 18px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; }
+    .q-title { font-weight: bold; margin-bottom: 12px; font-size: 1.05em; color: #222; }
+    .opt-btn { display: block; width: 100%; text-align: left; padding: 10px 14px; margin: 6px 0; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 0.95em; transition: background 0.2s; }
+    .opt-btn:hover { background: #eaf3ff; }
+    .opt-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+    .opt-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+    .opt-btn:disabled { cursor: default; }
+    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    button.action-btn { padding: 12px 24px; font-size: 1em; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button.action-btn:hover { background: #0056b3; }
+    #score-summary { display: none; text-align: center; padding: 20px; background: #e8f4f8; border-radius: 6px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Variable Load & Environmental Eng'g Quiz</h1>
+    <div class="status-bar">
+      <span>Total Questions: <span id="total-count">0</span></span>
+      <span>Answered: <span id="answered-count">0</span></span>
+      <span>Score: <span id="score-count">0</span></span>
+    </div>
+    <div id="quiz-body"></div>
+    <div id="score-summary">
+      <h2>Quiz Completed!</h2>
+      <p id="final-score-text" style="font-size: 1.2em;"></p>
+    </div>
+    <div class="btn-group">
+      <button class="action-btn" onclick="initQuiz()">Shuffle & Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { q: "The maximum continuous power available from a hydro electric plant under the most adverse hydraulic conditions is called:", options: ["base power", "firm power", "primary power", "secondary power"], answer: 1 },
+      { q: "The area under load curve divided by maximum demand represents:", options: ["load factor", "connected load", "average load", "diversity factor"], answer: 3 },
+      { q: "What is the reserve capacity of a plant?", options: ["maximum demand - average demand", "plant capacity - maximum demand", "plant capacity - average demand", "plant capacity x (1 - load factor)"], answer: 1 },
+      { q: "Load curve refers to the plot of:", options: ["load versus generating capacity", "load versus current", "load versus time", "load versus cost of power"], answer: 2 },
+      { q: "The ratio of maximum load to the rated plant capacity is called:", options: ["load factor", "utilization factor", "maximum load factor", "capacity"], answer: 1 },
+      { q: "Peak load for a period of time divided by installed capacity is:", options: ["capacity factor", "demand factor", "utilization factor", "load factor"], answer: 2 },
+      { q: "The ratio of the sum of individual maximum demands of the system to the maximum demand of the whole system is:", options: ["diversity factor", "utilization factor", "power factor", "demand factor"], answer: 0 },
+      { q: "The ratio between the actual power and the apparent power in any circuit is known as the ____ of that circuit.", options: ["measured power", "capacity", "power factor", "KVAR"], answer: 2 },
+      { q: "The ratio of the average load to the peak load over a designated period of time is called:", options: ["load factor", "reactive factor", "diversity factor", "plant use factor"], answer: 0 },
+      { q: "Yeast as raw material for beer making is added to the equipment called:", options: ["fermenters", "brew kettle", "cooler", "starting tube"], answer: 0 },
+      { q: "A major cause of air pollution resulting from the burning of fuel oil is:", options: ["nitrous", "hydrogen", "sulfur dioxide", "silicon"], answer: 2 },
+      { q: "Heavy water is:", options: ["B2O", "H2O", "W2O", "D2O"], answer: 3 },
+      { q: "Scintillation counter are used to detect:", options: ["Beta rays", "X-ray", "Gamma rays", "All of the above"], answer: 3 },
+      { q: "All of the following are common types of chemical reactions except:", options: ["direct combination", "fission", "decomposition", "double replacement"], answer: 1 },
+      { q: "Redox reactions can often be type of:", options: ["direct combination", "fission", "decomposition", "double replacement"], answer: 3 },
+      { q: "The fact that the amount of slightly soluble gas absorbed in a liquid is proportional to the partial pressure of the gas is known as:", options: ["Dalton's law", "Henry's law", "Raoult's law", "Boyle's law"], answer: 1 },
+      { q: "All of the following pollutants are produced because of decaying organic matter except:", options: ["ammonia", "sulfur dioxide", "methane", "hydrogen sulfide"], answer: 1 },
+      { q: "The velocity of radiation (v) and the frequency of radiation (f) are related to the wavelength of radiation by:", options: ["v / f", "f / v", "v * f", "v^2 * f"], answer: 0 },
+      { q: "Swimming pool water needs:", options: ["pre-chlorination", "super-chlorination", "dual-chlorination", "de-chlorination"], answer: 3 },
+      { q: "Aeration of water is done for all of the following purposes except for:", options: ["removal of CO2", "removal of bad taste", "increasing the amount of oxygen in water", "removal of temporary hardness"], answer: 3 },
+      { q: "Which of the following areas of work requires lowest noise level?", options: ["Gymnasiums", "Library", "Lecture halls", "Kitchens"], answer: 1 },
+      { q: "Mycotoxins are poisonous chemicals produced by:", options: ["bacteria", "molds", "virus", "algae"], answer: 1 },
+      { q: "Turbidity in water is due to:", options: ["algae", "fungi", "organic salts", "finely divided particles of clay, silt and organic matter"], answer: 3 },
+      { q: "Per capita consumption of water is generally taken as:", options: ["50-100 liters", "150-300 liters", "400-500 liters", "750-1000 liters"], answer: 1 },
+      { q: "Which of the following industries have the highest consumption of water for processing?", options: ["Foundry", "Automobile industry", "Paper mill", "Aluminum industry"], answer: 2 },
+      { q: "The radioactivity of water because of strontium can be removed by:", options: ["aeration", "alum coagulation", "phosphate coagulation", "lime"], answer: 2 },
+      { q: "Chemical used for checking the growth of algae in reservoirs is:", options: ["copper sulphate", "alum", "bleaching powder", "brine"], answer: 2 },
+      { q: "Which of the following is not a pollutant from sulfuric acid plants?", options: ["Sulfur dioxide", "Sulfur trioxide", "Acid mist", "Hydrogen sulfide"], answer: 3 },
+      { q: "Which of the following is a cold cathode lamp?", options: ["Sodium vapor lamp", "High pressure mercury vapor lamp", "Low pressure mercury vapor lamp", "Neon lamp"], answer: 3 },
+      { q: "Which has an octane rating of more than 100?", options: ["Gobar gas", "Methyl alcohol", "Benzol", "Ethyl alcohol"], answer: 2 },
+      { q: "The part per million is identical to:", options: ["Grains per gallon", "Pounds per cubic foot", "Milligrams per kg", "Tons per acre foot"], answer: 2 },
+      { q: "In power plant an electrostatic precipitator is installed between:", options: ["forced draft fan and induced draft fan", "furnace and chimney", "primary air and secondary air", "furnace and forced draft fan"], answer: 1 },
+      { q: "At present, the number of true elementary particles, which include leptons and quarks, is thought to be:", options: ["4", "8", "10", "12"], answer: 3 },
+      { q: "The effective size of a target atom that interacts with a moving particle is called its:", options: ["length", "width", "cross section", "pseudo-area"], answer: 2 },
+      { q: "Most nuclear particles can react with atoms in several different ways including:", options: ["absorption", "scattering", "absorption and scattering", "reflection and absorption"], answer: 2 },
+      { q: "The operation that produces highest noise level is:", options: ["welding", "riveting", "machining", "pressing"], answer: 1 },
+      { q: "The ratio of energy absorbed by the transfer fluid to the original incident energy striking the collector.", options: ["Shading factor", "Collector efficiency", "Betz coefficient", "Transmittance"], answer: 1 },
+      { q: "A swinging support constructed as part of the vessel and that supports the manway cover when it is unbolted and moved aside.", options: ["Davit", "Handhole", "Nozzle neck", "Manway arm"], answer: 0 },
+      { q: "Is the subjective method in which the smoke density is visually compared to five standardized white-black grids.", options: ["Ringelmann scale", "Dalton scale", "Smoke spot scale", "Dew point scale"], answer: 0 },
+      { q: "The ratio of fugacity at actual conditions to the fugacity at some reference state is known as:", options: ["compressibility", "activity", "gravimetric coefficient", "saturation"], answer: 1 },
+      { q: "A type of polymer used for detergents, milk bottles, oil containers and toys.", options: ["Polyvinyl chloride (PVC)", "Polystyrene (PS)", "High density polyethylene (HDPE)", "Polypropylene (PP)"], answer: 2 },
+      { q: "A type of polymer used for grocery bags and food wraps.", options: ["Polyvinyl chloride (PVC)", "Polystyrene (PS)", "Low density polyethylene (LDPE)", "Polypropylene (PP)"], answer: 2 },
+      { q: "A radioactive gas produced from the decay of radium within the rocks beneath a building.", options: ["Spills", "Radon", "Smoke", "Smog"], answer: 1 },
+      { q: "Consists of ground-level ozone and peroxyacyl nitrates (PAN).", options: ["Smog", "Spills", "Sulfur oxide", "Smoke"], answer: 0 },
+      { q: "A term used to mean the corrective steps taken to return the environment to its original condition.", options: ["Stabilization", "Remediation", "Greenhouse effect", "Opacity"], answer: 1 },
+      { q: "The burning of low-sulfur fuel is known as:", options: ["fuel switching", "fuel adding", "fuel binding", "fuel swapping"], answer: 0 },
+      { q: "The removal of particulate matter from a gas flow by exposing the flow to a liquid or slurry, is known as:", options: ["stripping", "spraying", "scrubbing", "absorption"], answer: 2 },
+      { q: "The drop in a solvent's vapor pressure and the increase in mole fraction as solute is added is described by:", options: ["Dalton's law", "Henry's law", "Raoult's law", "Boyle's law"], answer: 2 },
+      { q: "All of the following statements are characteristics of bases except:", options: ["they conduct electricity in aqueous solutions", "they turn red litmus paper blue", "they have a pH between 0 and 7", "they neutralize acids forming salts and water"], answer: 2 },
+      { q: "All of the following statements about conjugate acids and bases are true except:", options: ["a conjugate acid results when a base accepts a proton", "a conjugate base results when a base accepts a proton", "strong acids tend to give weak conjugate bases", "the Bronsted-Lowry theory defines bases as proton acceptors"], answer: 1 },
+      { q: "Are any solid particulate matter that becomes airborne, with the exception of particulate matter emitted from the exhaust stack of a combustion process.", options: ["Dusts or fugitive dusts", "Dioxins", "Fugitive emissions", "CFCs"], answer: 0 },
+      { q: "Equipment leaks from plant equipment are known as:", options: ["fugitive leaks", "fugitive dusts", "fugitive exhausts", "fugitive emissions"], answer: 3 },
+      { q: "What is a substance that absorbs or retains moisture?", options: ["Surface acting agent", "Dry ultra-fine coal", "Fossil fuel", "Humectant"], answer: 3 },
+      { q: "Is a soluble compound that reduces a liquid's surface tension or reduces the interfacial tension between a liquid and a solid.", options: ["Surface-acting agent or surfactant", "Humectant", "Oxygenated fuel", "CFC"], answer: 0 },
+      { q: "A material or substance that is accidentally or intentionally introduced to the environment in a quantity that exceeds what occurs naturally.", options: ["Waste", "Sludge", "Pollutant", "Biosolids"], answer: 2 },
+      { q: "Refers to organic waste produced from biological wastewater treatment processes.", options: ["Toxic waste", "Biosolids", "Extrinsic waste", "Process waste"], answer: 1 }
+    ];
+
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      document.getElementById("score-summary").style.display = "none";
+      
+      currentQuestions = originalQuestions.map(q => {
+        let opts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+        shuffleArray(opts);
+        return {
+          q: q.q,
+          options: opts
+        };
+      });
+      shuffleArray(currentQuestions);
+
+      document.getElementById("total-count").innerText = currentQuestions.length;
+      document.getElementById("answered-count").innerText = 0;
+      document.getElementById("score-count").innerText = 0;
+
+      const container = document.getElementById("quiz-body");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "q-card";
+        
+        const title = document.createElement("div");
+        title.className = "q-title";
+        title.innerText = `${qIdx + 1}. ${qObj.q}`;
+        card.appendChild(title);
+
+        qObj.options.forEach((optObj, oIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optObj.text}`;
+          btn.onclick = () => checkAnswer(qIdx, optObj, card);
+          card.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(qIdx, selectedOpt, cardElement) {
+      const btns = cardElement.querySelectorAll(".opt-btn");
+      btns.forEach(btn => btn.disabled = true);
+
+      if (selectedOpt.isCorrect) {
+        score++;
+        event.target.classList.add("correct");
+      } else {
+        event.target.classList.add("incorrect");
+        currentQuestions[qIdx].options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            btns[idx].classList.add("correct");
+          }
+        });
+      }
+
+      answeredCount++;
+      document.getElementById("score-count").innerText = score;
+      document.getElementById("answered-count").innerText = answeredCount;
+
+      if (answeredCount === currentQuestions.length) {
+        const summary = document.getElementById("score-summary");
+        document.getElementById("final-score-text").innerText = `You scored ${score} out of ${currentQuestions.length} (${((score/currentQuestions.length)*100).toFixed(1)}%)`;
+        summary.style.display = "block";
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>

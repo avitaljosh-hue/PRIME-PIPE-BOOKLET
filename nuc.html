@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuclear Plant Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+    .quiz-container { max-width: 800px; background: #fff; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    .status-bar { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; background: #eef2f5; padding: 12px; border-radius: 5px; }
+    .q-card { margin-bottom: 25px; padding: 18px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; }
+    .q-title { font-weight: bold; margin-bottom: 12px; font-size: 1.05em; color: #222; }
+    .opt-btn { display: block; width: 100%; text-align: left; padding: 10px 14px; margin: 6px 0; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; font-size: 0.95em; transition: background 0.2s; }
+    .opt-btn:hover { background: #eaf3ff; }
+    .opt-btn.correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+    .opt-btn.incorrect { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+    .opt-btn:disabled { cursor: default; }
+    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    button.action-btn { padding: 12px 24px; font-size: 1em; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button.action-btn:hover { background: #0056b3; }
+    #score-summary { display: none; text-align: center; padding: 20px; background: #e8f4f8; border-radius: 6px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Nuclear Plant Quiz</h1>
+    <div class="status-bar">
+      <span>Total Questions: <span id="total-count">0</span></span>
+      <span>Answered: <span id="answered-count">0</span></span>
+      <span>Score: <span id="score-count">0</span></span>
+    </div>
+    <div id="quiz-body"></div>
+    <div id="score-summary">
+      <h2>Quiz Completed!</h2>
+      <p id="final-score-text" style="font-size: 1.2em;"></p>
+    </div>
+    <div class="btn-group">
+      <button class="action-btn" onclick="initQuiz()">Shuffle & Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { q: "What is the suggested maximum permissible dose (MPD) of gamma ray exposure for general individuals not working in a nuclear setting, by choice, in rem/year?", options: ["1", "5", "1/2", "3"], answer: 2 },
+      { q: "The number of protons in the nucleus of an atom of the number of electrons in the orbit of an atom:", options: ["Atomic volume", "Atomic number", "Atomic weight", "Atomic mass"], answer: 1 },
+      { q: "The process in which a nucleus splits into smaller fragments.", options: ["Fusion", "Fission", "Photoelectric effect", "Compton's effect"], answer: 1 },
+      { q: "The ability of a substance to absorb neutrons is dependent upon which parameter?", options: ["Absorption cross section", "Scattering cross section", "Total cross section", "Atomic number"], answer: 0 },
+      { q: "What kind of bonding do common gases that exist free as diatomic molecules experience?", options: ["Ionic bonds", "Covalent bonds", "Metallic bonds", "Nuclear bonds"], answer: 1 },
+      { q: "Which of the following is NOT a unit of energy?", options: ["Atomic unit", "MeV", "Dynes", "Ergs"], answer: 2 },
+      { q: "Which of the following is NOT a unit of energy?", options: ["Calories", "Joules", "Pascals", "MeV"], answer: 2 },
+      { q: "An electrically charged atom or radical which carries electricity through an electrolyte is called:", options: ["ion", "isotope", "molecule", "hole"], answer: 0 },
+      { q: "What is the smallest particle of an element that can enter into a chemical reaction?", options: ["Molecule", "Ion", "Atom", "Isotope"], answer: 2 },
+      { q: "Beryllium, magnesium, and calcium all belong to which elemental grouping?", options: ["Noble elements", "Halogens", "Lanthanons", "Alkaline earth metals"], answer: 3 },
+      { q: "The thickness of material required to attenuate radiation to a particular level depends on:", options: ["the particle", "the particle energy", "the shielding material", "the particle, its energy, and the shielding material"], answer: 3 },
+      { q: "Particles that are easily stopped within a few millimeters because their double charges generate path ionization and because they are susceptible to electrostatic interaction are:", options: ["alpha neutrons", "alpha radiations", "beta radiations", "gamma radiations"], answer: 1 },
+      { q: "Radiation consisting of singly charged particles that penetrate to intermediate distances are called:", options: ["fast neutrons", "alpha radiations", "beta radiations", "gamma radiations"], answer: 2 },
+      { q: "Radiation with no charge, which produces no ionization, and which is difficult to attenuate thus posing a major health threat is:", options: ["slow neutrons", "alpha radiations", "beta radiations", "gamma radiations"], answer: 3 },
+      { q: "The property of fluid at a location where the Mach number is unity (at the throat) are called:", options: ["critical properties", "sonic properties", "dynamic properties", "stagnation properties"], answer: 0 },
+      { q: "Gamma attenuation is affected by:", options: ["their photoelectric effect", "pair production", "Compton scattering", "The photoelectric effect, pair production, and Compton scattering"], answer: 3 },
+      { q: "The amount of a radiation shield's dimensional geometry that reduces radiation to half of its original value is called the:", options: ["half-value mass", "half-value thickness", "semi-cross section", "logarithmic decrement"], answer: 1 },
+      { q: "The amount of a radiation shield's density that reduces radiation to half of its original value is called the:", options: ["half value mass", "half-value thickness", "semi cross section", "logarithmic decrement"], answer: 0 },
+      { q: "Radiation exposure, the measure of gamma radiation at the surface of an object, is measured in:", options: ["rems", "rads", "roentgens", "roentgens per second"], answer: 2 },
+      { q: "Radiation exposure rate, the rate of gamma radiation at the surface of an object, is measured in:", options: ["rems", "rads", "roentgens", "roentgens per second"], answer: 3 },
+      { q: "Exposure is a measure of ionization surrounding a person, but biological damage is dependent on the amount of energy:", options: ["striking the surface", "passing through the body", "absorbed", "reflected by the surface"], answer: 2 },
+      { q: "All of the following are practical applications of Einstein's principle of special relativity except:", options: ["mass increase", "length contraction", "time dilation", "space warping"], answer: 3 },
+      { q: "The postulate that no signal or energy can be transmitted with a speed greater than the speed of light is consistent with:", options: ["the Heisenberg uncertainty principle", "the Compton effect", "Einstein's law", "Newton's second law"], answer: 2 },
+      { q: "The total energy of an electron in the same shell is defined by the:", options: ["principal quantum number", "azimuthal quantum number", "magnetic quantum number", "Hund rule"], answer: 0 },
+      { q: "The direction of an electron's angular momentum vector is defined by the:", options: ["principal quantum number", "azimuthal quantum number", "magnetic quantum number", "electron spin quantum number"], answer: 2 },
+      { q: "The electron's spin angular momentum vector is defined by the:", options: ["azimuthal quantum number", "magnetic quantum number", "electron spin quantum number", "Hund rule"], answer: 2 },
+      { q: "The magnitude of an electron's angular momentum vector is defined by the:", options: ["principal quantum number", "azimuthal quantum number", "electron spin quantum number", "Hund rule"], answer: 1 },
+      { q: "The fact that each orbital of a set of equal-energy orbitals must be occupied with an electron before any orbital has two electrons is specified by which of the following?", options: ["principal quantum number", "azimuthal quantum number", "magnetic quantum number", "Hund rule"], answer: 3 },
+      { q: "The statement that no two electrons can have the same set of four quantum numbers is known as the:", options: ["Hund rule", "Heisenberg uncertainty principle", "Pauli exclusion principle", "Schrodinger equation"], answer: 2 },
+      { q: "All of the following terms describe the radiation lines from transitions of electrons in an atom except:", options: ["sharp", "principal", "obtuse", "fundamental"], answer: 2 },
+      { q: "When electrons are not shared equally between two elements, and electrons spend more time with one element than with the other, the bonding is called:", options: ["ionic bonding", "polar covalent bonding", "non-polar covalent bonding", "metallic bonding"], answer: 1 },
+      { q: "When electrons are shared equally (e.g., when the atoms are the same as in diatomic gases), the bonding is called:", options: ["ionic bonding", "polar covalent bonding", "non-polar covalent bonding", "resonance bonding"], answer: 2 },
+      { q: "Einstein reasoned there was a discrete amount of energy needed to remove an electron from a surface, with the rest of the incident photon's energy contributing to the kinetic energy of the photon. This amount of energy is called:", options: ["binding energy", "work function", "Coulomb energy", "Fermi energy"], answer: 1 },
+      { q: "Which of the following is not a postulate of Bohr's theory of the hydrogen atom?", options: ["Electron orbits are discrete and non-radiating and an electron may not remain between these orbits", "The energy change experienced by an electron changing from one orbit to another is quantized", "Light waves exist simultaneously as high frequency electrical and magnetic waves", "Angular momentum is quantized"], answer: 2 }
+    ];
+
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      document.getElementById("score-summary").style.display = "none";
+      
+      currentQuestions = originalQuestions.map(q => {
+        let opts = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+        shuffleArray(opts);
+        return {
+          q: q.q,
+          options: opts
+        };
+      });
+      shuffleArray(currentQuestions);
+
+      document.getElementById("total-count").innerText = currentQuestions.length;
+      document.getElementById("answered-count").innerText = 0;
+      document.getElementById("score-count").innerText = 0;
+
+      const container = document.getElementById("quiz-body");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement("div");
+        card.className = "q-card";
+        
+        const title = document.createElement("div");
+        title.className = "q-title";
+        title.innerText = `${qIdx + 1}. ${qObj.q}`;
+        card.appendChild(title);
+
+        qObj.options.forEach((optObj, oIdx) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerText = `${String.fromCharCode(65 + oIdx)}. ${optObj.text}`;
+          btn.onclick = () => checkAnswer(qIdx, optObj, card);
+          card.appendChild(btn);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(qIdx, selectedOpt, cardElement) {
+      const btns = cardElement.querySelectorAll(".opt-btn");
+      btns.forEach(btn => btn.disabled = true);
+
+      if (selectedOpt.isCorrect) {
+        score++;
+        event.target.classList.add("correct");
+      } else {
+        event.target.classList.add("incorrect");
+        currentQuestions[qIdx].options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            btns[idx].classList.add("correct");
+          }
+        });
+      }
+
+      answeredCount++;
+      document.getElementById("score-count").innerText = score;
+      document.getElementById("answered-count").innerText = answeredCount;
+
+      if (answeredCount === currentQuestions.length) {
+        const summary = document.getElementById("score-summary");
+        document.getElementById("final-score-text").innerText = `You scored ${score} out of ${currentQuestions.length} (${((score/currentQuestions.length)*100).toFixed(1)}%)`;
+        summary.style.display = "block";
+      }
+    }
+
+    window.onload = initQuiz;
+  </script>
+</body>
+</html>
