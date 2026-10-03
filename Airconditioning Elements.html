@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Air Conditioning (Elements) Quiz</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --primary: #0056b3;
+      --primary-hover: #003d80;
+      --correct: #28a745;
+      --incorrect: #dc3545;
+      --border: #e0e0e0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      color: var(--primary);
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+    .score-board {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .question-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    .question-text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    .options {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    .option-item {
+      margin-bottom: 8px;
+    }
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not([disabled]) {
+      background: #e9ecef;
+    }
+    .option-btn.correct {
+      background-color: #d4edda !important;
+      border-color: #c3e6cb !important;
+      color: #155724 !important;
+      font-weight: bold;
+    }
+    .option-btn.incorrect {
+      background-color: #f8d7da !important;
+      border-color: #f5c6cb !important;
+      color: #721c24 !important;
+    }
+    .explanation {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Air Conditioning (Elements) Quiz</h1>
+      <p>Test your knowledge on Air Conditioning principles, HVAC, and thermodynamics.</p>
+    </header>
+    <div class="controls">
+      <div class="score-board">Score: <span id="score">0</span> / <span id="total">0</span></div>
+      <div>
+        <button class="btn" id="shuffle-btn" onclick="shuffleAndReset()">🔀 Shuffle & Reset</button>
+        <button class="btn" id="reset-btn" onclick="resetQuiz()">🔄 Reset Score</button>
+      </div>
+    </div>
+    <div id="quiz-container"></div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { id: 1, q: "How do you call the water vapor content of air?", options: ["moisture", "humidity", "dew", "vapor"], answer: 1 },
+      { id: 2, q: "When air contains all of the water vapor it can hold, it is said to be", options: ["simulated", "loaded", "saturated", "moistured"], answer: 2 },
+      { id: 3, q: "What is the instrument used to register relative humidity?", options: ["hygrometer", "hydrometer", "perometer", "manometer"], answer: 0 },
+      { id: 4, q: "Humidity is a measure of which of the following?", options: ["water vapor content", "temperature", "latent heat", "any of the above"], answer: 0 },
+      { id: 5, q: "Air conditioning is the process of:", options: ["keeping a place cool", "removing heat from a specific area", "maintaining the air at a required temperature and humidity", "A or C"], answer: 2 },
+      { id: 6, q: "In an air-conditioning system, before the air is circulated to the required area, it is:", options: ["cooled", "filtered", "dehumidified", "all of the above"], answer: 3 },
+      { id: 7, q: "The temperature at which water vapor in the atmosphere begins to condense is known as the:", options: ["vapor point", "dew point", "moisture point", "none of the above"], answer: 1 },
+      { id: 8, q: "Saturation temperature is the same as:", options: ["dew point", "vapor temperature", "steam temperature", "humidity"], answer: 0 },
+      { id: 9, q: "When the bypass factor is B, the coil efficiency for sensible cooling of air is equal to:", options: ["1 + B", "1 - B", "1 - B / B", "1 + B / B"], answer: 1 },
+      { id: 10, q: "The psychrometric chart in air conditioning determines the", options: ["wet bulb and dry bulb temperatures", "psychrometric temperature requirements", "saturation temperature and relatives humidity", "moist air conditions"], answer: 3 },
+      { id: 11, q: "Which of the following is considered as comfort condition in air conditioning?", options: ["40°C DBT, 80% RH", "30°C DBT, 60% RH", "30°C DBT, 80% RH", "20°C DBT, 60% RH"], answer: 3 },
+      { id: 12, q: "The drift loss in cooling towers is about:", options: ["1% only", "12 to 15%", "10 to 20%", "30 to 40%"], answer: 2 },
+      { id: 13, q: "Cooling towers are used for cooling water:", options: ["to be injected in circulating air", "to be used for humidification", "to be used for filtration of air", "to be used for cooling the compressor"], answer: 3 },
+      { id: 14, q: "By which of the following processes heat mainly dissipates in cooling towers?", options: ["conduction", "convection", "radiation", "evaporation"], answer: 3 },
+      { id: 15, q: "Which one is commonly used liquid absorbent?", options: ["silica gel", "activated alumina", "ethylene glycol", "any one of the above"], answer: 2 },
+      { id: 16, q: "In sensible heating cooling following parameter remains unchanged", options: ["dry bulb temperature", "wet bulb temperature", "relative humidity", "humidity ratio"], answer: 3 },
+      { id: 17, q: "Heating and dehumidification can be obtained simultaneously if air is passed through:", options: ["sprays of water kept at a temperature higher than the dew point temperature of the entering air", "a solid absorbent surface", "a liquid absorbent spray", "any one of B and C"], answer: 3 },
+      { id: 18, q: "Dirt and foreign materials normally build-up on the side of the condenser tubes. To ensure adequate condenser capacity, a certain factor is used in calculating the overall heat transfer through the walls of the tubes including the heat transfer rate of the layers dirt and foreign materials. What is this factor?", options: ["Booster Factor", "Factor of Safety", "Fouling Factor", "Compression Factor"], answer: 2 },
+      { id: 19, q: "The engineer was tested to design the air conditioning system for a ball room dance hall. Considering that this involve a lot of activity from its users, the engineer would design that will require:", options: ["Maximum attainable effective temperature", "Constant Effective temperature", "Higher Effective Temperature", "Lower Effective Temperature"], answer: 0 },
+      { id: 20, q: "What is the value of the Mach No. throat of the converging-diverging nozzle?", options: ["Zero", "Two", "One", "Ten"], answer: 2 },
+      { id: 21, q: "What do bodies at a temperature above absolute zero?", options: ["It emits Energy", "It emits Thermal Radiation", "It emits Heat for Conduction", "It emits Heat for convection"], answer: 1 },
+      { id: 22, q: "When air is saturated, the wet bulb depression is:", options: ["zero", "indefinite", "unity", "100%"], answer: 0 },
+      { id: 23, q: "In a window air conditioning unit which of the following is usually done by the owner?", options: ["Semiannual cleaning or replacement of filters", "Annual cleaning of the evaporator, condenser fan blades, fan motor, compressor and casing", "Inspection of fan motors and lubricate them", "All of these"], answer: 0 },
+      { id: 24, q: "Fan motors in air conditioning units usually have:", options: ["2 or 3 speeds", "3 or 4 speeds", "1 or 2 speeds", "4 or 5 speeds"], answer: 0 },
+      { id: 25, q: "Which of the following capacitors that can usually be found in an air conditioning unit?", options: ["Starting capacitors", "Running capacitors", "Fan motor capacitors", "all of these"], answer: 3 },
+      { id: 26, q: "Which of the following troubles commonly occurs inside an air conditioning unit?", options: ["Stuck Compressor", "Clogged Refrigerant Circuit", "Short Circuit, open circuit, grounded motor winding", "All of these"], answer: 3 },
+      { id: 27, q: "The motor condition of an air conditioning unit can be checked with:", options: ["the continuity of light or with an ohmmeter", "the flow of refrigerant in the receiver", "the discharge pressure in the compressor", "All of these"], answer: 0 },
+      { id: 28, q: "An air conditioning system wherein the entire systems are mounted in the cabinet:", options: ["Console Air Conditioners", "Centralized Air Conditioners", "Package Type Air Conditioners", "Multizone Split Ductless System"], answer: 0 },
+      { id: 29, q: "The use of water to carry heat occupied spaces", options: ["Hydronic Heating System", "Water Boiling System", "Hydrokinetic Heating System", "Hydraulic Heating System"], answer: 0 },
+      { id: 30, q: "The method of cooling which primarily used where ambient air temperatures are high and relative humidity is used:", options: ["Swamp Cooling", "Evaporative Cooling", "Condensate Cooling", "Hydroionic Cooling"], answer: 0 },
+      { id: 31, q: "The other name for Swamp Cooling is:", options: ["Evaporative Cooling", "Condensate Cooling", "Wet Roof Cooling", "Excelsior Cooling"], answer: 2 },
+      { id: 32, q: "Evaporative condenser is used to cool", options: ["condenser vapor", "condenser surface", "condensate liquid", "all of these"], answer: 0 },
+      { id: 33, q: "A method of cooling which uses water as refrigerant. Pressure on the water surface is reduced to lower its boiling temperature.", options: ["Steam Jet Cooling", "Evaporative Cooling", "Vortex Tube Cooling", "Pressurized Cooling"], answer: 0 },
+      { id: 34, q: "Palladium Chloride may be used to measure the presence of:", options: ["vapor", "CO", "ammonia", "refrigerant"], answer: 1 },
+      { id: 35, q: "The amount of CO can be determined by the color of Palladium Chloride. An amount of 30 ppm to 70 ppm will cause:", options: ["Slight Darkening", "Grey Color", "Red Color", "Black Color"], answer: 0 },
+      { id: 36, q: "The term used to express the amount moisture in a given sample of air. It is compared with the amount of moisture in a given sample of air.", options: ["Humidity", "Relative Humidity", "Absolute Humidity", "Humidity Ratio"], answer: 1 },
+      { id: 37, q: "How should the window type air conditioning unit be placed?", options: ["Slant toward the inside of the home", "Slant toward the outside of the home", "Level", "Slant at approximately 15° from the horizontal"], answer: 1 },
+      { id: 38, q: "A dehumidifier is usually a small hermetic refrigerating system. It has both a condenser and an evaporator. Many older systems use R-12 or R-500. The newer units use:", options: ["R-134a", "R-145a", "R-217a", "R-121a"], answer: 0 },
+      { id: 39, q: "The normal cut-out setting of a window unit thermostat is between:", options: ["13°C to 16°C", "16°C to 21°C", "17°C to 22°C", "10°C to 15°C"], answer: 0 },
+      { id: 40, q: "Thermostat are used with most window units. They have differentials which vary between:", options: ["2°C to 4°C", "3°C to 5°C", "4°C to 5°C", "1°C to 2°C"], answer: 0 },
+      { id: 41, q: "In an air conditioning unit, the thermostat fails. The unit did not start. How do you test the operation of the thermostat?", options: ["Cover the air outlet and air inlet with a cloth. The air will recirculate into the unit and the temperature will quickly drop to the cut out temperature", "Cover the outlet and the air will not circulate and the thermostat functions because no air movement.", "Cover both the inlet and outlet so that the recirculating air has the same temperature", "Never cover any air passage so that air can freely move and thermostat functions well."], answer: 0 },
+      { id: 42, q: "Which of the following dehumidifier is often used to reheat the air after moisture is removed?", options: ["Evaporator", "Chiller", "Condenser", "Compressor"], answer: 2 },
+      { id: 43, q: "Which of the following refrigerant is added sometimes to other refrigerant to improve oil circulation?", options: ["R-117", "R-777", "R-170 (Ethane)", "R-270"], answer: 2 },
+      { id: 44, q: "A refrigeration that deals with producing temperature of -157°C or lower.", options: ["Low temperature refrigeration", "Extremely low temperature refrigeration", "Absolute zero refrigeration", "Cryogenics"], answer: 3 },
+      { id: 45, q: "Measurement of a device's ability to remove atmospheric air from test air.", options: ["Atmospheric Dust Spot Efficiency", "Atmospheric Dry Air Efficiency", "Test Air Efficiency", "Baudelot Air Efficiency"], answer: 0 },
+      { id: 46, q: "A liquid mixture having constant maximum and minimum boiling points. Refrigerants comprising this mixture do not combine chemically, yet the mixture provides constant characteristics.", options: ["Azeotropic Mixture", "Homogeneous Mixture", "Conzeotropic Mixture", "Cyrogenic Mixture"], answer: 0 },
+      { id: 47, q: "Refrigerant in Group A1 (R-11). Chemical combination of carbon, chlorine, and fluorine.", options: ["Carrene", "Cerrene", "CCL group", "HCL group"], answer: 0 },
+      { id: 48, q: "Which of the following refrigerants is popular in the industrial refrigerating system; also popularly absorption system of refrigerant.", options: ["R-717 (Ammonia)", "R-600 (Butane)", "R-611 (Methyl Formate)", "R-504"], answer: 0 },
+      { id: 49, q: "Which of the following is a function of air conditioning?", options: ["Temperature and Humidity Control", "Air Filtering, Cleaning, and Purification", "Air Movement and Circulation", "All of these"], answer: 3 },
+      { id: 50, q: "Oxygen is approximately what percent by weight in the atmosphere?", options: ["23%", "27%", "77%", "73%"], answer: 0 },
+      { id: 51, q: "Substances that have the ability to absorb moisture from the air are called:", options: ["Desiccants", "Moisturizer", "Dehygroscopic substances", "Moisture absorber"], answer: 0 },
+      { id: 52, q: "When the dry bulb and the wet bulb temperatures are identical, the air is said to be:", options: ["saturated", "compressed", "humidified", "dehumidified"], answer: 0 },
+      { id: 53, q: "In what form that water exists in air?", options: ["Solid", "Liquid", "Vapor", "Saturated"], answer: 2 },
+      { id: 54, q: "When air is heated, what happened to its relative humidity?", options: ["Increases", "Decreases", "Remain Constant", "May increase or Decrease Depending on temperature"], answer: 1 },
+      { id: 55, q: "The Horizontal Scale (Abscissa) in the Psychrometric Chart represents:", options: ["Dry bulb temperature", "Wet bulb temperature", "Relative Humidity", "Humidity"], answer: 0 },
+      { id: 56, q: "Most people are comfortable with the relative humidity of:", options: ["30% to 70%", "10% to 40%", "20% to 30%", "40% to 80%"], answer: 0 },
+      { id: 57, q: "The temperature below which water vapor in the air will start to condense.", options: ["Condensing Temperature", "Dry Bulb Temperature", "Dew point Temperature", "Wet Bulb Temperature"], answer: 2 },
+      { id: 58, q: "Which of the following is not used as method to measure air velocities?", options: ["Hot wire Anemometer", "Rotating Anemometer", "Swinging Vane Velocimeter", "Open type Barometer"], answer: 3 },
+      { id: 59, q: "It is a form of oxygen photochemically produced in nature.", options: ["Ozone", "Oxidation", "Oxidizing Agent", "DO2"], answer: 0 },
+      { id: 60, q: "What is the Chemical formula of Ozone?", options: ["O3", "O2", "D2O", "Oi"], answer: 0 },
+      { id: 61, q: "In the upper atmosphere, ozone is made by ultraviolet light reacting with:", options: ["Oxygen", "Hydrogen", "Nitrogen", "Water Vapor"], answer: 0 },
+      { id: 62, q: "The ozone concentration of 0.10 parts per million (ppm) is generally considered the maximum permissible for how many hours exposure?", options: ["8 hrs", "4 hrs", "7 hrs", "3 hrs"], answer: 0 },
+      { id: 63, q: "How may moisture be removed from air?", options: ["Condensation", "Absorption", "A and B", "none of these"], answer: 2 },
+      { id: 64, q: "In cooling cycle, the dry bulb temperature (db) of the air is lowered. When this happens the relative humidity", options: ["increases", "decreases", "remains constant", "increases or decreases depending on the temperature at which it is cooled"], answer: 0 },
+      { id: 65, q: "What is the effect of superheating the refrigerant?", options: ["It increases the Coefficient of Performance", "It decreases the Coefficient of Performance", "It lowers the boiling point of the refrigerant", "It increases the suction pressure of the refrigerant"], answer: 0 },
+      { id: 66, q: "In sensible heating the absolute humidity remains constant but the relative humidity:", options: ["increases", "decreases", "remains constant", "zero"], answer: 1 },
+      { id: 67, q: "The relative humidity becomes 100% and where the water vapor starts to condense.", options: ["Dew Point", "Cloud Point", "Saturated Point", "Critical Point"], answer: 0 },
+      { id: 68, q: "Why should you avoid bending or twisting of fan blades in an air conditioning unit?", options: ["It will not cause ice build-up", "It will wear out the motor bearings and cause noise", "It may not slice suction line", "It decreases the volume flow of refrigerant"], answer: 1 },
+      { id: 69, q: "A type of refrigerant that will not damage the ozone layer.", options: ["Hydrofluorocarbons (HCF's)", "Hydrochlorofluorocarbons (HCHF's)", "R-22", "R-12"], answer: 0 },
+      { id: 70, q: "Which of the following is the type of refrigerant that damages Ozone layer?", options: ["Hydrochlorofluorocarbons (HCHF's)", "R-12", "R-22", "All of these"], answer: 3 },
+      { id: 71, q: "Large-bulb alcohol thermometer used to measure air speed or atmospheric conditions by means of cooling.", options: ["Kata Thermometer", "Kelvin Thermometer", "JJ Thompson Thermometer", "Wet Bulb Thermometer"], answer: 0 },
+      { id: 72, q: "Which of the following components of the window air conditioning system must be cleaned annually?", options: ["Evaporator and Condenser", "Motor and compressor", "Fan Blades and Fan motor", "All of these"], answer: 3 },
+      { id: 73, q: "The phenomenon that warm air rise and cold air settle is called:", options: ["Stratification", "Sedimentation", "Setting Due", "Ventilation"], answer: 0 },
+      { id: 74, q: "Air delivered to the room from the supply duct, moving at a velocity of 150 ft/min or more is called:", options: ["Primary Air", "Secondary Air", "Saturated Air", "Air turbulence"], answer: 0 },
+      { id: 75, q: "Carries needed to deliver air to the conditioned space. It is made of sheet of metals like aluminum, galvanized sheet steel and some structural materials that will not burn.", options: ["Duct", "Air Inlet", "Air Outlet", "Diffuser"], answer: 0 },
+      { id: 76, q: "From what principle that air ducts operate?", options: ["Principle of Pressure Difference", "Principle of Temperature Difference", "Forced Draft Fan Principle", "Principle of Natural Convection"], answer: 0 },
+      { id: 77, q: "Which of the following is the common classification of ducts?", options: ["Conditioned Air - Duct", "Recirculating", "Fresh-air Ducts", "All of these"], answer: 3 },
+      { id: 78, q: "It is used deliver concentrated airstreams into a room.. Many have one-way or two-way adjustable air stream deflectors.", options: ["Register", "Grille", "Diffuser", "Damper"], answer: 0 },
+      { id: 79, q: "It is used to control the air-throw distance, height, and spread, as well as the amount of air.", options: ["Grille", "Register", "Diffuser", "Damper"], answer: 1 },
+      { id: 80, q: "It is used to deliver widespread, fan-shaped flows of air into the room.", options: ["Grille", "Register", "Diffuser", "Damper"], answer: 2 },
+      { id: 81, q: "Which of the following fans in air conditioning systems which can be classified as centrifugal flow?", options: ["Axial fan", "Propeller fan", "Bi-axial fan", "None of these"], answer: 1 },
+      { id: 82, q: "The most common controller in the heating and cooling systems.", options: ["Thermostat", "Pressure gage", "Barometer", "Sling Psychrometer"], answer: 0 },
+      { id: 83, q: "A thermostat that functions as increase or decrease instead of starting and stopping system is called :", options: ["modulate", "heating-cooling the thermostat", "interlocked", "compound thermostat"], answer: 0 },
+      { id: 84, q: "A number used to compare energy usage for different areas. It is calculated by dividing the energy consumption by the fottage of the conditioned area.", options: ["Energy Utilization Unit", "Energy Utilization Efficiency", "Energy Utilization Index", "Energy Utilization Ratio"], answer: 2 },
+      { id: 85, q: "The ratio of the rated cooling capacity divided by the amount of electrical power used:", options: ["Energy Efficiency Ratio (EER)", "Energy Efficiency Index (EE)", "Cooling Efficiency (CE)", "Energy Cooling Ratio (ECR)"], answer: 0 },
+      { id: 86, q: "Heat exchanger in which water flows by gravity over the outside of the tubes or plates.", options: ["Baudelot Cooler", "Free Cooler", "Newtonian Cooler", "Bourdon Cooler"], answer: 0 },
+      { id: 87, q: "A popular air conditioning system that includes a single outdoor condenser, three independent evaporators, and individual evaporator temperature control. The condensing unit is located outside on a slab. They are frequently used in legal and medical offices, motels and homes without ducts.", options: ["Multizone Ductless Split System", "Packaged Terminal Air Conditioner", "Console Air Conditioner", "Window type Air Conditioner"], answer: 0 },
+      { id: 88, q: "An air conditioning system which is a combination of heating and cooling system. It is designed to serve an individual room or zone.", options: ["Multizone Ductless Split System", "Packaged Terminal Air Conditioner", "Console air Conditioner", "Window Type air Conditioner"], answer: 1 },
+      { id: 89, q: "Which of the following is to be checked as regular monthly maintenance schedule of a console air conditioning units?", options: ["Water Leaks", "Fan Speeds", "Cooling Tower", "Duct Dampers, Registers and Diffusers"], answer: 3 },
+      { id: 90, q: "Which of the following is to be checked as part of the weekly maintenance schedule of a console air conditioners?", options: ["Filters", "Humidifiers", "Safety valves", "Cooling Tower"], answer: 3 },
+      { id: 91, q: "A mechanism that removes moisture.", options: ["Humidifiers", "Dehumidifiers", "Moisturizers", "Cooling Towers"], answer: 1 },
+      { id: 92, q: "When coil surface temperature is below the dew point of the air.", options: ["moisture will condense out of the air", "vapor will evaporate through the air", "air is dehumidified", "air is humidified and saturated"], answer: 0 },
+      { id: 93, q: "Nitrogen occupied almost how much of the Earth's Atmosphere.", options: ["One-fourth", "Three-fourths", "One-half", "One-third"], answer: 1 },
+      { id: 94, q: "Water in vapor form remains a vapor as long as its temperature is what relations to the dew point temperature.", options: ["above", "equals", "below", "almost"], answer: 2 },
+      { id: 95, q: "An instrument used in measuring air velocity by velocity-pressure method.", options: ["Pitot Tube", "Anemometer", "Aneroid Barometer", "Flowmeter"], answer: 0 },
+      { id: 96, q: "What is the specific humidity of dry air?", options: ["100", "20", "0", "50"], answer: 2 },
+      { id: 97, q: "When hot soup was served in a cup during dinner, an engineer was so eager to drink it. Since it was hot, he added ice cubes of ice to cool the soup stirred it. He noticed that dew starts to form on the outermost surface of the cup. He wanted to check the temperature of the outermost surface of the cup. What is this temperature equal to?", options: ["superheated temperature", "equal to zero", "standard temperature", "equal to air's dew point temperature"], answer: 3 },
+      { id: 98, q: "The temperature at which the water vapor in the gas begins to condense in a constant pressure process.", options: ["Dew point", "Vapor point", "Flue point", "Gas point"], answer: 0 },
+      { id: 99, q: "All of the following processes can be found on a psychrometric chart except :", options: ["humidification", "sensible heating", "natural convection", "sensible cooling"], answer: 2 },
+      { id: 100, q: "All of the following processes can be found on a psychrometric chart except:", options: ["heating and humidifying", "cooling and dehumidification", "black body radiation", "evaporative cooling"], answer: 2 },
+      { id: 101, q: "Which is not commonly used to cool and dehumidify equipment?", options: ["Calcium chloride", "Activated alumina", "Sodium zeolite", "Silica gel"], answer: 0 },
+      { id: 102, q: "All of the following temperatures have meaning in psychrometrics except:", options: ["dry - bulb temperature", "wet - bulb temperature", "adiabatic wall temperature", "dew point"], answer: 2 },
+      { id: 103, q: "The relative humidity is given by the :", options: ["ratio of the actual humidity to the saturated humidity at the same temperature and pressure", "ratio of the partial pressure of water vapor to the saturation pressure", "ratio of wet-bulb to dry-bulb temperature", "ratio of dry-bulb temperature to dew point"], answer: 1 },
+      { id: 104, q: "The determination of properties and behavior of atmospheric air usually the purview of :", options: ["thermodynamics", "psychrometrics", "forced convection", "Kirchoff's law"], answer: 1 },
+      { id: 105, q: "Past ME Board Question: Which of the following statements is correct? The relative humidity of an air water vapor mixture", options: ["is the ratio of the partial pressure of the water vapor to the partial pressure of the air.", "indicates the mass of water vapor in the mixture", "is equal to the mole fraction of water vapor in the mixture at the mixture temperature.", "is the ratio of the partial pressure of water vapor to the saturation pressure at the mixture temperature"], answer: 3 },
+      { id: 106, q: "Past ME Board Question: In sensible cooling process, moisture content.", options: ["does not change", "decreases", "indeterminate", "increases"], answer: 0 },
+      { id: 107, q: "Past ME Board Question: What amount of air is required in a low bypass factor?", options: ["Greater", "Lesser", "Indeterminate", "Constant"], answer: 1 },
+      { id: 108, q: "Past ME Board Question: The design of an air supply duct of an air conditioning system", options: ["adds moisture to the air", "lowers the temperature of the air", "does not affect the moisture of air", "affects the distribution"], answer: 3 },
+      { id: 109, q: "Past ME Board Question: What is the lowest temperature to which water could possibly be cooled in a cooling tower?", options: ["The effective temperature", "The temperature of adiabatic compression", "The wet bulb depression", "The dew point temperature of the air"], answer: 1 },
+      { id: 110, q: "Past ME Board Question: Combined process of cooling and humidifying is also known as:", options: ["heating and humidifying", "cooling tower", "evaporative cooling process", "moisture removal process"], answer: 2 },
+      { id: 111, q: "Past ME Board Question: In a cooling tower, the water is cooled mainly by:", options: ["condensation", "evaporation", "convection", "conduction"], answer: 2 },
+      { id: 112, q: "Past ME Board Question: Which of the following types of air dryers works by absorbing moisture on a solid dessicant or drying material such as activated alumina, silicon gel or molecular sieve?", options: ["Regenerative dryer", "Deliquescent dryer", "Spray dryer", "Refrigerated dryer"], answer: 1 },
+      { id: 113, q: "Past ME Board Question: The relationship of water vapor in the air at the dew point temperature to the amount that would be in the air if the air were saturated at the dry bulb temperature is:", options: ["partial pressure actual at dew point", "percentage humidity", "relative humidity", "partial pressure of water"], answer: 2 },
+      { id: 114, q: "Past ME Board Question: When the air is saturated the wet bulb depression is:", options: ["zero", "indefinite", "unity", "100%"], answer: 0 },
+      { id: 115, q: "Past ME Board Question: A temperature measurement in an ordinary De thermometer which has constant specific humidity.", options: ["Critical temperature", "Dew point temperature", "Dry bulb temperature", "Wet bulb temperature"], answer: 1 },
+      { id: 116, q: "Past ME Board Question: During sensible heating, the humidity remains constant but the relative humidity.", options: ["increases", "decreases", "remains constant", "zero"], answer: 1 },
+      { id: 117, q: "Past ME Board Question: The relative humidity becomes 100% and where the water vapor starts to condense.", options: ["Critical point", "Saturated point", "Dew point", "Cloud point"], answer: 2 },
+      { id: 118, q: "Past ME Board Question: What is the specific humidity of dry air?", options: ["150", "100", "50", "0"], answer: 3 },
+      { id: 119, q: "Past ME Board Question: An engineer inspected an air-conditioning unit. He found out that the unit does not produce any cooling effect, however, the air-conditioning unit is running. He checked the temperatures of the condenser and evaporator and had the unit run. He found out that there was no change in the temperature. What should he do?", options: ["Replace fuse", "Charge with new refrigerant", "Replace relay", "Adjust door seal"], answer: 1 },
+      { id: 120, q: "Past ME Board Question: What is the temperature range of air in air conditioning application where the dry air can be considered ideal gas?", options: ["100 to 125°C", "50 to 75°C", "75 to 100°C", "-10 to 50°C"], answer: 3 },
+      { id: 121, q: "Past ME Board Question: What is the value of air stratification in air conditioning design fit for human comfort?", options: ["minimum", "maximum", "less than air temperature", "equal to air temperature"], answer: 2 }
+    ];
+
+    let currentQuestions = [];
+    let userAnswers = {};
+    let score = 0;
+
+    function init() {
+      currentQuestions = JSON.parse(JSON.stringify(originalQuestions));
+      userAnswers = {};
+      score = 0;
+      document.getElementById('total').textContent = currentQuestions.length;
+      document.getElementById('score').textContent = 0;
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+
+      currentQuestions.forEach((q, qIndex) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        
+        const qText = document.createElement('div');
+        qText.className = 'question-text';
+        qText.textContent = `${qIndex + 1}. ${q.q}`;
+        card.appendChild(qText);
+
+        const optionsList = document.createElement('ul');
+        optionsList.className = 'options';
+
+        q.options.forEach((opt, optIndex) => {
+          const li = document.createElement('li');
+          li.className = 'option-item';
+          
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          const labels = ['A', 'B', 'C', 'D'];
+          btn.textContent = `${labels[optIndex]}. ${opt}`;
+          
+          btn.onclick = () => selectAnswer(qIndex, optIndex, btn);
+          
+          if (userAnswers[qIndex] !== undefined) {
+            btn.disabled = true;
+            if (optIndex === q.answer) {
+              btn.classList.add('correct');
+            }
+            if (userAnswers[qIndex] === optIndex && optIndex !== q.answer) {
+              btn.classList.add('incorrect');
+            }
+          }
+
+          li.appendChild(btn);
+          optionsList.appendChild(li);
+        });
+
+        card.appendChild(optionsList);
+        container.appendChild(card);
+      });
+    }
+
+    function selectAnswer(qIndex, optIndex, btnEl) {
+      if (userAnswers[qIndex] !== undefined) return;
+
+      userAnswers[qIndex] = optIndex;
+      const q = currentQuestions[qIndex];
+
+      if (optIndex === q.answer) {
+        score++;
+        document.getElementById('score').textContent = score;
+      }
+
+      renderQuiz();
+    }
+
+    function shuffleAndReset() {
+      // Shuffle questions
+      for (let i = originalQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [originalQuestions[i], originalQuestions[j]] = [originalQuestions[j], originalQuestions[i]];
+      }
+      
+      // Shuffle options for each question
+      originalQuestions.forEach(q => {
+        const correctOptText = q.options[q.answer];
+        for (let i = q.options.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+        }
+        q.answer = q.options.indexOf(correctOptText);
+      });
+
+      init();
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      score = 0;
+      document.getElementById('score').textContent = 0;
+      renderQuiz();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

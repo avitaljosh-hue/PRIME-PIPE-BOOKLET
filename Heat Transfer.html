@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heat Transfer (Elements) Quiz</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --primary: #d63384;
+      --primary-hover: #b8256f;
+      --correct: #198754;
+      --incorrect: #dc3545;
+      --border: #e0e0e0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      color: var(--primary);
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+    .score-board {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .question-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    .question-text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    .options {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    .option-item {
+      margin-bottom: 8px;
+    }
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not([disabled]) {
+      background: #e9ecef;
+    }
+    .option-btn.correct {
+      background-color: #d1e7dd !important;
+      border-color: #badbcc !important;
+      color: #0f5132 !important;
+      font-weight: bold;
+    }
+    .option-btn.incorrect {
+      background-color: #f8d7da !important;
+      border-color: #f5c6cb !important;
+      color: #842029 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Heat Transfer (Elements) Quiz</h1>
+      <p>Test your knowledge on Conduction, Convection, Radiation, and Heat Exchangers.</p>
+    </header>
+    <div class="controls">
+      <div class="score-board">Score: <span id="score">0</span> / <span id="total">0</span></div>
+      <div>
+        <button class="btn" onclick="shuffleAndReset()">🔀 Shuffle & Reset</button>
+        <button class="btn" onclick="resetQuiz()">🔄 Reset Score</button>
+      </div>
+    </div>
+    <div id="quiz-container"></div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { id: 1, q: "One of the reasons for insulating the pipes is:", options: ["They may not break under pressure", "There is minimum corrosion", "Capacity to withstand pressure is increased", "Heat loss from the surface is minimized"], answer: 3 },
+      { id: 2, q: "The rate of radiant energy, that is emitted by a surface at any temperature and in small wavelengths is found from the known rate of energy, that under the same conditions will be emitted from a black surface, by multiplying with the absorptivity. The above enunciation is called:", options: ["Lambert's law", "Kirchhoff's law", "Planck's law", "Stefan Boltzmann's law"], answer: 1 },
+      { id: 3, q: "Which of the following is generally used to measure the temperature inside the furnace?", options: ["mercury thermometer", "alcohol thermometer", "ash thermometer", "optical pyrometer"], answer: 3 },
+      { id: 4, q: "All heat transfer processes :", options: ["involve transfer of energy", "involve temperature difference between the bodies", "obey first law of thermodynamics", "obey second law of thermodynamics"], answer: 1 },
+      { id: 5, q: "What is thermal diffusivity ?", options: ["a mathematical formula", "a physical property of the material", "a configuration for heat conduction", "a dimensionless parameter"], answer: 1 },
+      { id: 6, q: "Which of the following is a unit of thermal diffusivity?", options: ["m²/hr", "kcal/m²hr", "kcal/m²hr°C", "m²/hr°C"], answer: 0 },
+      { id: 7, q: "Non isotropic conductivity is shown by which of the following?", options: ["brass", "copper", "wood", "steel"], answer: 2 },
+      { id: 8, q: "For glass wool thermal conductivity changes from sample to sample due changes in:", options: ["structure", "density", "composition", "all of the above"], answer: 3 },
+      { id: 9, q: "Which of the following is the S.I. unit of thermal conductivity?", options: ["W/m-hr-°K", "W/m°K", "KJ/m-hr-°C", "W/m-hr-°C"], answer: 1 },
+      { id: 10, q: "What is the value of the Prandt'l number for air?", options: ["10", "6.7", "67", "0.7"], answer: 3 },
+      { id: 11, q: "According to Prevost theory of heat exchange,", options: ["It is impossible to transfer heat from low temperature source to high temperature source", "Heat transfer by radiation needs no medium", "All bodies above absolute zero emit radiation", "Heat transfer in most of the cases occurs by combination of conduction, convection and radiation"], answer: 2 },
+      { id: 12, q: "Thermal conductivity of wood depends on which of the following?", options: ["moisture", "temperature", "density", "all of the above"], answer: 3 },
+      { id: 13, q: "A fur coat on an animal will help the animal to remain:", options: ["warm in winter", "cool in winter", "warm in summer", "cool in summer"], answer: 0 },
+      { id: 14, q: "The nature of flow of a fluid inside a tube, whether it is turbulent or laminar, can be ascertained by:", options: ["flow velocity", "surface conditions", "viscosity of fluid", "Reynolds number"], answer: 3 },
+      { id: 15, q: "By which of the following modes of heat transfer is the Stefan-Boltzmann law applicable ?", options: ["conduction", "radiation", "conduction and radiation combined", "convection and radiation combined"], answer: 1 },
+      { id: 16, q: "At all wave lengths and temperatures the monochromatic emissivity of a white body is equal to:", options: ["zero", "0.5", "unity", "0.1 to 0.5"], answer: 0 },
+      { id: 17, q: "The radiation from flames is having", options: ["continuous radiation from burning soot particles of microscopic and submicroscopic dimensions", "radiation from suspended larger particles of coal, coke, or ash contributing to flame lumininosity", "infared radiation from water vapor and carbon dioxide", "all of the above"], answer: 3 },
+      { id: 18, q: "The statement that the emissivity and absorptivity of a surface is surrounded by its own temperature are the same for both monochromatic and total radiation is called:", options: ["Lambert's law", "Kirchhoff's law", "D' Alambart's", "Law of emissivity"], answer: 1 },
+      { id: 19, q: "A reservoir that supplies energy in the form of heat is called:", options: ["source", "sink", "cold reservoir", "heat reservoir"], answer: 0 },
+      { id: 20, q: "In regenerator type heat exchanger, heat transfer occurs by:", options: ["direct mixing of hot and cold fluids", "a complete separation between hot and cold fluids", "flow of hot and cold fluids alternately over a surface", "generation of heat again and again"], answer: 2 },
+      { id: 21, q: "Least value of Prandt'l number can be expected in case of", options: ["liquid metals", "sugar solution", "salt solution", "water"], answer: 0 },
+      { id: 22, q: " \"The boiling point of a solution is a linear function of water at the same pressure.\" The above statement is called", options: ["Dubring's rule", "Petit and Dulong's law", "Fick's rule", "Reynolds law"], answer: 0 },
+      { id: 23, q: "Floating heads are provided in heat exchangers to", options: ["increase the pressure drop", "decrease the pressure drop", "facilitate maintenance", "avoid deformation of tubes because of thermal expansion"], answer: 3 },
+      { id: 24, q: "What do you call the first stage of crystal formation?", options: ["nucleation", "foaming", "separation", "vortexing"], answer: 0 },
+      { id: 25, q: "In heat exchanger design, one transfer unit implies:", options: ["one fluid which is exchanging with another fluid of the same chemical composition", "the section of heat exchanger which will cause temperature drop of one degree centigrade", "the section of heat exchanger where heat transfer surface area has been one square meter", "condition when the change in temperature of one steam is numerically equal to the average driving force"], answer: 3 },
+      { id: 26, q: "Dritus Boelter equation can be applied in case of fluids flowing in:", options: ["transition region", "turbulent region", "laminar region", "any of the above"], answer: 1 },
+      { id: 27, q: "In sugar mills can just is evaporated in:", options: ["zigzag tube evaporators", "long vertical tube evaporators", "short vertical tube evaporators", "horizontal tube evaporator"], answer: 1 },
+      { id: 28, q: "A 1-2 heat exchanger refers to which of the following?", options: ["single pass on shell side and double pass on tube side", "single pass on tube side and double pass on shell side", "single liquid cools two liquids at different temperature", "two tubes of cold fluid pass through one tube of hot fluid"], answer: 0 },
+      { id: 29, q: "A correction of LMTD is essential in case of:", options: ["parallel flow heat exchanger", "counter current heat exchanger", "cross flow heat exchanger", "none of the above."], answer: 2 },
+      { id: 30, q: "Which of the following is used as entrainer in acetic acid - water separation?", options: ["methyl alcohol", "phosphorous", "butyl acetate", "hexane"], answer: 2 },
+      { id: 31, q: "A type of radiation consisting of singly charged particles that generate to intermediate distances.", options: ["Nuclear radiation", "Alpha radiation", "Beta radiation", "Gamma radiation"], answer: 2 },
+      { id: 32, q: "An electrically charged atom or radical which carries electricity through an electrolyte is called:", options: ["ion", "isotope", "molecule", "hole"], answer: 0 },
+      { id: 33, q: "The energy of a body that can be transmitted in the form of heat.", options: ["Heat energy", "Thermal energy", "Entropy", "Internal energy"], answer: 1 },
+      { id: 34, q: "In an isometric process, the heat transferred is equal to :", options: ["change in enthalpy", "change in entropy", "change in internal energy", "work nonflow"], answer: 2 },
+      { id: 35, q: "A substance that is able to absorb liquids or gases and is used for removing them from a given medium or region.", options: ["Absorbent", "Cohesive", "Adsorbent", "Adhesive"], answer: 0 },
+      { id: 36, q: "Radiant heat transfer is described by :", options: ["Newton's law", "Fourier's law", "The logarithmic mean temperature", "Kirchhoff's law"], answer: 3 },
+      { id: 37, q: "A reservoir that absorbs energy in the form of heat is called", options: ["source", "sink", "cold reservoir", "heat reservoir"], answer: 1 },
+      { id: 38, q: "When the entire heat exchanger is selected as control volume, heat becomes", options: ["unity", "zero", "undefined", "indeterminate"], answer: 1 },
+      { id: 39, q: "Heat is conducted in the direction of :", options: ["increasing temperature", "decreasing temperature", "increasing and decreasing temperature", "constant temperature"], answer: 1 },
+      { id: 40, q: "The heat transfer term in the first law of thermodynamics may be due to any of the following except:", options: ["conduction", "convection", "radiation", "internal heat generation (e.g., chemical reaction)"], answer: 3 },
+      { id: 41, q: "All heat transfer processes require a medium of energy exchange except:", options: ["conduction", "natural convection", "forced convection", "radiation"], answer: 3 },
+      { id: 42, q: "Thermal conduction is described by :", options: ["Newton's law", "The logarithmic mean temperature difference", "The Stefan - Boltzmann law", "Fourier's law"], answer: 3 },
+      { id: 43, q: "Convection is described by which of the following laws?", options: ["Newton's law", "The logarithmic mean temperature difference", "The Stefan - Boltzmann law", "Fourier's law"], answer: 0 },
+      { id: 44, q: "Radiation heat transfer is described by", options: ["Newton's law", "The logarithmic mean temperature difference", "Fourier's law", "Kirchoff's law"], answer: 3 },
+      { id: 45, q: "The equivalent of ratio of emissive power to absorptivity for bodies in thermal equilibrium is described by:", options: ["Newton's law", "The logarithmic mean temperature difference", "Fourier's law", "Kirchoff's law"], answer: 3 },
+      { id: 46, q: "The temperature potential between temperature at the two ends of a heat exchanger are given by:", options: ["the logarithmic mean temperature difference", "the Stefan - Boltzmann law", "Fourier's law", "Kirchoff's law"], answer: 0 },
+      { id: 47, q: "The function of a heat exchanger is to :", options: ["increase the water temperature entering the boiler and decrease combustion requirements", "transfer heat from one fluid to another", "increase the total energy content of the flow", "exchange heat to increase energy to the flow"], answer: 1 },
+      { id: 48, q: "The function of a superheater is to:", options: ["increase the water temperature entering the boiler and decrease combustion requirements", "transfer heat from one fluid to another", "increase the total energy content of the flow", "exchange heat to increase energy to the flow"], answer: 3 },
+      { id: 49, q: "What is the series of processes that eventually bring the system back to its original condition?", options: ["reversible process", "irreversible process", "cycle", "isentropic process"], answer: 2 },
+      { id: 50, q: "Past ME Board Question: A theoretical body which when heated to incandescence would emit a continuous light-ray spectrum.", options: ["Black body radiation", "Black body", "Blue body", "White body"], answer: 1 },
+      { id: 51, q: "Past ME Board Question: Which of the following is the reason for insulating the pipes?", options: ["They may not break under pressure", "There is minimum corrosion", "Capacity to withstand pressure", "Heat loss from the surface is minimized"], answer: 3 },
+      { id: 52, q: "Past ME Board Question: Heat transfer due to density differential", options: ["Convection", "Nuclear", "Conduction", "Radiation"], answer: 0 },
+      { id: 53, q: "Past ME Board Question: The term \"exposure\" in radiological effects is used as a measure of a gamma ray or an X-ray field in the surface of an exposed object. Since this radiation produces ionization of the air surrounding the object, the exposure is obtained as", options: ["number of ions produced per mass of air x coulombs per kg", "mass of air x surface area of an exposed object", "mass of air over surface area of an exposed object", "number of ions produced per mass of air + coulombs per kg"], answer: 0 },
+      { id: 54, q: "Past ME Board Question: The passing of heat energy from molecule to molecule through a substance", options: ["conduction", "radiation", "conservation", "convection"], answer: 0 },
+      { id: 55, q: "Past ME Board Question: The radiant heat transfer depends on:", options: ["temperature", "heat rays", "heat flow from cold to hot", "humidity"], answer: 1 },
+      { id: 56, q: "Past ME Board Question: What kind of heat exchanger where water is heated to a point that dissolved gases are liberated?", options: ["Evaporator", "Condenser", "Intercooler", "Deaerator"], answer: 3 },
+      { id: 57, q: "Past ME Board Question: Heat transfer processes which include a change of phase of a fluid are considered", options: ["convection", "thermal radiation", "conduction", "radiation"], answer: 0 },
+      { id: 58, q: "Past ME Board Question: A hot block is cooled by blowing cool air over its top surface. The heat that is first transferred to the air layer close to the block is by conduction. It is eventually carried away from the surface by", options: ["convection", "radiation", "conduction", "thermal radiation"], answer: 0 },
+      { id: 59, q: "Past ME Board Question: A body that is hot compared to its surroundings illuminates more energy than it receives, while its surrounding absorbs more energy than they give. The heat is transferred from one to another by energy wave motion. What is this mode of heat transfer?", options: ["Radiation", "Conduction", "Convection", "Condensation"], answer: 0 },
+      { id: 60, q: "What is the heat transfer due to density differential?", options: ["Convection", "Conduction", "Nuclear", "Radiation"], answer: 0 },
+      { id: 61, q: "What do you call the passing of heat energy from molecule to molecule through a substance?", options: ["Conduction", "Conservation", "Radiation", "Convection"], answer: 0 },
+      { id: 62, q: "The transmission of heat from one place to another by fluid circulation between the spots of different temperatures is called", options: ["Convection", "Conservation", "Radiation", "Conduction"], answer: 0 },
+      { id: 63, q: "Which of the following requires the greatest amount of heat per kilogram for a given increase in temperature?", options: ["Ice", "Water", "Steam", "Copper"], answer: 1 },
+      { id: 64, q: "What do you call the effectiveness of a body as a thermal radiator at a given temperature?", options: ["Absorptivity", "Conductivity", "Emissivity", "Reflectivity"], answer: 2 },
+      { id: 65, q: "The natural direction of the heat flow between two reservoirs is dependent on which of the following?", options: ["Their temperature difference", "Their internal energy", "Their pressures", "Their states, whether solid, liquid and gas"], answer: 0 },
+      { id: 66, q: "Why are metals good conductors of heat?", options: ["Because they contain free electrons", "Because their atoms are relatively far apart", "Because their atoms collide infrequently", "Because they have reflecting surfaces"], answer: 0 },
+      { id: 67, q: "In natural convection a heated portion of a fluids moves because:", options: ["its molecular motions become aligned", "of molecular collisions within it", "its density is less than that of the surrounding fluid", "of currents in the surrounding fluid"], answer: 2 },
+      { id: 68, q: "In order to emit electromagnetic radiation, an object must be at a temperature:", options: ["above 0K", "above 0°C", "above that of its surroundings", "high enough for it to glow"], answer: 0 },
+      { id: 69, q: "The rate at which an object radiates electromagnetic energy does not depend on its:", options: ["surface area", "mass", "temperature", "ability to absorb radiation"], answer: 1 },
+      { id: 70, q: "Sublimation refers to:", options: ["the vaporization of a solid without first becoming liquid", "the melting of a solid", "the vaporization of a liquid", "the condensation of a gas into liquid"], answer: 0 },
+      { id: 71, q: "In the process of freeze drying, ice goes directly into water vapor. What is the temperature at which this process can take place?", options: ["Below the triple point of water", "At the triple point of water", "Above the triple point of water", "Any of the above, depending on the pressure"], answer: 0 },
+      { id: 72, q: "What usually happen when a vapor condenses into a liquid?", options: ["It evolves heat", "It generates heat", "Its temperature increases", "It boils with temperature less than 100°C"], answer: 0 },
+      { id: 73, q: "In a cooling tower, the water is cooled mainly by:", options: ["condensation", "convection", "evaporation", "conduction"], answer: 2 },
+      { id: 74, q: "How do you classify a body that has an emissivity factor of 0.7?", options: ["Gray body", "Black body", "White body", "Theoretical body"], answer: 0 },
+      { id: 75, q: "At what particular condition that no more heat can that be removed from a substance and the temperature can no longer be lowered?", options: ["Freezing point", "Absolute zero", "Critical point", "Ground zero"], answer: 1 },
+      { id: 76, q: "What refers to the heat transfer wherein the heat is transferred from one point to another by actual movement of substance?", options: ["Conduction", "Radiation", "Convection", "Absorption"], answer: 2 },
+      { id: 77, q: "The ratio of the radiation of actual body to the radiation of a blackbody is known as", options: ["emittance", "reflectance", "absorptance", "transmittance"], answer: 0 },
+      { id: 78, q: "Which of the following is the usual geometric view factor for a black body?", options: ["Zero", "Infinity", "One", "Indeterminate"], answer: 2 },
+      { id: 79, q: "What happens to the heat transferred radially across insulated pipe per unit area?", options: ["The heat will flow at constant rate.", "Decreases with the increase in thermal conductivity.", "Decrease from pipe wall to insulated surface.", "Partially increases from pipe wall to insulated surface."], answer: 2 },
+      { id: 80, q: "What do you call a change of phase directly from vapor to solid without passing through the liquid state?", options: ["Sublimation", "Solidification", "Vaporization", "Deposition"], answer: 3 },
+      { id: 81, q: "Which of the following is the Stefan-Boltzmann constant?", options: ["5.77 x 10^-7 W/m²K⁴", "7.67 x 10^-9 W/m²K⁴", "4.78 x 10^-10 W/m²K⁴", "5.67 x 10^-8 W/m²K⁴"], answer: 3 },
+      { id: 82, q: "What is the usual value of transmissivity for opaque materials?", options: ["0", "Indeterminate", "1", "Infinity"], answer: 0 },
+      { id: 83, q: "A body whose emissivity is less than 1 is known as a real body. What is the other term for real body?", options: ["Gray body", "White body", "Black body", "Theoretical body"], answer: 0 },
+      { id: 84, q: "What refers to an ideal body that absorbs all of the radiant energy that intrudes on it and also emits the maximum possible energy when acting as a source?", options: ["White body", "Black body", "Gray body", "Red hot body"], answer: 1 },
+      { id: 85, q: "The thermal resistance for one-dimensional steady conduction heat transfer through cylindrical wall in the radial direction is expressed in which of the following functions?", options: ["Linear", "Exponential", "Logarithmic", "Trigonometric"], answer: 2 },
+      { id: 86, q: "The law which states that \"the ratio of the emissive powers to absorptivities are equal when the two bodies are in thermal equilibrium\" is known as:", options: ["Stefan-Boltzmann Law", "Newton's Law of Convection", "Fourier's Law", "Kirchhoff's Law of Radiation"], answer: 3 },
+      { id: 87, q: "It refers to the ratio of the internal thermal resistance of a solid to the boundary layer thermal resistance (or external resistance of the body).", options: ["Biot number", "Prandtl number", "Nusselt number", "Reynolds number"], answer: 0 },
+      { id: 88, q: "It refers to the ratio of the rate of heat transferred by conduction to the rate of energy stored.", options: ["Reynolds number", "Fourier number", "Biot number", "Prandtl number"], answer: 1 },
+      { id: 89, q: "A hot block is cooled by blowing cool air over its top surface. The heat that is first transferred to the air layer close to the block is by conduction. It is eventually carried away from the surface by:", options: ["conduction", "radiation", "thermal", "convection"], answer: 3 },
+      { id: 90, q: "It is the term used to describe the energy of a body that can be transmitted in the form of heat.", options: ["Enthalpy", "Thermal energy", "Internal energy", "Entropy"], answer: 1 }
+    ];
+
+    let currentQuestions = [];
+    let userAnswers = {};
+    let score = 0;
+
+    function init() {
+      currentQuestions = JSON.parse(JSON.stringify(originalQuestions));
+      userAnswers = {};
+      score = 0;
+      document.getElementById('total').textContent = currentQuestions.length;
+      document.getElementById('score').textContent = 0;
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+
+      currentQuestions.forEach((q, qIndex) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        
+        const qText = document.createElement('div');
+        qText.className = 'question-text';
+        qText.textContent = `${qIndex + 1}. ${q.q}`;
+        card.appendChild(qText);
+
+        const optionsList = document.createElement('ul');
+        optionsList.className = 'options';
+
+        q.options.forEach((opt, optIndex) => {
+          const li = document.createElement('li');
+          li.className = 'option-item';
+          
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          const labels = ['A', 'B', 'C', 'D'];
+          btn.textContent = `${labels[optIndex]}. ${opt}`;
+          
+          btn.onclick = () => selectAnswer(qIndex, optIndex, btn);
+          
+          if (userAnswers[qIndex] !== undefined) {
+            btn.disabled = true;
+            if (optIndex === q.answer) {
+              btn.classList.add('correct');
+            }
+            if (userAnswers[qIndex] === optIndex && optIndex !== q.answer) {
+              btn.classList.add('incorrect');
+            }
+          }
+
+          li.appendChild(btn);
+          optionsList.appendChild(li);
+        });
+
+        card.appendChild(optionsList);
+        container.appendChild(card);
+      });
+    }
+
+    function selectAnswer(qIndex, optIndex, btnEl) {
+      if (userAnswers[qIndex] !== undefined) return;
+
+      userAnswers[qIndex] = optIndex;
+      const q = currentQuestions[qIndex];
+
+      if (optIndex === q.answer) {
+        score++;
+        document.getElementById('score').textContent = score;
+      }
+
+      renderQuiz();
+    }
+
+    function shuffleAndReset() {
+      for (let i = originalQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [originalQuestions[i], originalQuestions[j]] = [originalQuestions[j], originalQuestions[i]];
+      }
+      
+      originalQuestions.forEach(q => {
+        const correctOptText = q.options[q.answer];
+        for (let i = q.options.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+        }
+        q.answer = q.options.indexOf(correctOptText);
+      });
+
+      init();
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      score = 0;
+      document.getElementById('score').textContent = 0;
+      renderQuiz();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

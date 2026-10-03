@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluid Mechanics (Elements) Quiz</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --primary: #6f42c1;
+      --primary-hover: #593196;
+      --correct: #198754;
+      --incorrect: #dc3545;
+      --border: #e0e0e0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      color: var(--primary);
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+    .score-board {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .question-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+    .question-text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    .options {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    .option-item {
+      margin-bottom: 8px;
+    }
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not([disabled]) {
+      background: #e9ecef;
+    }
+    .option-btn.correct {
+      background-color: #d1e7dd !important;
+      border-color: #badbcc !important;
+      color: #0f5132 !important;
+      font-weight: bold;
+    }
+    .option-btn.incorrect {
+      background-color: #f8d7da !important;
+      border-color: #f5c6cb !important;
+      color: #842029 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Fluid Mechanics (Elements) Quiz</h1>
+      <p>Test your knowledge on Fluid Dynamics, Hydrostatics, Flow Equations, and Hydraulics.</p>
+    </header>
+    <div class="controls">
+      <div class="score-board">Score: <span id="score">0</span> / <span id="total">0</span></div>
+      <div>
+        <button class="btn" onclick="shuffleAndReset()">🔀 Shuffle & Reset</button>
+        <button class="btn" onclick="resetQuiz()">🔄 Reset Score</button>
+      </div>
+    </div>
+    <div id="quiz-container"></div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { id: 1, q: "If the energy of the incident photon is less than the work function:", options: ["an electron will be ejected", "more than one electron will be ejected", "an electron will not be ejected", "less than one electron will be ejected"], answer: 2 },
+      { id: 2, q: "For supersonic flow, the pressure of fluid must decrease as the fluid flow area of the duct", options: ["increases", "decreases", "remain the same", "none of these"], answer: 0 },
+      { id: 3, q: "Density in terms of viscosity is", options: ["kinematic viscosity / dynamic viscosity", "dynamic viscosity / kinematic viscosity", "kinematic viscosity x dynamic viscosity", "none of the above"], answer: 1 },
+      { id: 4, q: "Liquids and gases take the following characteristic(s) their contents.", options: ["Volume", "Shape", "Shape and volume", "Neither shape nor volume"], answer: 1 },
+      { id: 5, q: "Alcohol finds use in manometers as:", options: ["it provides a suitable meniscus for the inclined tube", "its density being less can provide longer length for a pressure difference, thus more accuracy can be obtained", "A and B above are correct", "Cheap and easily available"], answer: 2 },
+      { id: 6, q: "Which of the following statements about a Newtonian fluid is most accurate?", options: ["Shear stress is proportional to strain", "Viscosity is zero", "Shear stress is multi - valued", "Shear stress is proportional to rate of strain"], answer: 3 },
+      { id: 7, q: "The normal stress is the same in all directions at a point in fluid:", options: ["independent of the motion of one fluid layer relative to an adjacent layer", "when there is no motion of one fluid layer relative to an adjacent layer", "only if the fluid is frictionless", "only if fluid is frictionless and incompressible"], answer: 1 },
+      { id: 8, q: "Which of the following is not a characteristic of fluid pressure?", options: ["It is the same in all directions at a point in the fluid", "It acts normal to a surface", "It is a shear stress", "It is linear with depth"], answer: 2 },
+      { id: 9, q: "The length of mercury column at a place at an altitude will change with respect to that at ground in:", options: ["a linear relation", "a parabolic relation", "will remain constant", "first slowly and then steeply"], answer: 3 },
+      { id: 10, q: "All of the following dimensionless parameters are applicable to fluid flow problems except the", options: ["Reynolds number", "Froude number", "Mach number", "Biot number"], answer: 3 },
+      { id: 11, q: "Mass density of liquid (p) is given by which of the following?", options: ["rho = Mass / volume", "rho = metric slug / m²", "rho = kg sec² / m⁴", "all of the above"], answer: 3 },
+      { id: 12, q: "The speed of sound in all fluid is most closely related to all of the following properties except", options: ["compressibility", "density", "bulk modulus", "thermal conductivity"], answer: 3 },
+      { id: 13, q: "Under which condition, the specific weight of water is 1000 kg/m³?", options: ["at normal pressure of 760 mm", "at 4°C temperature", "at mean sea level", "all of the above"], answer: 3 },
+      { id: 14, q: "All of the following can be characteristics of fluids except", options: ["kinematic viscosity", "surface tension", "bulk modulus", "hysteresis"], answer: 3 },
+      { id: 15, q: "Which of the following can be used to measure the flow of water in a pipe of diameter 3000 mm?", options: ["Venturimeter", "Rotameter", "Nozzle", "Pitot tube"], answer: 3 },
+      { id: 16, q: "The pressure at a given depth due to several immiscible liquids is:", options: ["the average of the individual pressures", "the sum of the individual pressures", "independent of the individual pressures", "unknown"], answer: 1 },
+      { id: 17, q: "The equation of continuity of flow is applicable if:", options: ["the flow is one dimensional", "the flow is steady", "the velocity is uniform over the cross - section", "all of the above conditions are together"], answer: 3 },
+      { id: 18, q: "Uniform flow takes place when:", options: ["conditions remain unchanged with time at any point", "rate of change of velocity of fluid is zero", "at every point the velocity vector is identical in magnitude and direction for any given instant", "the change in transverse direction is zero"], answer: 2 },
+      { id: 19, q: "The continuity equation of an ideal fluid flow:", options: ["states that the net rate of in flow into any small volume must be zero", "applies to irrotational flow only", "states that the energy remains constant along streamline", "states that energy is constant everywhere in the fluid"], answer: 3 },
+      { id: 20, q: "A pitot tube can be used to measure fluid velocity as described by the Bernoulli's equation and the relationship between :", options: ["kinetic energy and static pressure", "fluid pressure and height of the fluid.", "fluid pressure and impact energy", "pressure and momentum"], answer: 0 },
+      { id: 21, q: "In order to avoid vaporization in the pipe line, the pipe line over the ridge is laid in such a way that it is not more than:", options: ["2.4 m above the hydraulic gradient", "6.4 m above the hydraulic gradient", "10.0 m above the hydraulic gradient", "5.0 above the hydraulic gradient"], answer: 1 },
+      { id: 22, q: "The stream function is a useful parameter in describing", options: ["the conservation of mass", "the conservation of momentum", "the conservation of energy", "the equation of state"], answer: 0 },
+      { id: 23, q: "For high speed flows, the potential energy of the fluids are:", options: ["positive", "negative", "negligible", "none of these"], answer: 2 },
+      { id: 24, q: "McLeod gauge used for low pressure measurement operates on the principle of", options: ["Gas law", "Boyle's law", "Charles law", "Pascal's law"], answer: 1 },
+      { id: 25, q: "A Kaplan turbine is", options: ["a high head mixed flow turbine", "an impulse turbine, inward flow", "a reaction turbine, outward flow", "low head axial flow turbine"], answer: 3 },
+      { id: 26, q: "The most common method for calculating frictional energy loss for laminar flowing fluids in noncircular pipes is:", options: ["the Darcy equation", "the Hagan - Poisevill equation", "the Hazen - Williams equation", "the Swamee - Jin equation"], answer: 0 },
+      { id: 27, q: "The parameter f in the expression for head-loss is", options: ["the fraction of flow that is totally turbulent", "the Darcy friction factor", "the height of the roughness scale in turbulent flow", "the static coefficient of friction"], answer: 1 },
+      { id: 28, q: "Friction factor for both laminar and turbulent flows can be found plotted in a", options: ["steam table", "psychrometric chart", "Moody diagram", "Mollier diagram"], answer: 2 },
+      { id: 29, q: "Which of the following is relative velocity?", options: ["The difference between two velocities", "Average velocity", "Sum of two velocities", "Vector difference of two velocities"], answer: 3 },
+      { id: 30, q: "Which of the following is the highest head?", options: ["33 inch Hg", "31.0 ft. water", "1.013 kg/cm²", "75.0 cm of Hg"], answer: 0 },
+      { id: 31, q: "For stable equilibrium of floating body its metacenter should lie:", options: ["below the center of gravity", "below the center of buoyancy", "above the center of buoyancy", "above the center of gravity"], answer: 3 },
+      { id: 32, q: "Center of pressure on an inclined plane lies", options: ["at the centroid", "above the centroid", "below the centroid", "at metacenter"], answer: 2 },
+      { id: 33, q: "The line of action of the buoyant forces always acts through the centroid of the", options: ["submerged body", "volume of the floating body", "volume of the fluid vertically above the body", "displaced volume of the fluid"], answer: 3 },
+      { id: 34, q: "The hydraulic grade line of a pipeline denotes which of the following?", options: ["Total energy", "Pressure energy", "Potential energy", "The sum of pressure energy and potential energy"], answer: 3 },
+      { id: 35, q: "The energy grade line of a pipeline denotes which of the following", options: ["Total energy", "Pressure energy", "Potential energy", "The sum of pressure energy and potential energy"], answer: 0 },
+      { id: 36, q: "The presence of friction in the energy grade line will always cause the line to slope", options: ["down in the direction of the flow", "upward in the direction of the flow", "level (no slope)", "there is no effect of friction on the energy grade line"], answer: 0 },
+      { id: 37, q: "The pitot tube is a device used for measurement of", options: ["pressure", "flow", "velocity", "discharge"], answer: 2 },
+      { id: 38, q: "Hydrometer is used to find out", options: ["specific gravity of liquids", "specific gravity of solids", "specific gravity of gases", "relative humidity"], answer: 0 },
+      { id: 39, q: "The fluid forces taken into consideration in the Navier Stokes equation are:", options: ["gravity, pressure and viscous", "gravity, pressure and turbulent", "pressure, viscous and turbulent", "gravity, viscous and turbulent"], answer: 0 },
+      { id: 40, q: "Permissible velocity of water flowing through concrete tunnel, is generally", options: ["4 - 5 m/s", "10 - 12 m/s", "13 - 16 m/s", "20 m/s"], answer: 0 },
+      { id: 41, q: "Orifice refers to an opening", options: ["with closed perimeter and of regular form through which water flows", "with prolonged sides having length of 2 to 3 diameters of opening in thick wall", "with partially full flow", "in hydraulic structure with regulation provision"], answer: 3 },
+      { id: 42, q: "The value of coefficient of discharge in comparison to coefficient of velocity is found to be", options: ["more", "less", "same", "more/less depending on flow"], answer: 1 },
+      { id: 43, q: "Weir refers to an opening", options: ["having closed perimeter and of regular form through which water flows", "having prolonged sides with length of 2 to 3 diameters of opening in thick wall", "having partially full flow", "in hydraulic structure with regulation provision"], answer: 2 },
+      { id: 44, q: "Which of the following parameters determine the friction factor of turbulent flow in a rough pipe?", options: ["Froude number and relative roughness", "Froude number and Mach number", "Reynolds number and relative roughness", "Mach number and relative roughness"], answer: 2 },
+      { id: 45, q: "Power transmitted through a pipe is maximum when the loss of head due to friction is :", options: ["one - half of the total head supplied", "one third of the total head supplied", "one - fourth of the total head supplied", "equal to the total head supplied"], answer: 1 },
+      { id: 46, q: "In a nozzle if back pressure is same as inlet pressure ; then", options: ["no flow takes place", "maximum flow takes place", "flow becomes subsonic in diverging section", "flow becomes supersonic in converging as well as supersonic section"], answer: 0 },
+      { id: 47, q: "The flow on two sides of a normal shock wave is called", options: ["sonic", "subsonic", "supersonic", "supersonic on one side and subsonic on the other side"], answer: 3 },
+      { id: 48, q: "Which of the following is the basic of Bernoulli's law for fluid flow?", options: ["Continuity equation", "Principle of conservation of energy", "Fourier's law", "Principle of conservation of mass"], answer: 1 },
+      { id: 49, q: "Which of the following is NOT a characteristic of fluid pressure?", options: ["It is a shear stress", "It is the same in all directions at a point in the fluid", "It acts normal to a surface", "It is linear with depth"], answer: 0 },
+      { id: 50, q: "Refers to the compressibility of a fluid, the fractional change in fluid volume per unit change in fluid.", options: ["Viscosity", "Bulk modulus", "Density", "Pressure"], answer: 3 },
+      { id: 51, q: "A pitot tube can be used to measure fluid velocity as described by the Bernoulli equation and the relationship between :", options: ["kinetic energy and static pressure", "fluid pressure and static pressure", "fluid pressure and impact energy", "pressure and momentum"], answer: 0 },
+      { id: 52, q: "The ratio of the area to the wetted perimeter is known as", options: ["flow factor", "hydraulic radius", "Kutter's C", "value of k in Darcy - Weisbach formula"], answer: 1 },
+      { id: 53, q: "What is the coefficient of contraction?", options: ["The ratio of the area of vena contracta to the area of the orifice", "The ratio of actual discharge to the theoretical discharge", "The ratio of the actual velocity to the theoretical velocity", "The ratio of the effective head to the actual head"], answer: 0 },
+      { id: 54, q: "Where is vena contracta most likely located?", options: ["At the orifice", "At a distance approximately ½ the diameter of the orifice", "At a distance approximately equal to the diameter of the orifice", "At a distance approximately twice the diameter of the orifice"], answer: 1 },
+      { id: 55, q: "A substance that is able to flow and yields to any force tending to change its shape without changing its volume such as water and air.", options: ["Fluid", "Flux", "Gas oil", "Water gas"], answer: 0 },
+      { id: 56, q: "The velocity of a fluid particle at the center of the pipe section is", options: ["maximum", "minimum", "average", "logarithmic average"], answer: 0 },
+      { id: 57, q: "For supersonic flow, the pressure of fluid must increase as the fluid flow area of the duct :", options: ["increases", "decreases", "constant", "none of these"], answer: 1 },
+      { id: 58, q: "Which is incorrect statement regarding apparent shear forces.", options: ["It can never be found in frictionless fluid regardless of its motion", "It can never be found when the fluid is at rest", "It depends upon cohesive forces", "It may occur owing to cohesion when the fluid is at rest"], answer: 3 },
+      { id: 59, q: "The time required for half a quantity of radioactive particles to decay (disintegrate) is called its", options: ["average life", "median life", "time constant", "half time"], answer: 3 },
+      { id: 60, q: "SI unit of viscosity is :", options: ["10 times poise", "9.81 times poise", "1/9.81 times poise", "1/10 times poise"], answer: 0 },
+      { id: 61, q: "For computation convenience, fluids are usually classed as:", options: ["rotational or irrotational", "real or ideal", "laminar or turbulent", "Newtonian or non-Newtonian"], answer: 1 },
+      { id: 62, q: "Which of the following is not a dimensionless parameter?", options: ["Kinetic viscosity", "Weber number", "Darcy Weisbach friction factor", "Froude number"], answer: 0 },
+      { id: 63, q: "Which of the following is not a characteristic of real fluids?", options: ["Finite viscosity", "Non uniform velocity distributions", "Compressibility", "Experience of eddy currents and turbulence"], answer: 3 },
+      { id: 64, q: "Which of the following is not the mass density of water?", options: ["62.5 lbm/ft³", "1000 kg/m³", "1 g/cm³", "1 kg/L"], answer: 1 },
+      { id: 65, q: "The upper critical Reynolds number for pipe flow is:", options: ["of no practical importance to designers", "always used to design pipes for strength", "the number at which turbulent flow changes over to laminar flow", "the number at which laminar flow changes into turbulent flow"], answer: 0 },
+      { id: 66, q: "Which of the following statements about gauge pressure is most correct? Gauge pressure are measured relative to", options: ["atmospheric pressure", "a vacuum", "each other", "the surface"], answer: 0 },
+      { id: 67, q: "The volumetric change of the fluid caused by a resistance is called", options: ["volumetric strain", "volumetric index", "compressibility", "adhesion"], answer: 3 },
+      { id: 68, q: "Compressibility of a fluid relates the fractional change in fluid volume per unit change in fluid.", options: ["temperature", "density", "pressure", "viscosity"], answer: 2 },
+      { id: 69, q: "Property of a fluid whereby its own molecules are attracted is known as", options: ["adhesion", "cohesion", "surface tension", "viscosity"], answer: 1 },
+      { id: 70, q: "The term subsonic flow refers to a flowing gas with a speed:", options: ["less than the local speed of sound", "equal to the speed of sound", "greater than the speed of sound", "much greater than the speed of sound"], answer: 0 },
+      { id: 71, q: "The pressure at a point in a fluid will not be same in all the directions if the fluid is:", options: ["viscous", "viscous and static", "inviscous and in motion", "viscous and is in motion"], answer: 3 },
+      { id: 72, q: "The statement that \"the hydrostatic pressure a fluid exerts on an immersed object or on container walls is a function only of fluid depth\" is", options: ["D'Alembert's paradox", "the perfect gas law", "the hydrostatic paradox", "Boyle's law"], answer: 2 },
+      { id: 73, q: "Bernoulli's equation is a/an", options: ["momentum equation", "conservation of energy equation", "conservation of mass equation", "equation of state"], answer: 1 },
+      { id: 74, q: "An ideal fluid is one that :", options: ["is very viscous", "obeys Netwon's law of viscosity", "is assumed in problems in conduit flow", "is frictionless and incompressible"], answer: 3 },
+      { id: 75, q: "The relationship between pressure and altitude in the atmosphere is given by the :", options: ["perfect gas law", "conservation of mass", "barometric height relationship", "first law of thermodynamics"], answer: 2 },
+      { id: 76, q: "The fact the buoyant force on a floating object equal to the weight of the water displaced is:", options: ["Bernoulli's law", "Archimedes' principle", "The law of diminishing returns", "The conservation of mass"], answer: 1 },
+      { id: 77, q: "Which of the following terms does not appear in the steady flow energy equation (the extended Bernoulli's equation)?", options: ["Kinetic energy", "Potential energy", "Friction losses", "Hysteresis losses"], answer: 3 },
+      { id: 78, q: "Neglecting the forces due to inertia, gravity and frictional resistance, the design of a channel can be made by comparing", options: ["Weber number", "Reynolds number", "Froude's number", "Prant'l number"], answer: 2 },
+      { id: 79, q: "The difference between stagnation pressure and total pressure is:", options: ["due to height difference", "due to fluid kinetic energy", "none of the terms are interchangeable", "important only in supersonic flow"], answer: 2 },
+      { id: 80, q: "Fully turbulent flow in a pipe is characterized by all of the following except:", options: ["a parabolic velocity profile", "a momentum exchange due to fluid masses rather than molecules", "a maximum velocity at the fluid center line", "a 1/7 velocity profile"], answer: 0 },
+      { id: 81, q: "The laminar friction factor of fluid flowing through pipe is a function of all of the following except:", options: ["fluid velocity", "pipe diameter", "pipe roughness", "Reynolds number"], answer: 2 },
+      { id: 82, q: "The continuity equation is applicable to:", options: ["viscous unviscous fluids", "compressibility of fluids", "conservation of mass", "steady unsteady flow"], answer: 2 },
+      { id: 83, q: "The rise or fall of head 'h' in a capillary tube of diameter 'd' and liquid surface tension 's' and specific weight 'w' is given by:", options: ["4s / wd", "4ds / w", "4wd / s", "4ws / d"], answer: 0 },
+      { id: 84, q: "The study of the practical laws of fluid flow and the resistance of open pipes and channels.", options: ["fluid mechanics", "hydraulics", "aerodynamics", "thermodynamics"], answer: 1 },
+      { id: 85, q: "Which of the following turbine is different from the others?", options: ["Fourneyron turbine", "Francis turbine", "Kaplan turbine", "Pelton wheel"], answer: 3 },
+      { id: 86, q: "Running away speed of a Pelton wheel gives :", options: ["actual operating speed", "no load speed", "full load speed", "no load speed when governor mechanism fails"], answer: 3 },
+      { id: 87, q: "Which of the following turbine is different from the others?", options: ["Pelton wheel", "Banki turbine", "Jonval turbine", "Kaplan turbine"], answer: 3 },
+      { id: 88, q: "The characteristic length of the Reynold's number used to calculate the friction in noncircular full running pipes is based on the", options: ["run length", "pipe length", "hydraulic diameter (the equivalent diameter)", "wetted circumference"], answer: 2 },
+      { id: 89, q: "The hydraulic radius of noncircular pipe is :", options: ["the square root of the flow area", "the ratio of the area to the wetted perimeter", "the radius of a pipe of equivalent area", "none of the above."], answer: 1 },
+      { id: 90, q: "The Darcy equation can be used for all liquids and flows except:", options: ["water", "alcohol", "gasoline", "air flowing supersonically"], answer: 3 },
+      { id: 91, q: "The Hazen - Williams formula for head loss due to friction is based upon :", options: ["rigorous mathematical derivation", "empirical data", "semi-empirical analysis", "screndipity"], answer: 1 },
+      { id: 92, q: "The extended Bernoulli equation includes all of the following terms except:", options: ["potential energy", "kinetic energy", "nuclear energy", "friction losses"], answer: 2 },
+      { id: 93, q: "An equipotential line is one that :", options: ["has no velocity component tangent to it", "has uniformly varying dynamic pressure", "has no velocity component normal to it", "exists in case of rotational flow"], answer: 0 },
+      { id: 94, q: "What is the use of a Hydraulic jump?", options: ["increase the flow rate", "reduce the flow rate", "reduce the velocity of flow", "reduce the energy of flow"], answer: 3 },
+      { id: 95, q: "What do you call the lowest portion to storage basin from where the water is not drawn?", options: ["bottom storage", "sub soil storage", "spring reserve", "dead storage"], answer: 3 },
+      { id: 96, q: "The presence of friction in the hydraulic grade line will always cause the line to slope :", options: ["down in the direction of the flow", "upward in the direction of the flow", "level (no slope)", "there is no effect of friction on the energy grade line"], answer: 0 },
+      { id: 97, q: "The presence of a minor loss in the energy grade line will cause the line to slope :", options: ["down in the direction of the flow", "upward in the direction of the flow", "vertically downward", "there is no effect of friction on the energy grade line"], answer: 0 },
+      { id: 98, q: "What do you call the pressure which the fluid exerts on an immersed object or container walls?", options: ["Normal pressure", "Standard liquid pressure", "Hydrostatic pressure", "Gage pressure"], answer: 2 },
+      { id: 99, q: "Viscosity for a fluid is defined as the constant of proportionality between shear stress and what other variable?", options: ["The spatial derivative of velocity", "The time derivative of pressure", "The time derivative of density", "The spatial derivative of density"], answer: 0 },
+      { id: 100, q: "What is the classification of the fluid flow if the fluid travels parallel to the adjacent layers and the paths of the individual particles do not cross each other?", options: ["Steady flow", "Laminar flow", "Uniform flow", "Turbulent flow"], answer: 1 },
+      { id: 101, q: "Which of the following refers to the measure of a fluid's sensitivity to changes in viscosity with changes in temperature?", options: ["Viscosity index", "Coefficient of viscosity", "Viscosity ratio", "Viscosity factor"], answer: 0 },
+      { id: 102, q: "If the Mach number is greater than 1 but lesser than 5, what is the standard classification of the travel?", options: ["Transonic travel", "Subsonic travel", "Hypersonic travel", "Supersonic travel"], answer: 3 },
+      { id: 103, q: "What is measured by a Pitot tube?", options: ["Volumetric discharge", "Mass flow", "Pressure", "Velocity"], answer: 3 },
+      { id: 104, q: "What is the difference between the energy grade line and the hydraulic grade line?", options: ["potential energy", "pressure energy", "kinetic energy", "friction losses"], answer: 2 },
+      { id: 105, q: "Kinetic energy is not neglected in calculations of:", options: ["high speed flow", "low speed flow", "steady flow", "equilibrium flow"], answer: 0 },
+      { id: 106, q: "Discharge losses through orifice are due to:", options: ["friction losses", "minor losses", "both friction and minor losses", "pressure losses"], answer: 2 },
+      { id: 107, q: "Which of the following is considered as an important parameter in the study of compressible flow?", options: ["speed of fluid", "speed of sound", "speed of light", "speed of fluid flow"], answer: 1 },
+      { id: 108, q: "Is the velocity at which an infinitesimal small pressure wave travels through a medium.", options: ["Subsonic velocity", "Hypersonic velocity", "Sonic velocity", "Monatomic velocity"], answer: 2 },
+      { id: 109, q: "It is the ratio of the actual velocity of the fluid to the velocity of sound.", options: ["Mach number", "Froude number", "Sonic number", "Euler number"], answer: 0 },
+      { id: 110, q: "The flow is called sonic when Mach number is:", options: ["equal to 1", "less than 1", "more than 1", "none of these"], answer: 0 },
+      { id: 111, q: "The flow is sub - sonic when Mach no. is:", options: ["greater than 1", "less than 1", "more than 1", "none of these"], answer: 1 },
+      { id: 112, q: "The flow is supersonic when Mach no. is :", options: ["greater than zero", "less than 1", "more than 1", "none of these"], answer: 2 },
+      { id: 113, q: "The flow is transonic when", options: ["M = 0", "M < 1", "M > 1", "M = 1"], answer: 3 },
+      { id: 114, q: "The pressure decreases as the temperature and velocity increases while the fluid velocity and Mach number:", options: ["increases", "decreases", "remains constant", "none of these"], answer: 0 },
+      { id: 115, q: "The Mach number is unity or one at the location of smallest flow area, called the :", options: ["decreasing area", "throat", "increasing area", "none of these"], answer: 1 },
+      { id: 116, q: "What happens to the velocity of fluid after passing the throat although the flow area", options: ["increases rapidly", "decreases rapidly", "remains constant", "none of these"], answer: 0 },
+      { id: 117, q: "Which of the following is an example of a Newtonian fluid?", options: ["Motor oils.", "Gas", "Paints", "Clay slurries"], answer: 1 },
+      { id: 118, q: "What is the critical pressure of water?", options: ["150 kg/cm²", "less than 200 kg/cm²", "more than 200 kg/cm²", "100 kg/cm²"], answer: 2 },
+      { id: 119, q: "Past ME Board Question: The volumetric change of the fluid caused by a resistance is called:", options: ["volumetric change", "volumetric index", "compressibility", "adhesion"], answer: 3 },
+      { id: 120, q: "Past ME Board Question: The energy of a fluid flowing at any section in a pipeline is a function of:", options: ["velocity of flow only", "pressure only", "height above a chosen datum, density, internal energy, pressure and velocity of flow", "pressure, height above a chosen datum, velocity of flow, density of fluid"], answer: 2 },
+      { id: 121, q: "Past ME Board Question: If the fluid travels parallel to the adjacent layers and the paths of individual particles do not cross, the fluid is said to be:", options: ["turbulent", "critical", "dynamic", "laminar"], answer: 3 },
+      { id: 122, q: "Past ME Board Question: Center of pressure on an inclined plane lies :", options: ["at the centroid", "above the centroid", "below the centroid", "at the metacenter"], answer: 2 },
+      { id: 123, q: "Past ME Board Question: At any instant, if the number of particles passing every cross - section of the stream is the same, the flow is said to be:", options: ["steady flow", "uniform flow", "continuous flow", "laminar flow"], answer: 0 },
+      { id: 124, q: "Past ME Board Question: The ratio of cross-sectional area of flow to the wetted perimeter is:", options: ["hydraulic lead", "hydraulic section", "hydraulic mean depth", "hydraulic gradient"], answer: 2 },
+      { id: 125, q: "Past ME Board Question: If A is the cross-sectional area of the flow and Pw is the wetted perimeter of a pipe, then what is the hydraulic depth. Ha?", options: ["Pw - A", "Pw / A", "A / Pw", "Pw x A"], answer: 2 },
+      { id: 126, q: "Past ME Board Question: If Q is the volume in gallon; D is height or elevation in ft, and m is weight in lbs per gallon, what is the desired energy to lift the water from lower to higher elevation?", options: ["E = mD / Q", "E = mDQ", "E = mQ / D", "E = QD / m"], answer: 1 },
+      { id: 127, q: "Past ME Board Question: The flow of the convergent section of a nozzle is always subsonic. If the flow is subsonic then the Mach number is:", options: ["greater than unity", "less than unity", "near unity", "unity"], answer: 1 }
+    ];
+
+    let currentQuestions = [];
+    let userAnswers = {};
+    let score = 0;
+
+    function init() {
+      currentQuestions = JSON.parse(JSON.stringify(originalQuestions));
+      userAnswers = {};
+      score = 0;
+      document.getElementById('total').textContent = currentQuestions.length;
+      document.getElementById('score').textContent = 0;
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+
+      currentQuestions.forEach((q, qIndex) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        
+        const qText = document.createElement('div');
+        qText.className = 'question-text';
+        qText.textContent = `${qIndex + 1}. ${q.q}`;
+        card.appendChild(qText);
+
+        const optionsList = document.createElement('ul');
+        optionsList.className = 'options';
+
+        q.options.forEach((opt, optIndex) => {
+          const li = document.createElement('li');
+          li.className = 'option-item';
+          
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          const labels = ['A', 'B', 'C', 'D'];
+          btn.textContent = `${labels[optIndex]}. ${opt}`;
+          
+          btn.onclick = () => selectAnswer(qIndex, optIndex, btn);
+          
+          if (userAnswers[qIndex] !== undefined) {
+            btn.disabled = true;
+            if (optIndex === q.answer) {
+              btn.classList.add('correct');
+            }
+            if (userAnswers[qIndex] === optIndex && optIndex !== q.answer) {
+              btn.classList.add('incorrect');
+            }
+          }
+
+          li.appendChild(btn);
+          optionsList.appendChild(li);
+        });
+
+        card.appendChild(optionsList);
+        container.appendChild(card);
+      });
+    }
+
+    function selectAnswer(qIndex, optIndex, btnEl) {
+      if (userAnswers[qIndex] !== undefined) return;
+
+      userAnswers[qIndex] = optIndex;
+      const q = currentQuestions[qIndex];
+
+      if (optIndex === q.answer) {
+        score++;
+        document.getElementById('score').textContent = score;
+      }
+
+      renderQuiz();
+    }
+
+    function shuffleAndReset() {
+      for (let i = originalQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [originalQuestions[i], originalQuestions[j]] = [originalQuestions[j], originalQuestions[i]];
+      }
+      
+      originalQuestions.forEach(q => {
+        const correctOptText = q.options[q.answer];
+        for (let i = q.options.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+        }
+        q.answer = q.options.indexOf(correctOptText);
+      });
+
+      init();
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      score = 0;
+      document.getElementById('score').textContent = 0;
+      renderQuiz();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
